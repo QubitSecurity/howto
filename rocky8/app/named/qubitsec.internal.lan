@@ -1,0 +1,16 @@
+$TTL 86400
+@   IN  SOA     ns.qubitsec.internal. root.qubitsec.internal. (
+        2022110001  ;Serial
+        3600        ;Refresh
+        1800        ;Retry
+        604800      ;Expire
+        86400       ;Minimum TTL
+)
+
+        IN  NS      ns.qubitsec.internal.
+        IN  NS      ns2.qubitsec.internal.
+        IN  A       10.10.10.250
+
+
+ns                   IN      A       10.10.10.250
+ns2                  IN      A       10.10.10.250
