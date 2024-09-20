@@ -1,0 +1,49 @@
+mount
+
+mknod /dev/vda4 b 8 4
+
+chown root:disk /dev/vda4
+
+fdisk /dev/vda
+
+p
+
+n
+
+p
+
+3
+
+t
+
+3
+
+8e
+
+p
+
+w
+
+reboot
+
+fdisk /dev/vda
+
+p
+
+q
+
+pvcreate /dev/vda4
+
+vgs
+
+vgextend rl /dev/vda4
+
+pvscan
+
+vgdisplay rl
+
+lvresize -r -l+100%FREE /dev/rl/root 
+
+df -h
+
+reboot
