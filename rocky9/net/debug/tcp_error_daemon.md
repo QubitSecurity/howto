@@ -1,4 +1,4 @@
-이 스크립트는 TCP 포트 443(HTTPS)와 80(HTTP)에서 재전송(`tcp retransmission`) 및 중복 ACK(`dup ack`)을 모니터링하여 네트워크 타임아웃과 관련된 문제를 감지하고 로그로 기록하는 기능을 수행합니다. 
+`tcp_error_daemon.sh` 이 스크립트는 TCP 포트 443(HTTPS)와 80(HTTP)에서 재전송(`tcp retransmission`) 및 중복 ACK(`dup ack`)을 모니터링하여 네트워크 타임아웃과 관련된 문제를 감지하고 로그로 기록하는 기능을 수행합니다. 
 
 ### 코드 설명
 
