@@ -1,35 +1,3 @@
-
-```mermaid
-graph TD
-    subgraph JVM_Applications [JVM Applications]
-        Kafka(Kafka) --> JMXExporter1
-        Zookeeper(Zookeeper) --> JMXExporter2
-        Solr(Solr) --> JMXExporter3
-    end
-
-    subgraph JMX_Exporter [JMX Exporters]
-        JMXExporter1[JMX Exporter]
-        JMXExporter2[JMX Exporter]
-        JMXExporter3[JMX Exporter]
-    end
-
-    subgraph Prometheus_System [Prometheus System]
-        Prometheus(Prometheus)
-    end
-
-    subgraph Visualization [Visualization]
-        Grafana(Grafana)
-    end
-
-    JMXExporter1 -->|Expose Metrics| Prometheus
-    JMXExporter2 -->|Expose Metrics| Prometheus
-    JMXExporter3 -->|Expose Metrics| Prometheus
-
-    Prometheus -->|Fetch Metrics| Grafana
-```
-
-<hr/>
-
 JMX(Java Management Extensions)는 Kafka, Zookeeper, Solr 등 Java 기반 애플리케이션의 성능 및 상태를 모니터링하는 데 활용되는 기술입니다. 각 애플리케이션이 노출하는 다양한 메트릭을 수집하고 관리하는 데 사용되며, Prometheus와 같은 모니터링 도구와도 연동될 수 있습니다. 아래에 각 시스템을 JMX를 통해 모니터링하는 방법을 자세히 설명하겠습니다.
 
 ### 1. **JMX란?**
@@ -81,3 +49,35 @@ JMX(Java Management Extensions)는 Kafka, Zookeeper, Solr 등 Java 기반 애플
    - **JMX**는 Kafka, Zookeeper, Solr과 같은 Java 기반 시스템의 상태와 성능 메트릭을 모니터링하는 표준 방법입니다.
    - 각 시스템은 JMX를 통해 JVM 관련 메트릭과 애플리케이션별 메트릭을 외부로 노출하며, 이를 통해 실시간으로 애플리케이션의 상태를 파악할 수 있습니다.
    - Prometheus와 같은 모니터링 도구와 연동하여 JMX 데이터를 수집하고, Grafana로 시각화하는 것이 일반적인 모니터링 방식입니다.
+
+<hr/>
+
+
+```mermaid
+graph TD
+    subgraph JVM_Applications [JVM Applications]
+        Kafka(Kafka) --> JMXExporter1
+        Zookeeper(Zookeeper) --> JMXExporter2
+        Solr(Solr) --> JMXExporter3
+    end
+
+    subgraph JMX_Exporter [JMX Exporters]
+        JMXExporter1[JMX Exporter]
+        JMXExporter2[JMX Exporter]
+        JMXExporter3[JMX Exporter]
+    end
+
+    subgraph Prometheus_System [Prometheus System]
+        Prometheus(Prometheus)
+    end
+
+    subgraph Visualization [Visualization]
+        Grafana(Grafana)
+    end
+
+    JMXExporter1 -->|Expose Metrics| Prometheus
+    JMXExporter2 -->|Expose Metrics| Prometheus
+    JMXExporter3 -->|Expose Metrics| Prometheus
+
+    Prometheus -->|Fetch Metrics| Grafana
+```
