@@ -1,3 +1,35 @@
+
+```mermaid
+graph TD
+    subgraph JVM_Applications [JVM Applications]
+        Kafka(Kafka) --> JMXExporter1
+        Zookeeper(Zookeeper) --> JMXExporter2
+        Solr(Solr) --> JMXExporter3
+    end
+
+    subgraph JMX_Exporter [JMX Exporters]
+        JMXExporter1[JMX Exporter]
+        JMXExporter2[JMX Exporter]
+        JMXExporter3[JMX Exporter]
+    end
+
+    subgraph Prometheus_System [Prometheus System]
+        Prometheus(Prometheus)
+    end
+
+    subgraph Visualization [Visualization]
+        Grafana(Grafana)
+    end
+
+    JMXExporter1 -->|Expose Metrics| Prometheus
+    JMXExporter2 -->|Expose Metrics| Prometheus
+    JMXExporter3 -->|Expose Metrics| Prometheus
+
+    Prometheus -->|Fetch Metrics| Grafana
+```
+
+<hr/>
+
 JMX(Java Management Extensions)는 Kafka, Zookeeper, Solr 등 Java 기반 애플리케이션의 성능 및 상태를 모니터링하는 데 활용되는 기술입니다. 각 애플리케이션이 노출하는 다양한 메트릭을 수집하고 관리하는 데 사용되며, Prometheus와 같은 모니터링 도구와도 연동될 수 있습니다. 아래에 각 시스템을 JMX를 통해 모니터링하는 방법을 자세히 설명하겠습니다.
 
 ### 1. **JMX란?**
