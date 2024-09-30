@@ -87,7 +87,7 @@ systemctl status crio
 ## 2. 멀티노드 구성
 ### 2.1 멀티노드 기본 구성 형태
 ```
-haproxy 1
+haproxy 2(master1, backup1)
 master 3
 worker 3
 ```
