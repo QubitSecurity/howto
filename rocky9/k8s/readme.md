@@ -4,6 +4,10 @@
 setenforce Permissive
 확인
 getenforce
+
+(영구 적용)
+vi /etc/selinux/config
+SELINUX=permissive
 ```
 
 ### 0.2 방화벽 종료
