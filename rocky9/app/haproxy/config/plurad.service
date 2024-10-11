@@ -1,4 +1,7 @@
-# /lib/systemd/system/plurad.service
+# Before install
+## /etc/plura/conf/plurad.service
+# After install
+## /lib/systemd/system/plurad.service
 
 [Unit]
 Description=Plura agent service
