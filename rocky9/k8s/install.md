@@ -209,3 +209,41 @@ graph TD;
 ```
 
 이 구성도는 Kubernetes 클러스터의 기본 아키텍처를 시각적으로 나타내며, Master 및 Worker 노드, HAProxy, 그리고 Kubernetes API 서버 간의 관계를 보여줍니다.
+
+---
+
+추가 **Master** 노드와 **Worker** 노드에 대한 Kubernetes 클러스터 합류 프로세스를 Mermaid로 구성한 다이어그램을 아래와 같이 작성하였습니다.
+
+### 추가 Master 및 Worker 노드 구성도 (Mermaid)
+
+```mermaid
+graph LR;
+    A[HAProxy Load Balancer] --> B[Kubernetes API Server]
+    
+    subgraph Master Node Configuration
+        C1[Master Node 1 - Initialized] --> B
+        C2[Master Node 2] -->|kubeadm join| B
+        C3[Master Node 3] -->|kubeadm join| B
+    end
+    
+    subgraph Worker Node Configuration
+        W1[Worker Node 1] -->|kubeadm join| B
+        W2[Worker Node 2] -->|kubeadm join| B
+        W3[Worker Node 3] -->|kubeadm join| B
+    end
+```
+
+### 구성 설명:
+1. **HAProxy Load Balancer**:
+   - 모든 Master 및 Worker 노드는 Kubernetes API 서버와 통신하기 위해 HAProxy 로드 밸런서를 통해 접근합니다.
+
+2. **Master Node Configuration**:
+   - **Master Node 1**이 이미 초기화되어 API 서버와 연결되어 있다는 것을 명확히 표시했습니다. kubeadm join은 불필요하므로 링크를 생략하고, 대신 "Initialized"라는 설명을 추가했습니다.
+   - **Master Node 2**와 **Master Node 3**는 `kubeadm join` 명령을 통해 기존 **Master Node 1**이 있는 클러스터에 추가됩니다.
+   - 각 Master 노드는 **API 서버**를 통해 클러스터에 합류하고, 제어 평면(컨트롤 플레인)에 참여합니다.
+
+3. **Worker Node Configuration**:
+   - **Worker Node 1**, **Worker Node 2**, **Worker Node 3** 역시 `kubeadm join` 명령을 사용해 클러스터에 합류합니다.
+   - Worker 노드는 API 서버와 연결되어 Kubernetes에서 Pod와 워크로드를 실행합니다.
+
+이 구성도는 추가 Master 및 Worker 노드가 HAProxy 로드 밸런서를 통해 Kubernetes API 서버에 접속하고, `kubeadm join`을 통해 클러스터에 참여하는 과정을 시각화한 것입니다.
