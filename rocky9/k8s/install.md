@@ -217,7 +217,7 @@ graph TD;
 ### 추가 Master 및 Worker 노드 구성도 (Mermaid)
 
 ```mermaid
-graph LR;
+graph TD;
     A[HAProxy Load Balancer] --> B[Kubernetes API Server]
     
     subgraph Master Node Configuration
