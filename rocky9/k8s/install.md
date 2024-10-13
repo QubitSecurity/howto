@@ -192,15 +192,22 @@ kubectl apply -f deploy.yaml
 ### Kubernetes 클러스터 동작 구성도 (Mermaid)
 
 ```mermaid
-graph TD;
+graph LR;
     A[Worker Nodes] --> B[Master Nodes];
     B -->|Control Traffic| C[HAProxy];
     C -->|Load Balancing| D[Kube API Server];
+
     subgraph Master Nodes
     B1[Master Node 1]
     B2[Master Node 2]
     B3[Master Node 3]
     end
+```
+
+### Worker Nodes 구성도 (Mermaid)
+
+```mermaid
+graph LR;
     subgraph Worker Nodes
     A1[Worker Node 1]
     A2[Worker Node 2]
