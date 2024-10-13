@@ -122,7 +122,7 @@ systemctl status crio
 
 ### 2.1 기본 구조
 ```
-haproxy 2 (master1, backup1)
+haproxy 2 (master1, backup)
 master 3
 worker 3
 ```
