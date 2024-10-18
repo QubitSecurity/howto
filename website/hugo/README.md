@@ -1,7 +1,8 @@
 # About
 
-### 1. [Install Hugo](https://github.com/QubitSecurity/howto/blob/main/website/hugo.md)
-- [Template](https://github.com/QubitSecurity/howto/blob/main/website/hugoTemplate.md)
+### 1. [Install Hugo](https://github.com/QubitSecurity/howto/blob/main/website/hugo/hugo.md)
+- [Template](https://github.com/QubitSecurity/howto/blob/main/website/hugo/hugoTemplate.md)
+- [Config](https://github.com/QubitSecurity/howto/blob/main/website/hugo/config/)
 
 ### 2. [Hugo Homepage](https://gohugo.io/)
 
