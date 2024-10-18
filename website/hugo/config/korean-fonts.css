@@ -1,0 +1,13 @@
+/* static/css/korean-fonts.css 파일에 폰트 적용 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    text-align: justify;
+}
+
+h1, h2, h3, p {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+p {
+    text-align: justify;
+}
