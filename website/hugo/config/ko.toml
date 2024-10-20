@@ -1,0 +1,49 @@
+[more]
+other = "더 보기"
+
+[allTitle]
+other = "모든 {{.Title }}"
+
+[recentTitle]
+other = "최근 {{.Title }}"
+
+[readMore]
+other = "더 읽기"
+
+[by]
+other = "작성자"
+
+[whatsInThis]
+other = "{{ .Type }}에 포함된 내용"
+
+[related]
+other = "관련된 내용"
+
+[yourName]
+other = "이름"
+
+[emailAddress]
+other = "이메일 주소"
+
+[message]
+other = "메시지"
+
+[emailRequiredNote]
+other = "이메일 주소는 필수입니다."
+
+[send]
+other = "보내기"
+
+[taxonomyPageList]
+other = "아래는 분류어 “{{ .Title }}”을(를) 사용하는 페이지 목록입니다."
+
+[readingTime]
+one = "읽는 데 1분"
+other = "읽는 데 {{ .Count }}분"
+
+[wordCount]
+one = "1단어"
+other = "{{ .Count }}단어"
+
+[pageTitle]
+other = "{{ .Name }} 페이지"
