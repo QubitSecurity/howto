@@ -178,17 +178,6 @@
         owner: "{{ kafka_user }}"
         group: "{{ kafka_group }}"
 
-    # - name: Create AKHQ configuration file
-      # copy:
-        # dest: "/opt/akhq/akhq-0.25.1/config/application.yml"
-        # content: |
-            # akhq:
-            # connections:
-            # my-cluster:
-            # properties:
-            # bootstrap.servers: "10.10.11.101:9092"  # Kafka 브로커 주소
-            # server:
-            # port: 8088  # AKHQ가 사용할 포트
             
     - name: Create AKHQ configuration file
       copy:
@@ -201,26 +190,7 @@
               connections:
                 local:
                   properties:
-                    bootstrap.servers: "{{ ansible_host }}:9092"
-        
-          # micronaut:
-            # server:
-              # port:9080
-          # akhq:
-            # connections:
-              # my-cluster:
-                # properties:
-                  # bootstrap.servers: "10.10.11.101:9092"  # Kafka 브로커 주소
-
-          # server:
-            # port: 8088  # AKHQ가 사용할 포트
-
-          # security:
-            # default-group: admin  # 기본적으로 admin 권한을 부여 (선택사항)
-
-          # micronaut:
-            # security:
-              # enabled: false  # 인증 비활성화 (선택사항)
+                    bootstrap.servers: "{{ ansible_host }}:9092"     
         owner: "{{ kafka_user }}"
         group: "{{ kafka_group }}"
         mode: '0644'
@@ -234,27 +204,7 @@
         group: "{{ kafka_group }}"
         mode: '0755'
         remote_src: yes
-        
 
-
-    # - name: Create AKHQ systemd service file
-      # copy:
-        # dest: /etc/systemd/system/akhq.service
-        # content: |
-          # [Unit]
-          # Description=AKHQ (Kafka UI)
-          # After=network.target
-
-          # [Service]
-          # User={{ kafka_user }}
-          # Group={{ kafka_group }}
-          # ExecStart=java -jar /opt/akhq/akhq-0.25.1/akhq-0.25.1-all.jar --spring.config.location=/opt/akhq/akhq-0.25.1/config/application.yml
-
-          # Restart=on-failure
-
-          # [Install]
-          # WantedBy=multi-user.target
-          
     - name: Create AKHQ systemd service file
       copy:
         dest: /etc/systemd/system/akhq.service
@@ -272,8 +222,6 @@
 
           [Install]
           WantedBy=multi-user.target
-
-
 
     - name: Reload systemd daemon for AKHQ
       systemd:
