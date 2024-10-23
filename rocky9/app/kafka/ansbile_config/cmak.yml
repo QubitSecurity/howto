@@ -1,0 +1,292 @@
+---
+- hosts: kafkamain
+  become: yes
+  vars:
+    kafka_version_major: "2.12-"
+    kafka_version_minor: "3.8.0"
+    kafka_home: "/opt/kafka"
+    kafka_user: "sysadmin"
+    kafka_group: "sysadmin"
+    cmak_version: "3.0.0.6"
+    akhq_version: "0.25.1"
+
+
+  tasks:
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+        
+    - name: Install necessary dependencies
+      environment:
+        http_proxy: "http://172.16.10.20:3128/"
+        https_proxy: "http://172.16.10.20:3128/"
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libXft
+        - java-21-openjdk-devel
+        - wget
+        - tar
+        - unzip
+
+    - name: Ensure Kafka group exists
+      group:
+        name: "{{ kafka_group }}"
+        state: present
+
+    - name: Create Kafka user
+      user:
+        name: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        create_home: no
+
+    - name: Ensure Kafka home directory exists
+      file:
+        path: "{{ kafka_home }}"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+
+    # CMAK 설치
+    - name: Download CMAK binaries
+      environment:
+        http_proxy: "http://172.16.10.20:3128/"
+        https_proxy: "http://172.16.10.20:3128/"
+      get_url:
+        url: "https://github.com/yahoo/CMAK/releases/download/{{ cmak_version }}/cmak-{{ cmak_version }}.zip"
+        dest: "/tmp/cmak.zip"
+
+    - name: Create CMAK directory
+      file:
+        path: "/opt/cmak"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    - name: Extract CMAK binaries
+      unarchive:
+        src: "/tmp/cmak.zip"
+        dest: "/opt/cmak"
+        remote_src: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    - name: Create CMAK directory
+      file:
+        path: "/opt/cmak/conf"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    - name: Configure CMAK application conf
+      template:
+        src: ./application.conf.j2
+        dest: "/opt/cmak/cmak-{{cmak_version}}/conf/application.conf"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    - name: Create CMAK configuration file
+      copy:
+        dest: "/opt/cmak/conf/application.conf"
+        content: |
+          cmak {
+            kafka-clusters = {
+              my-cluster = {
+                bootstrap.servers = "{{ ansible_host }}:9092"
+              }
+            }
+          }
+
+    - name: Create CMAK systemd service file
+      copy:
+        dest: /etc/systemd/system/cmak.service
+        content: |
+          [Unit]
+          Description=CMAK (Cluster Manager for Apache Kafka)
+          After=network.target
+
+          [Service]
+          User={{ kafka_user }}
+          Group={{ kafka_group }}
+          ExecStart=/opt/cmak/cmak-{{cmak_version}}/bin/cmak -J--add-opens=java.base/sun.net.www.protocol.file=ALL-UNNAMED -J--add-exports=java.base/sun.net.www.protocol.file=ALL-UNNAMED
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon for CMAK
+      systemd:
+        daemon_reload: yes
+
+    - name: Start CMAK service
+      systemd:
+        name: cmak
+        state: restarted
+        enabled: yes
+
+    # AKHQ 설치
+    - name: Download AKHQ zip
+      environment:
+        http_proxy: "http://172.16.10.20:3128/"
+        https_proxy: "http://172.16.10.20:3128/"
+      get_url:
+        url: "https://github.com/tchiotludo/akhq/releases/download/{{ akhq_version }}/akhq-{{ akhq_version }}.zip"
+        dest: "/tmp/akhq.zip"
+
+    - name: Download AKHQ jar
+      environment:
+        http_proxy: "http://172.16.10.20:3128/"
+        https_proxy: "http://172.16.10.20:3128/"
+      get_url:
+        url: "https://github.com/tchiotludo/akhq/releases/download/{{ akhq_version }}/akhq-{{ akhq_version }}-all.jar"
+        dest: "/tmp/akhq-{{ akhq_version }}-all.jar"
+
+
+    - name: Create AKHQ directory
+      file:
+        path: "/opt/akhq"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    - name: Create AKHQ directory
+      file:
+        path: "/opt/akhq/config"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+
+
+    - name: Extract AKHQ binaries
+      unarchive:
+        src: "/tmp/akhq.zip"
+        dest: "/opt/akhq"
+        remote_src: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    - name: Create AKHQ directory
+      file:
+        path: "/opt/akhq/akhq-0.25.1/config"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+    # - name: Create AKHQ configuration file
+      # copy:
+        # dest: "/opt/akhq/akhq-0.25.1/config/application.yml"
+        # content: |
+            # akhq:
+            # connections:
+            # my-cluster:
+            # properties:
+            # bootstrap.servers: "10.10.11.101:9092"  # Kafka 브로커 주소
+            # server:
+            # port: 8088  # AKHQ가 사용할 포트
+            
+    - name: Create AKHQ configuration file
+      copy:
+        dest: "/opt/akhq/akhq-0.25.1/config/application.yml"
+        content: |
+            micronaut:
+              server:
+                port: 8784
+            akhq:
+              connections:
+                local:
+                  properties:
+                    bootstrap.servers: "{{ ansible_host }}:9092"
+        
+          # micronaut:
+            # server:
+              # port:9080
+          # akhq:
+            # connections:
+              # my-cluster:
+                # properties:
+                  # bootstrap.servers: "10.10.11.101:9092"  # Kafka 브로커 주소
+
+          # server:
+            # port: 8088  # AKHQ가 사용할 포트
+
+          # security:
+            # default-group: admin  # 기본적으로 admin 권한을 부여 (선택사항)
+
+          # micronaut:
+            # security:
+              # enabled: false  # 인증 비활성화 (선택사항)
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+
+    - name: Copy AKHQ jar
+      copy:
+        src: "/tmp/akhq-{{ akhq_version }}-all.jar"
+        dest: "/opt/akhq/akhq-{{ akhq_version }}/akhq-{{ akhq_version }}-all.jar"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+        remote_src: yes
+        
+
+
+    # - name: Create AKHQ systemd service file
+      # copy:
+        # dest: /etc/systemd/system/akhq.service
+        # content: |
+          # [Unit]
+          # Description=AKHQ (Kafka UI)
+          # After=network.target
+
+          # [Service]
+          # User={{ kafka_user }}
+          # Group={{ kafka_group }}
+          # ExecStart=java -jar /opt/akhq/akhq-0.25.1/akhq-0.25.1-all.jar --spring.config.location=/opt/akhq/akhq-0.25.1/config/application.yml
+
+          # Restart=on-failure
+
+          # [Install]
+          # WantedBy=multi-user.target
+          
+    - name: Create AKHQ systemd service file
+      copy:
+        dest: /etc/systemd/system/akhq.service
+        content: |
+          [Unit]
+          Description=AKHQ (Kafka UI)
+          After=network.target
+
+          [Service]
+          User={{ kafka_user }}
+          Group={{ kafka_group }}
+          ExecStart=/usr/bin/java -jar /opt/akhq/akhq-{{ akhq_version }}/akhq-{{ akhq_version }}-all.jar --spring.config.location=file:/opt/akhq/akhq-0.25.1/config/application.yml
+          WorkingDirectory=/opt/akhq/akhq-0.25.1
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+
+
+    - name: Reload systemd daemon for AKHQ
+      systemd:
+        daemon_reload: yes
+
+    - name: Start AKHQ service
+      systemd:
+        name: akhq
+        state: restarted
+        enabled: yes
+
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
