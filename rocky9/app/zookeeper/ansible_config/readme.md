@@ -2,6 +2,10 @@
 ```
 ansible hosts 파일 경로 : /home/qubit/ansible/hosts
 zookeeper 실행 경로 : /opt
+
+파일 종류
+zookeeper.yml - ansible을 통해 zookeeper를 다운로드, 설치, 실행하는 yml
+zoo.cfg.j2 - zookeeper 실행 설정 파일 생성을 위한 동적 파일
 ```
 
 ### 1. 실행 방법
