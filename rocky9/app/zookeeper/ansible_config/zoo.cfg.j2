@@ -1,0 +1,14 @@
+tickTime=4000
+initLimit=10
+syncLimit=5
+dataDir=/opt/apache-zookeeper-3.8.4-bin/data
+dataLogDir=/opt/apache-zookeeper-3.8.4-bin/logs
+clientPort=2181
+admin.serverPort=8081
+autopurge.snapRetainCount=6
+autopurge.purgeInterval=48
+4lw.commands.whitelist=mntr,conf,ruok,srvr
+
+{% for item in range(0, groups['zk'] | length) %}
+server.{{ item + 1 }}={{ hostvars[groups['zk'][item]].ansible_host | default(groups['zk'][item]) }}:2888:3888:participant;2181
+{% endfor %}
