@@ -1,0 +1,155 @@
+---
+- hosts: kafka, kafkamain
+  become: yes
+  vars:
+    kafka_version_major: "2.12-"
+    kafka_version_minor: "3.8.0"
+    kafka_home: "/opt/kafka"
+    kafka_user: "sysadmin"
+    kafka_group: "sysadmin"
+    jmx_port: "8781"
+
+  tasks:
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Install necessary dependenciesa
+      environment:
+        http_proxy: "http://172.16.10.20:3128/"
+        https_proxy: "http://172.16.10.20:3128/"
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libXft
+        - java-21-openjdk-devel
+        - wget
+        - tar
+        - unzip
+
+    - name: Ensure Kafka group exists
+      group:
+        name: "{{ kafka_group }}"
+        state: present
+
+    - name: Create Kafka user
+      user:
+        name: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        create_home: no
+
+    - name: Ensure Kafka home directory exists
+      file:
+        path: "{{ kafka_home }}"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+    - name: Download Kafka binaries
+      environment:
+        http_proxy: "http://172.16.10.20:3128/"
+        https_proxy: "http://172.16.10.20:3128/"
+
+      get_url:
+        url: "https://downloads.apache.org/kafka/{{ kafka_version_minor }}/kafka_{{ kafka_version_major }}{{kafka_version_minor}}.tgz"
+#        url: https://downloads.apache.org/kafka/3.8.0/kafka_2.12-3.8.0.tgz
+        dest: "/tmp/kafka.tgz"
+
+    - name: Extract Kafka binaries
+      unarchive:
+        src: "/tmp/kafka.tgz"
+        dest: "{{ kafka_home }}"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+        remote_src: yes
+
+    - name: Ensure Kafka config directory exists
+      file:
+        path: "{{ kafka_home }}/config"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+    - name: Ensure Kafka data directory exists
+      file:
+        path: "{{ kafka_home }}/kafka-data"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+    - name: Configure Kafka server properties
+      template:
+        src: ./server.properties.j2
+        dest: "{{ kafka_home }}/config/server.properties"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+
+#    - name: Configure zookeeper properties
+#      copy:
+#        dest: "{{ kafka_home }}/config/server.properties"
+#        content: |
+#            broker.id=0
+#            log.dirs=/var/lib/kafka/logs
+#            zookeeper.connect=localhost:2181
+#            listeners=PLAINTEXT://0.0.0.0:9092
+#            advertised.listeners=PLAINTEXT://172.16.17.101:9092
+
+    # - name: Create kafka-env.sh file if it doesn't exist
+      # copy:
+        # dest: "{{ kafka_home }}/config/kafka-env.sh"
+        # content: |
+          !/bin/bash
+          # export JMX_PORT={{ jmx_port }}
+        # owner: "{{ kafka_user }}"
+        # group: "{{ kafka_group }}"
+        # mode: '0755'
+
+
+
+    # - name: Ensure JMX_PORT is set in kafka-env.sh
+      # lineinfile:
+        # path: "{{ kafka_home }}/config/kafka-env.sh"
+        # regexp: "^export JMX_PORT="
+        # line: "export JMX_PORT={{ jmx_port }}"
+        # owner: "{{ kafka_user }}"
+        # group: "{{ kafka_group }}"
+        # mode: '0644'
+      
+    - name: Create Kafka systemd service file
+      copy:
+        dest: /etc/systemd/system/kafka.service
+        content: |
+          [Unit]
+          Description=Apache Kafka Server
+          Documentation=http://kafka.apache.org/documentation/
+          Requires=network.target
+          After=network.target
+
+          [Service]
+          User={{ kafka_user }}
+          Group={{ kafka_group }}
+          Environment=JMX_PORT={{ jmx_port }}
+          ExecStart={{ kafka_home }}/kafka_{{ kafka_version_major }}{{ kafka_version_minor }}/bin/kafka-server-start.sh {{ kafka_home }}/config/server.properties
+          ExecStop={{ kafka_home }}/kafka_{{ kafka_version_major }}{{ kafka_version_minor }}/bin/kafka-server-stop.sh
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Start Kafka service
+      systemd:
+        name: kafka
+        state: restarted
+        enabled: yes
+
