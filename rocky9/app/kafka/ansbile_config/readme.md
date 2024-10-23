@@ -1,7 +1,9 @@
 ### 0. 실행 환경
 ```
 ansible hosts 파일 경로 : /home/sysadmin/ansible/hosts
-kafka 실행 경로 : /opt
+kafka 실행 경로 : /opt/kafka
+cmak 실행 경로 : /opt/cmak
+akhq 실행 경로 : /opt/akhq
 ```
 
 ### 1. 실행 방법
