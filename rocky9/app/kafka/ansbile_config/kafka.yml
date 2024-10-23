@@ -5,8 +5,8 @@
     kafka_version_major: "2.12-"
     kafka_version_minor: "3.8.0"
     kafka_home: "/opt/kafka"
-    kafka_user: "sysadmin"
-    kafka_group: "sysadmin"
+    kafka_user: "qubit"
+    kafka_group: "qubit"
     jmx_port: "8781"
 
   tasks:
