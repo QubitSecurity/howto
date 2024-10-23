@@ -56,7 +56,6 @@
 
       get_url:
         url: "https://downloads.apache.org/kafka/{{ kafka_version_minor }}/kafka_{{ kafka_version_major }}{{kafka_version_minor}}.tgz"
-#        url: https://downloads.apache.org/kafka/3.8.0/kafka_2.12-3.8.0.tgz
         dest: "/tmp/kafka.tgz"
 
     - name: Extract Kafka binaries
@@ -91,37 +90,6 @@
         owner: "{{ kafka_user }}"
         group: "{{ kafka_group }}"
 
-#    - name: Configure zookeeper properties
-#      copy:
-#        dest: "{{ kafka_home }}/config/server.properties"
-#        content: |
-#            broker.id=0
-#            log.dirs=/var/lib/kafka/logs
-#            zookeeper.connect=localhost:2181
-#            listeners=PLAINTEXT://0.0.0.0:9092
-#            advertised.listeners=PLAINTEXT://172.16.17.101:9092
-
-    # - name: Create kafka-env.sh file if it doesn't exist
-      # copy:
-        # dest: "{{ kafka_home }}/config/kafka-env.sh"
-        # content: |
-          !/bin/bash
-          # export JMX_PORT={{ jmx_port }}
-        # owner: "{{ kafka_user }}"
-        # group: "{{ kafka_group }}"
-        # mode: '0755'
-
-
-
-    # - name: Ensure JMX_PORT is set in kafka-env.sh
-      # lineinfile:
-        # path: "{{ kafka_home }}/config/kafka-env.sh"
-        # regexp: "^export JMX_PORT="
-        # line: "export JMX_PORT={{ jmx_port }}"
-        # owner: "{{ kafka_user }}"
-        # group: "{{ kafka_group }}"
-        # mode: '0644'
-      
     - name: Create Kafka systemd service file
       copy:
         dest: /etc/systemd/system/kafka.service
