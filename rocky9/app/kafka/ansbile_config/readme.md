@@ -6,8 +6,10 @@ cmak 실행 경로 : /opt/cmak
 akhq 실행 경로 : /opt/akhq
 
 파일 종류
-zookeeper.yml - ansible을 통해 zookeeper를 다운로드, 설치, 실행하는 yml
-zoo.cfg.j2 - zookeeper 실행 설정 파일 생성을 위한 동적 파일
+kafka.yml - ansible을 통해 kafka 를 다운로드, 설치, 실행하는 yml
+server.propertise.j2 - kafka 실행 설정 파일 생성을 위한 동적 파일
+cmak.yml - ansible을 통해 cmak, akhq 를 다운로드, 설치, 실행하는 yml
+application.conf.j2 - cmak 실행 설정 파일 생성을 위한 동적 파일
 ```
 
 ### 1. 실행 방법
