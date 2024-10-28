@@ -54,7 +54,7 @@ graph LR;
         direction TB
         Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
         Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
-        Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
+        Zookeeper4[ZookeeperN<br>Zookeeper_NodeN:2888:3888:2181]
         
     end
 
@@ -65,6 +65,7 @@ graph LR;
         Kafka1[Kafka1<br>Kafka_Node1:9092]
         Kafka2[Kafka2<br>Kafka_Node2:9092]
         Kafka3[Kafka3<br>Kafka_Node3:9092]
+        Kafka4[KafkaN<br>Kafka_NodeN:9092]
     end
 
     hosts -->|설치| Kafka
@@ -72,10 +73,17 @@ graph LR;
     Kafka1 --> Zookeeper1
     Kafka1 --> Zookeeper2
     Kafka1 --> Zookeeper3
+    Kafka1 --> Zookeeper4
     Kafka2 --> Zookeeper1
     Kafka2 --> Zookeeper2
     Kafka2 --> Zookeeper3
+    Kafka2 --> Zookeeper4
     Kafka3 --> Zookeeper1
     Kafka3 --> Zookeeper2
     Kafka3 --> Zookeeper3
+    Kafka3 --> Zookeeper4
+    KafkaN --> Zookeeper1
+    KafkaN --> Zookeeper2
+    KafkaN --> Zookeeper3
+    KafkaN --> Zookeeper4
 ```
