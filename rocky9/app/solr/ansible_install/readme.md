@@ -60,4 +60,5 @@ hosts -->|설치| Solr
 SolrProcesses --> Zookeeper1
 SolrProcesses --> Zookeeper2
 SolrProcesses --> Zookeeper3
+SolrProcesses --> Zookeeper4
 ```
