@@ -21,8 +21,8 @@ sudo systemctl stop kakka
 graph LR;
 
     %% Define layout direction and spacing
-    style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
-    style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
+    %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
+    %% style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
 
 
     %% Ansible Server Section
@@ -47,9 +47,9 @@ graph LR;
         %% Kafka Subgraph
     subgraph Kafka[Kafka]
         direction TB
-        Kafka1[Kafka1<br>192.168.200.160:9092]
-        Kafka2[Kafka2<br>192.168.200.161:9092]
-        Kafka3[Kafka3<br>192.168.200.162:9092]
+        Kafka1[Kafka1<br>Kafka_IP1:9092]
+        Kafka2[Kafka2<br>Kafka_IP2:9092]
+        Kafka3[Kafka3<br>Kafka_IP3:9092]
     end
 
     hosts -->|설치| Kafka
