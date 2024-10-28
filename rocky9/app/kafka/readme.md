@@ -37,9 +37,9 @@ graph LR;
     %% Zookeeper Section
     subgraph Zookeeper[Installed_Zookeeper]
         direction TB
-        Zookeeper1[Zookeeper1<br>Zookeeper_IP1:2888:3888:2181]
-        Zookeeper2[Zookeeper2<br>Zookeeper_IP2:2888:3888:2181]
-        Zookeeper3[Zookeeper3<br>Zookeeper_IP3:2888:3888:2181]
+        Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
+        Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
+        Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
         
     end
 
@@ -47,9 +47,9 @@ graph LR;
         %% Kafka Subgraph
     subgraph Kafka[Kafka]
         direction TB
-        Kafka1[Kafka1<br>Kafka_IP1:9092]
-        Kafka2[Kafka2<br>Kafka_IP2:9092]
-        Kafka3[Kafka3<br>Kafka_IP3:9092]
+        Kafka1[Kafka1<br>Kafka_Node1:9092]
+        Kafka2[Kafka2<br>Kafka_Node2:9092]
+        Kafka3[Kafka3<br>Kafka_Node3:9092]
     end
 
     hosts -->|설치| Kafka
