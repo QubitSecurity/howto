@@ -22,3 +22,42 @@ ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo systemctl stop solr*
 ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/solr*"
 ```
 
+### 4. 구조
+```mermaid
+graph LR;
+
+    %% Define layout direction and spacing
+   %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
+   %% style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
+   %% style Plug_Zookeeper fill:#fff,stroke:#000,stroke-width:2px;
+
+    %% Ansible Server Section
+    subgraph Ansible_Server[Ansible Server]
+        direction TB
+        Ansible1[Ansible]
+        hosts[hosts]
+        
+        Ansible1 --> hosts
+    end
+
+    %% Zookeeper Section
+    subgraph Zookeeper[Installed_Zookeeper]
+        direction TB
+        Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
+        Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
+        Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
+        Zookeeper4[ZookeeperN<br>Zookeeper_NodeN:2888:3888:2181]
+        
+    end
+
+    %% Solr Subgraph
+    subgraph Solr[Solr Single]
+        direction TB
+        SolrProcesses[SolrProcesses<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
+    end
+hosts -->|설치| Solr
+
+SolrProcesses --> Zookeeper1
+SolrProcesses --> Zookeeper2
+SolrProcesses --> Zookeeper3
+```
