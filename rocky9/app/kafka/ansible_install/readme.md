@@ -20,16 +20,16 @@ ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/cmak.yml
 
 ### 2. 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo systemctl stop kafka"
-ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo systemctl stop cmak"
-ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo systemctl stop akhq"
+ansible -i /home/qubit/ansible/hosts kafka -m command -a "sudo systemctl stop kafka"
+ansible -i /home/qubit/ansible/hosts kafkamain -m command -a "sudo systemctl stop cmak"
+ansible -i /home/qubit/ansible/hosts kafkamain -m command -a "sudo systemctl stop akhq"
 ```
 
 ### 3. 서비스 전체 설치 파일 삭제
 ```
-ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/kafka"
-ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/cmak"
-ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/akhq"
+ansible -i /home/qubit/ansible/hosts kafka -m shell -a "sudo rm -rf /opt/kafka"
+ansible -i /home/qubit/ansible/hosts kafkamain -m shell -a "sudo rm -rf /opt/cmak"
+ansible -i /home/qubit/ansible/hosts kafkamain -m shell -a "sudo rm -rf /opt/akhq"
 ```
 ### 4. 구조
 ```mermaid
