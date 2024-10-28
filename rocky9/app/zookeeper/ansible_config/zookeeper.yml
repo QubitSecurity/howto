@@ -40,12 +40,6 @@
         owner: "{{ zookeeper_user }}"
         group: "{{ zookeeper_group }}"
 
-#    - name: Extract ZooKeeper
-#      unarchive:
-#        src: /tmp/apache-zookeeper-3.8.4-bin.tar.gz
-#        dest: /opt/
-#        remote_src: yes
-
     - name: Create zookeeper directory
       file:
         path: "{{ zookeeper_home }}"
@@ -63,20 +57,6 @@
         mode: '0755'
         remote_src: yes
 
-#    - name: Copy ZooKeeper configuration
-#      copy:
-#        src: /opt/apache-zookeeper-3.8.4-bin/conf/zoo_sample.cfg
-#        dest: /opt/apache-zookeeper-3.8.4-bin/conf/zoo.cfg
-
-
-
-
-#    - name: Modify ZooKeeper configuration
-#      lineinfile:
-#        path: /opt/apache-zookeeper-3.8.4-bin/conf/zoo.cfg
-#        regexp: '^dataDir='
-#        line: 'dataDir=/var/lib/zookeeper'
-
     - name: Create ZooKeeper data directory for zookeeper
       file:
         path: "{{ zookeeper_home }}/apache-zookeeper-{{zookeeper_version}}-bin/data"
@@ -85,12 +65,6 @@
         group: qubit
         mode: '0755'
 
-#    - name: Configure zookeeper properties
-#      template:
-#        src: zoo.cfg
-#        dest: /opt/apache-zookeeper-3.8.4-bin/conf/zoo.cfg
-#
- 
     - name: Create myid file for zookeeper
       copy:
         dest: "{{ zookeeper_home }}/apache-zookeeper-{{zookeeper_version}}-bin/data/myid"
@@ -99,29 +73,6 @@
         group: "{{ zookeeper_group }}"
         mode: '0644'
 
-
-        
-    # - name: Configure zookeeper properties
-      # copy:
-        # dest: "{{ zookeeper_home }}/apache-zookeeper-3.8.4-bin/conf/zoo.cfg"
-        # content: |
-            # tickTime=4000
-            # initLimit=10
-            # syncLimit=5
-            # dataDir={{ zookeeper_home }}/apache-zookeeper-3.8.4-bin/data
-            # dataLogDir={{ zookeeper_home }}/apache-zookeeper-3.8.4-bin/logs
-            # clientPort=2181
-            # admin.serverPort=8081
-            # autopurge.snapRetainCount=6
-            # autopurge.purgeInterval=48
-            # 4lw.commands.whitelist=mntr,conf,ruok,srvr
-            # server.1={{ zookeeper_ip }}:2887:3887:participant;2181
-            # server.2={{ zookeeper_ip }}:2888:3888:participant;2182
-            # server.3={{ zookeeper_ip }}:2889:3889:participant;2183
-        # owner: qubit
-        # group: qubit
-        # mode: '0755'
-    
     - name: Configure zookeeper properties
       template:
         src: zoo.cfg.j2
