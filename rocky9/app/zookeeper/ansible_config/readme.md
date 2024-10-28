@@ -15,7 +15,7 @@ ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/zookeeper.yml
 
 ### 2. 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo pkill -9 -f 'zookeeper'"
+ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo /opt/apache-zookeeper-X.X.X-bin/bin/zkServer.sh stop"
 ```
 
 ### 3. 서비스 전체 설치 파일 삭제
