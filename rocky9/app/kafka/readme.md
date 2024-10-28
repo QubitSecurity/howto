@@ -17,7 +17,7 @@ sudo systemctl start kakka
 sudo systemctl stop kakka
 ```
 ### 1.3. 구조
-```
+```mermaid
 graph LR;
 
     %% Define layout direction and spacing
