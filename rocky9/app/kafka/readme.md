@@ -23,7 +23,7 @@ sudo systemctl stop kakka
 ```
 HOME 경로 : /opt/cmak
 실행 파일 경로 : /etc/systemd/system/cmak.service
-설정 파일 : /opt/cmak/cmak-3.0.0.6/conf/application.conf
+설정 파일 : /opt/cmak/cmak-X.X.X.X/conf/application.conf
 ```
 
 
