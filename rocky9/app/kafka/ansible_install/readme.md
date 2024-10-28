@@ -83,8 +83,8 @@ graph LR;
     Kafka3 --> Zookeeper2
     Kafka3 --> Zookeeper3
     Kafka3 --> Zookeeper4
-    KafkaN --> Zookeeper1
-    KafkaN --> Zookeeper2
-    KafkaN --> Zookeeper3
-    KafkaN --> Zookeeper4
+    Kafka4 --> Zookeeper1
+    Kafka4 --> Zookeeper2
+    Kafka4 --> Zookeeper3
+    Kafka4 --> Zookeeper4
 ```
