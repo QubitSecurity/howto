@@ -2,14 +2,15 @@
 - hosts: kafkamain
   become: yes
   vars:
-    kafka_version_major: "2.12-"
-    kafka_version_minor: "3.8.0"
+    kafka_version_major: "X.XX-"
+    kafka_version_minor: "X.X.X"
     kafka_home: "/opt/kafka"
     kafka_user: "qubit"
     kafka_group: "qubit"
-    cmak_version: "3.0.0.6"
-    akhq_version: "0.25.1"
-
+    jmx_port: "8781"
+    proxy: "http://XXX.XXX.XXX.XXX:3128/"
+    cmak_version: "X.X.X.X"
+    akhq_version: "X.XX.X"
 
   tasks:
     - name: Stop and disable firewalld
@@ -20,8 +21,8 @@
         
     - name: Install necessary dependencies
       environment:
-        http_proxy: "http://172.16.10.20:3128/"
-        https_proxy: "http://172.16.10.20:3128/"
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
       package:
         name: "{{ item }}"
         state: present
@@ -55,8 +56,8 @@
     # CMAK 설치
     - name: Download CMAK binaries
       environment:
-        http_proxy: "http://172.16.10.20:3128/"
-        https_proxy: "http://172.16.10.20:3128/"
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
       get_url:
         url: "https://github.com/yahoo/CMAK/releases/download/{{ cmak_version }}/cmak-{{ cmak_version }}.zip"
         dest: "/tmp/cmak.zip"
@@ -132,8 +133,8 @@
     # AKHQ 설치
     - name: Download AKHQ zip
       environment:
-        http_proxy: "http://172.16.10.20:3128/"
-        https_proxy: "http://172.16.10.20:3128/"
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
       get_url:
         url: "https://github.com/tchiotludo/akhq/releases/download/{{ akhq_version }}/akhq-{{ akhq_version }}.zip"
         dest: "/tmp/akhq.zip"
