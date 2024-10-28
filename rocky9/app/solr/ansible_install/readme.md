@@ -14,12 +14,12 @@ ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/solr.yml
 
 ### 2. 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo systemctl stop solr*"
+ansible -i /home/qubit/ansible/hosts solr -m command -a "sudo systemctl stop solr*"
 ```
 
 ### 3. 서비스 전체 설치 파일 삭제
 ```
-ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/solr*"
+ansible -i /home/qubit/ansible/hosts solr -m shell -a "sudo rm -rf /opt/solr*"
 ```
 
 ### 4. 구조
