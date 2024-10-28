@@ -20,5 +20,5 @@ ansible -i /home/qubit/ansible/hosts zk -m command -a "sudo pkill -9 -f 'zookeep
 
 ### 3. 서비스 전체 설치 파일 삭제
 ```
-ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/apache-zookeeper-3.8.4-bin"
+ansible -i /home/qubit/ansible/hosts zk -m shell -a "sudo rm -rf /opt/apache-zookeeper-X.X.X-bin"
 ```
