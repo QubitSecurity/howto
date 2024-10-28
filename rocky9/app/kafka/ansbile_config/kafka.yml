@@ -2,12 +2,13 @@
 - hosts: kafka, kafkamain
   become: yes
   vars:
-    kafka_version_major: "2.12-"
-    kafka_version_minor: "3.8.0"
+    kafka_version_major: "X.XX-"
+    kafka_version_minor: "X.X.X"
     kafka_home: "/opt/kafka"
     kafka_user: "qubit"
     kafka_group: "qubit"
     jmx_port: "8781"
+    proxy: "http://XXX.XXX.XXX.XXX:3128/"
 
   tasks:
     - name: Stop and disable firewalld
@@ -18,8 +19,8 @@
 
     - name: Install necessary dependenciesa
       environment:
-        http_proxy: "http://172.16.10.20:3128/"
-        https_proxy: "http://172.16.10.20:3128/"
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
       package:
         name: "{{ item }}"
         state: present
@@ -51,8 +52,8 @@
 
     - name: Download Kafka binaries
       environment:
-        http_proxy: "http://172.16.10.20:3128/"
-        https_proxy: "http://172.16.10.20:3128/"
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
 
       get_url:
         url: "https://downloads.apache.org/kafka/{{ kafka_version_minor }}/kafka_{{ kafka_version_major }}{{kafka_version_minor}}.tgz"
