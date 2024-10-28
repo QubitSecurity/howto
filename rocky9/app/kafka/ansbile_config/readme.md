@@ -1,4 +1,4 @@
-### 0. 실행 환경
+### 0. 설치 환경
 ```
 ansible hosts 파일 경로 : /home/qubit/ansible/hosts
 kafka 실행 경로 : /opt/kafka
