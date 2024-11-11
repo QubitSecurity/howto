@@ -1,6 +1,6 @@
 ### 1.0. 실행 환경
 ```
-실행 파일 경로 : //usr/lib/systemd/system/redis.service
+실행 파일 경로 : /usr/lib/systemd/system/redis.service
 Config 경로 : /etc/redis
 ```
 
