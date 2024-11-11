@@ -1,0 +1,260 @@
+---
+- name: Install Redis from source
+  hosts: redis
+  become: yes
+  vars:
+    redis_stack_version: "X.X.X-vXX"
+    redis_user: "sysadmin"
+    redis_group: "sysadmin"
+    redis_config_path: "/etc/redis/"
+    proxy: "http://172.16.10.20:3128/"
+    sysctl_settings:
+      - { key: 'fs.file-max', value: '2097152' }
+      - { key: 'net.ipv4.ip_local_port_range', value: '1024 65500' }
+      - { key: 'net.core.rmem_default', value: '26214400' }
+      - { key: 'net.core.rmem_max', value: '26214400' }
+      - { key: 'net.core.wmem_default', value: '262144' }
+      - { key: 'net.core.wmem_max', value: '1048576' }
+      - { key: 'vm.overcommit_memory', value: '1' }
+
+  tasks:
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Install necessary dependencies
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - java-21-openjdk-devel
+        - wget
+        - tar
+        - python3-libsemanage
+        - policycoreutils-python-utils
+
+    - name: Ensure each sysctl setting is present in sysctl.conf
+      lineinfile:
+        path: /etc/sysctl.conf
+        regexp: "^{{ item.key }}\\s*="
+        line: "{{ item.key }} = {{ item.value }}"
+        state: present
+      loop: "{{ sysctl_settings }}"
+
+    - name: Set Transparent Huge Pages to 'never'
+      shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled
+      register: thp_result
+      ignore_errors: true
+      changed_when: thp_result.rc == 0
+
+    - name: Append limits for redis in /etc/security/limits.conf
+      lineinfile:
+        path: /etc/security/limits.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        insertafter: EOF
+      with_items:
+        - { regexp: '^redis\s+soft\s+nofile\s+65536', line: 'redis              soft    nofile  65536' }
+        - { regexp: '^redis\s+hard\s+nofile\s+65536', line: 'redis              hard    nofile  65536' }
+        - { regexp: '^redis\s+soft\s+nproc\s+unlimited', line: 'redis              soft    nproc   unlimited' }
+        - { regexp: '^redis\s+hard\s+nproc\s+unlimited', line: 'redis              hard    nproc   unlimited' }
+
+    - name: Apply sysctl settings
+      shell: sudo sysctl -p
+      
+    - name: Configure dnf to use proxy
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: "^proxy="
+        line: "proxy={{ proxy }}"
+        state: present
+
+    - name: Module Reset Redis 
+      shell: sudo dnf -y module reset redis
+      
+    - name: Module Check Redis 
+      shell: sudo dnf module list redis
+
+    - name: Install Redis 
+      #shell: sudo dnf module -y install redis
+      shell: sudo dnf module -y install redis:remi-7.2
+
+
+    - name: Download Redis-Stack
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      get_url:
+        url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel8.x86_64.tar.gz"
+        #url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel9.x86_64.tar.gz"
+        dest: /tmp/redis-stack-server-{{redis_stack_version}}.tgz
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+
+    - name: Extract Redis-Stack
+      become: yes
+      unarchive:
+        src: "/tmp/redis-stack-server-{{redis_stack_version}}.tgz"
+        dest: "/tmp"
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+        remote_src: yes
+
+    - name: Create Redis Module directories
+      file:
+        path: "{{redis_config_path}}/module"
+        state: directory
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        
+    - name: Copy Redis Module 
+      shell: sudo cp /tmp/redis-stack-server-{{redis_stack_version}}/lib/* {{redis_config_path}}/module
+
+    #Default Configration
+    - name: Set bind config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^bind 127.0.0.1 -::1'
+        line: 'bind *'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    - name: Set protected-mode config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^protected-mode'
+        line: 'protected-mode no'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    #Clustering Configration
+    - name: Set cluster-enabled config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^cluster-enabled'
+        line: 'cluster-enabled yes'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    - name: Set cluster-config-file config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^cluster-config-file'
+        line: 'cluster-config-file nodes-6379.conf'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    - name: Set cluster-node-timeout config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^cluster-node-timeout'
+        line: 'cluster-node-timeout 5000'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+    
+    #JSON Module Configuration
+    - name: Set cluster-node-timeout config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^loadmodule '
+        line: 'loadmodule {{redis_config_path}}module/rejson.so'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755' 
+       
+    - name: Enable & Execute Redis first
+      shell: sudo systemctl enable --now redis
+      ignore_errors: yes
+      register: redis_start_result
+      until: redis_start_result.rc == 0
+      retries: 2  # 원하는 시도 횟수로 설정 (예: 5번)
+      delay: 3  # 재시도 사이의 대기 시간 (초)
+
+    - name: Identify Denied Actions
+      shell: ausearch -m avc -ts recent | audit2allow -a -M redis_rejson
+      ignore_errors: yes
+      become: yes
+      become_user: root
+      register: identify_result
+      until: identify_result.rc == 0
+      retries: 5  # 원하는 횟수로 설정 (예: 5번 시도)
+      delay: 3  # 재시도 사이의 대기 시간 (초)
+
+    - name: Load Policy
+      shell: semodule -i redis_rejson.pp
+      ignore_errors: yes
+      become: yes
+      become_user: root
+      register: load_policy_result
+      until: load_policy_result.rc == 0
+      retries: 5  # 원하는 횟수로 설정
+      delay: 3  # 재시도 사이의 대기 시간 (초)
+
+    - name: Restore SELinux Rules
+      shell: sudo restorecon -Rv {{redis_config_path}}
+
+    - name: Enable & Execute Redis second
+      shell: sudo systemctl enable --now redis
+      
+    #Configure Sentinel
+    - name: Configure Redis Sentinel
+      copy:
+        dest: "{{redis_config_path}}/sentinel1.conf"
+        content: |
+          port 26379
+          dir "/tmp"
+          sentinel monitor mymaster {{ ansible_host }} 6379 2
+          sentinel down-after-milliseconds mymaster 500
+          sentinel failover-timeout mymaster 1000
+          sentinel parallel-syncs mymaster 1
+          /etc/selinux/config
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+          
+    - name: Create systemd service file for Redis Sentinel1
+      copy:
+        dest: /etc/systemd/system/redis-sentinel1.service
+        content: |
+          [Unit]
+          Description=Redis Sentinel
+          After=network.target
+
+          [Service]
+          ExecStart=/bin/redis-server {{redis_config_path}}sentinel.conf --sentinel
+          #ExecStart=/bin/redis-server {{redis_config_path}}sentinel.conf --sentinel 1>/dev/null 2>&1 &
+          ExecStop=/bin/kill -s TERM $MAINPID
+          Restart=always
+          User=redis
+          Group=redis
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Redis Sentinel service
+      systemd:
+        name: redis-sentinel1
+        state: restarted
+        enabled: yes
