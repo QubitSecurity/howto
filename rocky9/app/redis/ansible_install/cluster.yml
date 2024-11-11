@@ -1,6 +1,6 @@
 ---
 - name: Configure Redis Cluster
-  hosts: redis-master
+  hosts: redis
   gather_facts: no
   vars:
     redis_port: 6379
