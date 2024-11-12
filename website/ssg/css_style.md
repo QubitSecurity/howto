@@ -8,6 +8,33 @@
 
 ---
 
+```mermaid
+graph LR
+    subgraph 서버
+        D[크론 잡]
+        B[업데이트 스크립트<br>/usr/local/bin/update_markdown.sh]
+        C[변환 스크립트<br>/usr/local/bin/convert_markdown.sh]
+        E[마크다운 파일<br>/var/www/markdown_site/markdown]
+        F[HTML 파일<br>/var/www/markdown_site/html]
+        T[Pandoc 템플릿<br>/var/www/markdown_site/pandoc_template.html]
+        S[CSS 파일<br>/var/www/markdown_site/html/css/style.css]
+        G[Nginx 서버]
+    end
+    A[GitHub 저장소] -->|git pull| B
+    D -->|정기 실행| B
+    B -->|업데이트| E
+    B -->|업데이트 후 실행| C
+    C -->|읽기| E
+    C -->|사용| T
+    C -->|사용| S
+    C -->|생성| F
+    G -->|제공| F
+    H[사용자] -->|HTTP 요청| G
+    H -->|언어 선택| G
+```
+
+---
+
 ### **1. 변환 스크립트 수정**
 
 기존의 변환 스크립트 `/usr/local/bin/convert_markdown.sh`를 수정하여 Pandoc이 CSS 파일과 언어 정보를 포함한 HTML 파일을 생성하도록 합니다.
