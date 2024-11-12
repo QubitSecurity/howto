@@ -4,8 +4,8 @@
   become: yes
   vars:
     redis_stack_version: "X.X.X-vXX"
-    redis_user: "sysadmin"
-    redis_group: "sysadmin"
+    redis_user: "qubit"
+    redis_group: "qubit"
     redis_config_path: "/etc/redis/"
     proxy: "http://172.16.10.20:3128/"
     sysctl_settings:
