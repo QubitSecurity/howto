@@ -1,0 +1,44 @@
+body, .footer-bar {
+    background-color: #000000; /* Set background to black */
+    color: #FFFFFF; /* Set text color to white */
+    transition: background-color 2s ease;
+}
+
+a {
+    color: #FFFFFF; /* Ensure links are visible on dark background */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF; /* Set heading color to white */
+}
+
+p, ul, ol {
+    color: #FFFFFF; /* Ensure paragraph and list text is white */
+}
+
+/* Adjust heading sizes */
+h1 {
+    font-size: 1.4em;
+}
+
+h2 {
+    font-size: 1.3em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+h4 {
+    font-size: 1.1em;
+}
+
+h5, h6 {
+    font-size: 1em;
+}
+
+/* Adjust list items */
+ul li, ol li {
+    font-size: 1em; /* Ensure lists are not oversized */
+    color: #FFFFFF; /* Set list item text to white */
+}
