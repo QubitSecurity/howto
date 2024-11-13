@@ -1,0 +1,82 @@
+/* Set black background and white text for body */
+body, html {
+    background-color: #0D1117;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* General text and heading sizes */
+p {
+    font-size: 17px; /* Set paragraph text size */
+    line-height: 1.4;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    color: #fff;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    background-color: transparent; /* Remove background color */
+}
+
+/* Heading sizes */
+h1 {
+    font-size: 1.4em;
+}
+
+h2 {
+    font-size: 1.3em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+h4 {
+    font-size: 1.1em;
+}
+
+h5, h6 {
+    font-size: 1em;
+}
+
+/* List item styling */
+ul, ol {
+    margin-left: 20px;
+    padding-left: 20px;
+}
+
+li {
+    font-size: 20px; /* Smaller font size for list items */
+    line-height: 1.8;
+}
+
+/* Content area */
+.content {
+    padding: 20px;
+}
+
+/* Language switcher styling */
+.language-switcher {
+    text-align: right;
+    padding: 10px 20px;
+}
+
+.language-switcher a {
+    color: #FFFFFF; /* Ensure language switcher text is visible */
+    text-decoration: none;
+}
+
+.language-switcher a:hover {
+    color: #CCCCCC; /* Lighten color on hover for visibility */
+}
+
+/* Footer styling */
+.footer-bar {
+    text-align: center;
+    padding: 10px;
+    background-color: #111;
+    color: #fff;
+}
