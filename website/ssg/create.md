@@ -126,27 +126,45 @@ crontab -e
 
 **3.1. Pandoc 설치**
 
-Rocky Linux 8에서 Pandoc을 설치하려면 추가 리포지토리를 설정하거나 바이너리를 직접 설치해야 합니다.
+1. **Pandoc 최신 버전 확인 및 다운로드:**
 
-- **방법 1: 리포지토리에서 설치**
+   Pandoc의 공식 설치 페이지에서 최신 버전을 확인하고, 해당 버전의 Linux용 바이너리 아카이브를 다운로드합니다.
 
-EPEL 리포지토리에 Pandoc 패키지가 포함되어 있습니다.
+   ```bash
+   # 최신 버전 확인 후 다운로드
+   wget https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-linux-amd64.tar.gz
+   ```
 
-```bash
-sudo dnf install pandoc -y
-```
+   위 명령어에서 `3.5`는 최신 버전 번호이며, 필요에 따라 해당 번호를 변경하여 사용하시면 됩니다.
 
-- **방법 2: 바이너리 직접 설치**
+2. **다운로드한 아카이브 파일의 압축 해제:**
 
-Pandoc 공식 사이트에서 최신 버전을 다운로드하여 설치할 수 있습니다.
+   ```bash
+   # 압축 해제
+   tar -xvzf pandoc-3.5-linux-amd64.tar.gz
+   ```
 
-```bash
-sudo dnf install wget -y
-wget https://github.com/jgm/pandoc/releases/download/2.19.2/pandoc-2.19.2-linux-amd64.tar.gz
-tar xvzf pandoc-2.19.2-linux-amd64.tar.gz
-sudo cp -r pandoc-2.19.2/bin/* /usr/local/bin/
-sudo cp -r pandoc-2.19.2/share/* /usr/local/share/
-```
+3. **Pandoc 바이너리 파일을 시스템 경로로 이동:**
+
+   압축 해제된 디렉토리 내의 `bin` 폴더에 `pandoc` 실행 파일이 있습니다. 이를 `/usr/local/bin` 디렉토리로 이동하여 시스템 전역에서 사용할 수 있도록 설정합니다.
+
+   ```bash
+   # pandoc 바이너리 파일을 /usr/local/bin으로 이동
+   sudo cp pandoc-3.5/bin/pandoc /usr/local/bin/
+   ```
+
+4. **설치 확인:**
+
+   `pandoc` 명령어를 통해 설치가 정상적으로 완료되었는지 확인합니다.
+
+   ```bash
+   # pandoc 버전 확인
+   pandoc --version
+   ```
+
+   위 명령어를 실행하여 Pandoc의 버전 정보가 출력되면 설치가 성공적으로 완료된 것입니다.
+
+---
 
 **3.2. 변환 스크립트 작성**
 
