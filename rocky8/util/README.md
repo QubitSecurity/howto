@@ -45,6 +45,10 @@
 
     source /etc/profile.d/pproxy.sh ls -l | awk '{ print $9 }'
 
+### 3.3 no-proxy
+
+    curl --noproxy '*' http://w.plura.io/philosophy/en/
+
 ## 4. ls
 
 ### 4.1 print only filename
