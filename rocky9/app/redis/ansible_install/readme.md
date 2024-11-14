@@ -31,7 +31,7 @@ ansible -i /home/qubit/ansible/hosts redis -m shell -a "sudo systemctl remove re
 ansible -i /home/sysadmin/ansible/hosts redis -m command -a "sudo redis-cli -h {{ ansible_host }} -p 6379 CLUSTER RESET "
 ```
 
-### 4. 구조
+### 5. 구조
 ```mermaid
 graph TD
     subgraph Redis_Cluster
