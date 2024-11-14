@@ -6,7 +6,7 @@ ansible hosts 파일 경로 : /home/qubit/ansible/hosts
 파일 종류
 redis(nojson).yml - ansible을 통해 redis 를 다운로드, 설치, 실행하는 yml
 redis(json).yml - ansible을 통해 redis 를 다운로드, 설치, 실행, json 모듈 적용 yml
-cluser.yml - ansible을 통해 실행되는 redis를 clustering 하는 yml
+cluser.yml - ansible을 통해 실행되는 redis를 clustering 하는 yml(redis(nojson).ym 혹은 redis(json).yml 이후 실행)
 ```
 
 ### 1. 설치 방법
