@@ -1,8 +1,9 @@
 #!/bin/bash
-INPUT_DIR="/var/www/markdown_site/markdown"
-OUTPUT_DIR="/var/www/markdown_site/html"
-TEMPLATE_DIR="/var/www/markdown_site/html/templates"
-CSS_PATH="/var/www/markdown_site/html/css/custom-style.css"
+INPUT_DIR="/usr/share/nginx/html/w_plura_markdown"
+OUTPUT_DIR="/usr/share/nginx/html/w_plura"
+TEMPLATE_DIR="/usr/share/nginx/html/w_plura/templates"
+CSS_PATH="/usr/share/nginx/html/w_plura/css/custom-style.css"
+GITHUB_BASE_URL="https://github.com/qubitsec/plura/blob/main"  # Base URL of your GitHub repo
 
 # Ensure the output directory exists
 mkdir -p "$OUTPUT_DIR"
@@ -22,6 +23,9 @@ find "$INPUT_DIR" -type f -name "*.md" | while read -r file; do
     # Ensure the output directory exists
     mkdir -p "$output_dir"
 
+    # Construct the source link for the original GitHub file
+    source_link="$GITHUB_BASE_URL/$relative_path/$filename.md"
+
     # Convert the markdown content to HTML using Pandoc
     content=$(pandoc "$file" -f markdown -t html)
 
@@ -34,6 +38,7 @@ find "$INPUT_DIR" -type f -name "*.md" | while read -r file; do
         -e "s|{{lang}}|$lang|g" \
         -e "s|{{year}}|$(date +'%Y')|g" \
         -e "s|{{language_switcher}}|$language_switcher|g" \
+        -e "s|{{source_link}}|$source_link|g" \
         "$TEMPLATE_DIR/post_template.html" > "$temp_file"
 
     # Insert the converted HTML content into the placeholder {{post_content}}
