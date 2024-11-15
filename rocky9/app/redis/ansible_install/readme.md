@@ -49,20 +49,22 @@ graph TD
         Ansible1 --> hosts
     end
 
-    subgraph Redis_Cluster
-        Master1[Master Node 1]
-        Slave1[Slave Node 1]
-        Master2[Master Node 2]
-        Slave2[Slave Node 2]
-        Master3[Master Node 3]
-        Slave3[Slave Node 3]
-        Master4[Master Node 4]
-        Slave4[Slave Node 4]
-        Master5[Master Node 5]
-        Slave5[Slave Node 5]
+    subgraph Mysql-Master
+        direction TB
+        Master1[Master #1 Node]
+		Master2[Master #2 Node]
+		MasterN[Master #N Node]
+		
+	end
+	
+	subgraph Mysql-Replica
+        Replica1[Replica #1 Node]      
+        Replica2[Replica #2 Node]
+        ReplicaN[Replica #N Node]
     end
 
-    hosts --|설치|-->Redis_Cluster
+    hosts --|설치|-->Mysql-Master
+	hosts --|설치|-->Mysql-Replica
 
     Master1 <--> Slave1
     Master2 <--> Slave2
