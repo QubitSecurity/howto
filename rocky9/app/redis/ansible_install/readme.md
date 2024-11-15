@@ -28,7 +28,7 @@ ansible -i /home/qubit/ansible/hosts redis -m shell -a "sudo systemctl remove re
 
 ### 4. 클러스터링 해제
 ```
-ansible -i /home/sysadmin/ansible/hosts redis -m command -a "sudo redis-cli -h {{ ansible_host }} -p 6379 CLUSTER RESET "
+ansible -i /home/qubit/ansible/hosts redis -m command -a "sudo redis-cli -h {{ ansible_host }} -p 6379 CLUSTER RESET "
 ```
 
 ### 5. 구조
