@@ -62,7 +62,7 @@ graph TD
         Slave5[Slave Node 5]
     end
 
-    hosts -->|설치|-->Redis_Cluster
+    hosts --|설치|-->Redis_Cluster
 
     Master1 <--> Slave1
     Master2 <--> Slave2
