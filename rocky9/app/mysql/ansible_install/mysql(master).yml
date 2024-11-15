@@ -1,0 +1,154 @@
+---
+- name: Install MySQL Server
+  hosts: mysql-master
+  become: yes
+  vars:
+    mysql_user: "qubit"
+    mysql_group: "qubit"
+    mysql_config_path: "/etc/mysql/"
+    proxy: "http://172.16.10.20:3128/"
+    new_mysql_root_password: "PASSWORD"  # 새로 설정할 root 비밀번호
+    db_password : "password"
+    db_user : "user"
+
+  tasks:
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Configure dnf to use proxy
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: "^proxy="
+        line: "proxy={{ proxy }}"
+        state: present
+
+    # Prepare & Install Mysql
+    - name: Import MySQL GPG key
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      rpm_key:
+        state: present
+        key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+    
+    - name: Add MySQL repository
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      dnf:
+        name: https://repo.mysql.com/mysql84-community-release-el9-1.noarch.rpm
+        state: present
+
+    - name: Install MySQL server
+      dnf:
+        name: mysql-server
+        state: present
+
+    # Setting Mysql Configuration
+    - name: Set Bind in my.cnf
+      lineinfile:
+        path: "/etc/my.cnf"
+        regexp: '^bind-address'
+        line: "bind-address = 0.0.0.0"
+        create: yes
+        
+    - name: Set default-time-zone in my.cnf
+      lineinfile:
+        path: "/etc/my.cnf"
+        regexp: '^default-time-zone '
+        line: "default-time-zone = '+09:00'"
+        create: yes
+
+    - name: Set log timestamp format to KST
+      lineinfile:
+        path: "/etc/my.cnf"
+        regexp: '^log_timestamps '
+        line: "log_timestamps = SYSTEM"
+        create: yes
+
+    - name: Set log timestamp format to KST
+      lineinfile:
+        path: "/etc/my.cnf"
+        regexp: '^mysql_native_password '
+        line: "mysql_native_password=on"
+        create: yes
+
+    - name: Add MySQL Master configuration to /etc/my.cnf
+      blockinfile:
+        path: /etc/my.cnf
+        block: |
+          ### Master
+          server-id = {{ ansible_host.split('.')[-1] }}
+          log-bin = /var/lib/mysql/mysql-bin
+          read_only = 1
+          tmpdir = /tmp
+          binlog_format = ROW
+          max_binlog_size = 1024M
+          sync_binlog = 1
+          binlog_expire_logs_seconds = 604800  # 7일 (7 * 24 * 60 * 60 초)
+          slow_query_log = 1
+
+    - name: Create and configure /etc/my.cnf.d/charset.cnf
+      copy:
+        dest: /etc/my.cnf.d/charset.cnf
+        content: |
+          [mysqld]
+          character-set-server = utf8mb4
+
+          [client]
+          default-character-set = utf8mb4
+        owner: root
+        group: root
+        mode: '0644'
+  
+    - name: Enable & Execute mysql
+      shell: sudo systemctl enable --now mysqld
+
+    # Check init Root Password & Setting Root Password
+    - name: Retrieve the MySQL initial root password from log file
+      shell: "grep 'temporary password' /var/log/mysqld.log | awk '{print $NF}'"
+      register: mysql_root_password
+      changed_when: false  # To prevent this task from being marked as "changed"
+    
+    - name: Show the MySQL initial root password
+      debug:
+        msg: "MySQL initial root password: {{ mysql_root_password.stdout }}"
+
+    - name: Change MySQL root password using initial password via SQL query
+      shell: >
+        mysql --connect-expired-password -u root
+        -p'{{ mysql_root_password.stdout }}'
+        -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ new_mysql_root_password }}';"
+      ignore_errors: yes  # 초기 비밀번호가 이미 변경된 경우 오류 무시
+
+    # - name: Set MySQL root password to never expire
+      # shell: >
+        # mysql -u root -p{{new_mysql_root_password }} -e
+        # "ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;"
+
+    # Create Main User
+    - name: Create a MySQL user via SQL query
+      shell: >
+        mysql -u root -p'{{ new_mysql_root_password }}' -e "
+        CREATE USER '{{ db_user }}'@'%' IDENTIFIED BY '{{ db_password }}';
+        GRANT ALL PRIVILEGES ON *.* TO '{{ db_user }}'@'%' WITH GRANT OPTION;
+        FLUSH PRIVILEGES;"
+      ignore_errors: yes  # 이미 user가 생성된 경우
+         
+    - name: Restart MySQL server
+      service:
+        name: mysqld
+        state: restarted
+    
+    # Create Replica User
+    - name: Create Replica User
+      shell: >
+        mysql -u plura -p'{{ db_password }}' -e "
+        CREATE USER 'repl'@'%' IDENTIFIED WITH 'mysql_native_password' BY '{{ db_password }}';
+        GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+        FLUSH PRIVILEGES;"
+      ignore_errors: yes  # 이미 user가 생성된 경우
+
