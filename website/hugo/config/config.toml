@@ -1,0 +1,52 @@
+title = "PLURA XDR &#8211; Cloud SECaaS Platform w/ MITRE ATT&amp;CK"
+baseURL = "http://172.16.18.17"
+languageCode = "en-us"
+theme = "../../../ananke"
+resourceDir = "../resources"
+
+# 기본 언어 설정을 ko로 설정하려면 아래처럼 수정하세요.
+defaultContentLanguage = "ko"
+
+SectionPagesMenu = "main"
+Paginate = 6
+googleAnalytics = ""
+enableRobotsTXT = true
+
+[languages]
+[languages.ja]
+title = "PLURA Blog JA"
+weight =2 
+contentDir = "content/ja"
+
+[languages.ko]
+title = "PLURA Blog KO"
+weight = 1
+contentDir = "content/ko"
+
+[sitemap]
+changefreq = "monthly"
+priority = 0.5
+filename = "sitemap.xml"
+
+[params]
+text_color = ""
+author = ""
+favicon = ""
+site_logo = ""
+description = "PLURA-XDR provides an integrated, real-time cybersecurity solution for detecting, analyzing, and responding to evolving cyber threats with EDR, WAF, Forensic, SIEM."
+background_color_class = "bg-black"
+recent_posts_number = 3
+googleFonts = "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap"
+#googleFonts = "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;700&display=swap"
+#googleFonts = "https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap"
+customCSS = true  # custom.css를 사용할지 여부
+#css_file = "/css/custom.css"  # custom.css 파일 경로 설정
+css_file = ["/css/fonts.css","/css/main.css"]
+
+#[markup]
+#  [markup.goldmark]
+#    [markup.goldmark.renderer]
+#      unsafe = true
+#    [markup.goldmark.parser]
+#      autoHeadingID = true
+#      attribute = true
