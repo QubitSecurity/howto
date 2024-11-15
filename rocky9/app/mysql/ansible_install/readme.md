@@ -17,13 +17,13 @@ ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/mysql(replica)
 
 ### 2. 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts mysql-master,mysql-slave -m command -a "sudo systemctl stop mysqld*"
+ansible -i /home/qubit/ansible/hosts mysql-master,mysql-replica -m command -a "sudo systemctl stop mysqld*"
 ```
 
 ### 3. 서비스 전체 설치 파일 삭제
 ```
-ansible -i /home/qubit/ansible/hosts mysql-master,mysql-slave  -m shell -a "sudo rm -rf /etc/my.cnf*"
-ansible -i /home/qubit/ansible/hosts mysql-master,mysql-slave  -m shell -a "sudo systemctl remove mysqld*"
+ansible -i /home/qubit/ansible/hosts mysql-master,mysql-replica  -m shell -a "sudo rm -rf /etc/my.cnf*"
+ansible -i /home/qubit/ansible/hosts mysql-master,mysql-replica  -m shell -a "sudo systemctl remove mysqld*"
 ```
 
 
