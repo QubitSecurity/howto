@@ -6,7 +6,7 @@
     mysql_user: "qubit"
     mysql_group: "qubit"
     mysql_config_path: "/etc/mysql/"
-    proxy: "http://172.16.10.20:3128/"
+    proxy: "http://xxx.xxx.xxx.xxx.:3128/"
     new_mysql_root_password: "PASSWORD"  # 새로 설정할 root 비밀번호
     db_password : "password"
     db_user : "user"
