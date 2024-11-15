@@ -30,14 +30,14 @@ ansible -i /home/qubit/ansible/hosts redis -m shell -a "sudo systemctl remove my
 ### 5. 구조
 ```mermaid
 graph LR
-        Master1[Master1 Node]
-        Replica1[Replica1 Node]
+        Master1[Master #1 Node]
+        Replica1[Replica #1 Node]
 
-        Master2[Master2 Node]
-        Replica2[Replica2 Node]
+        Master2[Master #2 Node]
+        Replica2[Replica #2 Node]
 
-        MasterN[MasterN Node]
-        ReplicaN[ReplicaN Node]
+        MasterN[Master #N Node]
+        ReplicaN[Replica #N Node]
 
     Master1 --> Replica1
     Master2 --> Replica2
