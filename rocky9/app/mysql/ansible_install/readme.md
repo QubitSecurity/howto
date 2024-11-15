@@ -33,6 +33,6 @@ graph LR
         Master1[Master Node]
         Replica1[Replica Node]
 
-    Master1 <--> Replica1
+    Master1 --> Replica1
 
 ```
