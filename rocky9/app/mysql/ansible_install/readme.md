@@ -29,18 +29,42 @@ ansible -i /home/qubit/ansible/hosts mysql-master,mysql-slave  -m shell -a "sudo
 
 ### 5. 구조
 ```mermaid
-graph LR
+graph TD;
+
+    %% Define layout direction and spacing
+    %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
+    %% style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
+
+
+    %% Ansible Server Section
+    subgraph Ansible_Server[Ansible Server]
+        direction TB
+        Ansible1[Ansible]
+        hosts[hosts]
+        
+        Ansible1 --> hosts
+    end
+
+    %% Zookeeper Section
+    subgraph Mysql-Master[Mysql-Master]
+        direction TB
         Master1[Master #1 Node]
-        Replica1[Replica #1 Node]
-
-        Master2[Master #2 Node]
+		Master2[Master #2 Node]
+		MasterN[Master #N Node]
+		
+	end
+	    
+	subgraph Mysql-Replica[Mysql-Replica]
+        Replica1[Replica #1 Node]      
         Replica2[Replica #2 Node]
-
-        MasterN[Master #N Node]
         ReplicaN[Replica #N Node]
+    end
+
+
+    hosts -->|설치| Mysql-Master
+	hosts -->|설치| Mysql-Master
 
     Master1 --> Replica1
     Master2 --> Replica2
     MasterN --> ReplicaN
-
 ```
