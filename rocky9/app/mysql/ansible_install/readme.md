@@ -37,7 +37,7 @@ graph LR
         Replica2[Replica2 Node]
 
         MasterN[MasterN Node]
-        ReplicaN[ReplicaN2 Node]
+        ReplicaN[ReplicaN Node]
 
     Master1 --> Replica1
     Master2 --> Replica2
