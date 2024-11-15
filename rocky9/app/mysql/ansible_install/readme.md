@@ -29,7 +29,7 @@ ansible -i /home/qubit/ansible/hosts redis -m shell -a "sudo systemctl remove my
 
 ### 5. 구조
 ```mermaid
-graph TD
+graph LR
         Master1[Master Node]
         Replica1[Replica Node]
 
