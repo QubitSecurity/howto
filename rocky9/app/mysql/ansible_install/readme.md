@@ -29,7 +29,7 @@ ansible -i /home/qubit/ansible/hosts mysql-master,mysql-replica  -m shell -a "su
 
 ### 5. 구조
 ```mermaid
-graph TD;
+graph LR;
 
     %% Define layout direction and spacing
     %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
