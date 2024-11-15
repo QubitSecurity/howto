@@ -67,4 +67,4 @@ graph TD;
     Master1 --> Replica1
     Master2 --> Replica2
     MasterN --> ReplicaN
-```****
+```
