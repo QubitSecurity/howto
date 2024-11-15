@@ -46,7 +46,7 @@ graph TD;
     end
 
     %% Zookeeper Section
-    subgraph Mysql-Master[Mysql-Master]
+    subgraph Mysql-Master
         direction TB
         Master1[Master #1 Node]
 		Master2[Master #2 Node]
@@ -54,7 +54,7 @@ graph TD;
 		
 	end
 	    
-	subgraph Mysql-Replica[Mysql-Replica]
+	subgraph Mysql-Replica
         Replica1[Replica #1 Node]      
         Replica2[Replica #2 Node]
         ReplicaN[Replica #N Node]
