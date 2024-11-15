@@ -34,12 +34,9 @@ ansible -i /home/qubit/ansible/hosts redis -m command -a "sudo redis-cli -h {{ a
 ### 5. 구조
 ```mermaid
 graph TD
-
     %% Define layout direction and spacing
     %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
     %% style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
-
-
     %% Ansible Server Section
     subgraph Ansible_Server[Ansible Server]
         direction TB
@@ -48,25 +45,22 @@ graph TD
         
         Ansible1 --> hosts
     end
-
-    subgraph Mysql-Master
-        direction TB
-        Master1[Master #1 Node]
-		Master2[Master #2 Node]
-		MasterN[Master #N Node]
-		
-	end
-	
-	subgraph Mysql-Replica
-        Replica1[Replica #1 Node]      
-        Replica2[Replica #2 Node]
-        ReplicaN[Replica #N Node]
+    subgraph Redis_Cluster
+        Master1[Master Node 1]
+        Slave1[Slave Node 1]
+        Master2[Master Node 2]
+        Slave2[Slave Node 2]
+        Master3[Master Node 3]
+        Slave3[Slave Node 3]
+        Master4[Master Node 4]
+        Slave4[Slave Node 4]
+        Master5[Master Node 5]
+        Slave5[Slave Node 5]
     end
-
-    hosts --|설치|-->Mysql-Master
-	hosts --|설치|-->Mysql-Replica
-
-    Master1 --> Replica1
-    Master2 --> Replica2
-    MasterN --> ReplicaN
+    hosts --|설치|-->Redis_Cluster
+    Master1 <--> Slave1
+    Master2 <--> Slave2
+    Master3 <--> Slave3
+    Master4 <--> Slave4
+    Master5 <--> Slave5
 ```
