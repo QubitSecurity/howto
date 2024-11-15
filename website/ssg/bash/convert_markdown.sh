@@ -12,7 +12,10 @@ mkdir -p "$OUTPUT_DIR"
 find "$INPUT_DIR" -type f -name "*.md" | while read -r file; do
     # Extract the filename and directory path
     filename=$(basename "$file" .md)
-    title=$(head -n 1 "$file" | sed 's/# //')  # Extract title from the first line of each file
+
+    # Extract the first heading (h1, h2, or h3) as the title
+    title=$(grep -m 1 -E '^#{1,3} ' "$file" | sed 's/^#\+\s*//')
+
     lang="en"  # Default language code for each file
 
     # Define the relative path for the output file within OUTPUT_DIR
