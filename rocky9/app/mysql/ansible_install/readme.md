@@ -61,8 +61,8 @@ graph TD;
     end
 
 
-    hosts -->|설치|--> Mysql-Master
-	hosts -->|설치|--> Mysql-Replica
+    hosts --|설치|--> Mysql-Master
+	hosts --|설치|--> Mysql-Replica
 
     Master1 --> Replica1
     Master2 --> Replica2
