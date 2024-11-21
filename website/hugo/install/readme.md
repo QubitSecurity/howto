@@ -42,11 +42,15 @@ git remote set-url origin https://github.com/qubitsec/blog.git
 
 git remote -v
 ````
-#### 3.3 Blog Git Pull
+#### 3.3 Blog Git Push
+````
+git push -u origin main
+````
+#### 3.4 Blog Git Pull
 ````
 git pull --autostash --rebase origin main
 ````
-#### 3.4 Blog Git Pull 확인
+#### 3.5 Blog Git Pull 확인
 ````
 cat /home/user/blog/themes/ananke/exampleSite/config.toml
 ````
