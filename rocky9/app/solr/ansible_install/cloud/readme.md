@@ -9,7 +9,7 @@ solr-single.yml - ansible을 통해 solr 를 다운로드, 설치, 실행하는 
 
 ### 1. 설치 방법
 ```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/solr-singgle.yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/solr-single.yml
 ```
 
 ### 2. 서비스 전체 종료
