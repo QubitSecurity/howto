@@ -2,7 +2,7 @@
 ```
 HOME 경로 : /opt/solr
 실행 파일 경로 : /etc/systemd/system/solr.service
-DATA 경로 : /opt/solr/solr[PORT]/data
+DATA 경로 : /opt/solr/server/solr
 ```
 
 ### 1.1. 실행
