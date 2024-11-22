@@ -51,10 +51,10 @@ graph LR;
     end
 
     %% Solr Subgraph
-    subgraph Solr[Solr Single]
+    subgraph Solr[Solr Group]
         direction TB
         SolrProcesses1[SolrProcesses1<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
-        SolrProcesses1[SolrProcesses1<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
+        SolrProcesses2[SolrProcesses1<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
     end
 hosts -->|설치| Solr
 
