@@ -13,6 +13,11 @@ username              hard    nproc   unlimited
 
 ### 1.1 Run and Stop
 ```
+barematel.md - baremetal 구조의 solr 실행 방법
+cloud.md - cloud 구조의 solr 실행 방법
+```
+
+```
 ~/solr/bin/solr start -cloud
 ```
 ```
