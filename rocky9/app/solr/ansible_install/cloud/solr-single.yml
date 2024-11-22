@@ -2,12 +2,12 @@
 - hosts: solr-single
   become: yes
   vars:
-    solr_version: "9.7.0"
+    solr_version: "X.X.X"
     solr_home: "/opt"
-    solr_user: "sysadmin"
-    solr_group: "sysadmin"
+    solr_user: "qubit"
+    solr_group: "qubit"
     solr_port_base: 8983
-    proxy: "http://172.16.10.20:3128/"
+    proxy: "http://xxx.xxx.xxx.xxx:3128/"
     num_of_instances: 3  # 인스턴스 개수 지정
     solr_heap: "3g"
 
