@@ -1,0 +1,113 @@
+---
+- hosts: solr-single
+  become: yes
+  vars:
+    solr_version: "9.7.0"
+    solr_home: "/opt"
+    solr_user: "sysadmin"
+    solr_group: "sysadmin"
+    solr_port_base: 8983
+    proxy: "http://172.16.10.20:3128/"
+    num_of_instances: 3  # 인스턴스 개수 지정
+    solr_heap: "3g"
+
+  tasks:
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Install necessary dependencies
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - java-21-openjdk-devel
+        - wget
+        - tar
+        - unzip
+        - gzip
+
+    - name: Download Solr
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      get_url:
+        url: "https://www.apache.org/dyn/closer.lua/solr/solr/{{solr_version}}/solr-{{solr_version}}.tgz?action=download"
+        dest: /tmp/solr-{{solr_version}}.tgz
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+
+    - name: Create solr directory
+      file:
+        path: "{{ solr_home }}"
+        state: directory
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        mode: '0755'
+
+    - name: Extract solr
+      become: yes
+      unarchive:
+        src: "/tmp/solr-{{solr_version}}.tgz"
+        dest: "{{ solr_home }}"
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        mode: '0755'
+        remote_src: yes
+
+    - name: Set SOLR_HEAP in solr.in.sh
+      lineinfile:
+        path: "{{ solr_home }}/solr-{{ solr_version }}/bin/solr.in.sh"
+        regexp: '^SOLR_HEAP='
+        line: 'SOLR_HEAP="{{solr_heap}}"'
+        create: yes
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        mode: '0755'
+      
+    - name: Create a symbolic link from /opt/solr to actual solr directory
+      file:
+        src: "{{ solr_home }}/solr-{{ solr_version }}"
+        dest: "{{ solr_home }}/solr"
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        state: link
+
+    - name: Change ownership of the symbolic link to solr_user and solr_group
+      command: chown -h {{ solr_user }}:{{ solr_group }} "{{ solr_home }}/solr"
+
+    - name: Create Solr systemd service file for each instance
+      copy:
+        dest: "/etc/systemd/system/solr.service"
+        content: |
+          [Unit]
+          Description=Solr instance 
+          After=network.target
+
+          [Service]
+          Type=forking
+          User={{ solr_user }}
+          Group={{ solr_group }}
+          ExecStart={{ solr_home }}/solr/bin/solr start -c  -j "-Dhost={{ansible_host}}" "-Dsolr.jetty.host=0.0.0.0" -z "{{ groups['zk'] | join(':2181,') }}:2181"
+          ExecStop={{ solr_home }}/solr/bin/solr stop -all
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+          
+    - name: Reload systemd to apply new service files
+      systemd:
+        daemon_reload: yes
+
+    - name: Start and enable Solr service instances
+      systemd:
+        name: "solr"
+        state: restarted
+        enabled: yes
+      
