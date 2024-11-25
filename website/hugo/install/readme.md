@@ -66,9 +66,12 @@ cd /home/user/blog/themes/ananke/exampleSite
 ````
 nohup hugo server -b http://xxx.xxx.xxx.xxx -p 80 --bind 0.0.0.0 --disableFastRender -c /home/user/blog/themes/ananke/exampleSite/config.toml 1>/dev/null 2>&1 &
 ````
+#### 4.2.1 Hugo 실행 예제
+````
+cd /usr/share/nginx/html/blog
+nohup hugo server -b https://blog.plura.io -p 443 --bind 0.0.0.0 --disableFastRender > /var/log/hugo_server.log 2>&1 &
+````
 #### 4.3 Hugo 종료
 ````
 pkill hugo
 ````
-
-
