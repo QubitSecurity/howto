@@ -73,6 +73,10 @@ cd /usr/share/nginx/html/blog
 nohup hugo server -b https://blog.plura.io -p 443 --bind 0.0.0.0 --disableFastRender > /var/log/hugo_server.log 2>&1 &
 ````
 ````
+git pull --autostash --rebase origin main
+````
+
+````
 hugo --cleanDestinationDir
 ````
 
