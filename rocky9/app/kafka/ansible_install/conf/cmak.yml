@@ -141,8 +141,8 @@
 
     - name: Download AKHQ jar
       environment:
-        http_proxy: "http://172.16.10.20:3128/"
-        https_proxy: "http://172.16.10.20:3128/"
+        http_proxy: "http://xxx.xxx.xxx.xxx:3128/"
+        https_proxy: "http://xxx.xxx.xxx.xxx:3128/"
       get_url:
         url: "https://github.com/tchiotludo/akhq/releases/download/{{ akhq_version }}/akhq-{{ akhq_version }}-all.jar"
         dest: "/tmp/akhq-{{ akhq_version }}-all.jar"
@@ -189,9 +189,9 @@
                 port: 8784
             akhq:
               connections:
-                local:
+                cluster:
                   properties:
-                    bootstrap.servers: "{{ ansible_host }}:9092"     
+                    bootstrap.servers: "{{ groups['kafka'] | join(':9092,') }}:9092"   
         owner: "{{ kafka_user }}"
         group: "{{ kafka_group }}"
         mode: '0644'
