@@ -55,7 +55,7 @@ graph LR;
         Node5[Node #5]
     end
 
-   hosts --|설치|--> Rabbitmq Clustering
+   hosts --|설치|--> "Rabbitmq Clustering"
 
 
 ```
