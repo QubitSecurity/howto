@@ -29,7 +29,7 @@ ansible -i /home/sysadmin/ansible/hosts rabbitmq-master  -m command -a "sudo dnf
 
 ### 5. 구조
 ```mermaid
-graph LR;
+graph TB;
 
     %% Define layout direction and spacing
     %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
