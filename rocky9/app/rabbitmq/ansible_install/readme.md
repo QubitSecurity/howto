@@ -46,7 +46,7 @@ graph LR;
     end
 
 
-    subgraph Rabbitmq Clustering
+    subgraph Rabbitmq-Clustering
         direction TB
         Node1[Node #1]
         Node2[Node #2]
@@ -55,7 +55,7 @@ graph LR;
         Node5[Node #5]
     end
 
-   hosts --|설치|--> "Rabbitmq Clustering"
+   hosts --|설치|--> Rabbitmq-Clustering
 
 
 ```
