@@ -53,8 +53,7 @@ graph LR;
         Node3[Node #3]
         Node4[Node #4]
         Node5[Node #5]
-		
-	end
+    end
 
    hosts --|설치|--> Rabbitmq Clustering
 
