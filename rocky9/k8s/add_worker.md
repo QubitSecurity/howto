@@ -4,11 +4,6 @@
 
 #### 기존 클러스터링 마스터 노드에서 클러스터링 값 추출
 ```
-setenforce Permissive
-```
-
-#### SELinux 상태 확인
-```
 kubeadm token create --print-join-command
 
 result ex:
