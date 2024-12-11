@@ -5,41 +5,55 @@
   vars:
     rabbitmq_user: "qubit"
     rabbitmq_group: "qubit"
-    mysql_config_path: "/etc/mysql/"
     proxy: "http://xxx.xxx.xxx.xxx:3128/"
     rabbitmq_mgt_user: "qubit"
     rabbitmq_mgt_password: "password"
 
   tasks:
+    # Stop and disable firewalld
     - name: Stop and disable firewalld
       systemd:
         name: firewalld
         state: stopped
         enabled: no
 
-    - name: Configure dnf to use proxy
+    # Configure dnf proxy
+    - name: Ensure proxy configuration is present in dnf.conf
       lineinfile:
         path: /etc/dnf/dnf.conf
         regexp: "^proxy="
         line: "proxy={{ proxy }}"
         state: present
 
-    # Install Erlang
-    - name: Install Erlang
-      environment:
-        http_proxy: "{{proxy}}"
-        https_proxy: "{{proxy}}"
+    # Check and install Erlang
+    - name: Check if Erlang is already installed
+      command: erl -version
+      register: erlang_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install Erlang if not installed
       shell: sudo dnf -y install https://github.com/rabbitmq/erlang-rpm/releases/download/v26.2.5.5/erlang-26.2.5.5-1.el9.x86_64.rpm
-      #https://github.com/rabbitmq/erlang-rpm/releases
-
-    # Install RabbitMQ
-    - name: Install RabbitMQ
       environment:
-        http_proxy: "{{proxy}}"
-        https_proxy: "{{proxy}}"
-      shell: sudo dnf -y install https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.0.3/rabbitmq-server-4.0.3-1.el8.noarch.rpm
-      # ※https://github.com/rabbitmq/rabbitmq-server/releases/
+        http_proxy: "{{ proxy }}"
+        https_proxy: "{{ proxy }}"
+      when: erlang_check.rc != 0
 
+    # Check and install RabbitMQ
+    - name: Check if RabbitMQ is already installed
+      command: rpm -q rabbitmq-server
+      register: rabbitmq_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install RabbitMQ if not installed
+      shell: sudo dnf -y install https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.0.3/rabbitmq-server-4.0.3-1.el8.noarch.rpm
+      environment:
+        http_proxy: "{{ proxy }}"
+        https_proxy: "{{ proxy }}"
+      when: rabbitmq_check.rc != 0
+
+    # Write /etc/hosts
     - name: Get the list of hosts in the specific group
       set_fact:
         target_hosts: "{{ groups['rabbitmq'] }}"
@@ -58,42 +72,44 @@
         state: present
       loop: "{{ target_hosts }}"
       
-    - name: Start and enable rabbitmq-server
+    # Enable RabbitMQ service
+    - name: Ensure RabbitMQ service is enabled and restarted
       systemd:
-        name: "rabbitmq-server"
+        name: rabbitmq-server
         state: restarted
         enabled: yes
 
-    - name: Create Management User
-      shell: "sudo rabbitmqctl add_user {{ rabbitmq_mgt_user }} {{ rabbitmq_mgt_password }}"
-      register: result_add_user
-      failed_when: >
-        result_add_user.rc != 0 and
-        ("already exists" not in result_add_user.stderr)
-      changed_when: result_add_user.rc == 0
-      ignore_errors: no
+    # Create Management User
+    - name: Check if management user already exists
+      shell: rabbitmqctl list_users | grep -q {{ rabbitmq_mgt_user }}
+      register: user_check
+      failed_when: false
+      changed_when: false
 
+    - name: Create management user if not exists
+      shell: >
+        sudo rabbitmqctl add_user {{ rabbitmq_mgt_user }} {{ rabbitmq_mgt_password }} &&
+        sudo rabbitmqctl set_user_tags {{ rabbitmq_mgt_user }} administrator &&
+        sudo rabbitmqctl set_permissions -p / {{ rabbitmq_mgt_user }} ".*" ".*" ".*"
+      when: user_check.rc != 0
 
-    - name: Set User Tags
-      shell: "sudo rabbitmqctl set_user_tags {{ rabbitmq_mgt_user }} administrator"
-      when: result_add_user.rc == 0
-      ignore_errors: yes
+    - name: Check if RabbitMQ management plugin is enabled
+      shell: rabbitmq-plugins list | grep -w 'rabbitmq_management' | grep -w 'E'
+      register: plugin_check
+      changed_when: false
+      failed_when: false
 
-    - name: Set Permissions
-      shell: "sudo rabbitmqctl set_permissions -p / {{ rabbitmq_mgt_user }} \".*\" \".*\" \".*\""
-      when: result_add_user.rc == 0
-      ignore_errors: yes
-       
-    # Enable Management Plugin
-    - name: Plugin Management
+    - name: Enable RabbitMQ management plugin if not already enabled
       shell: sudo rabbitmq-plugins enable rabbitmq_management
-      ignore_errors: yes  # 이미 실행되고 있는 경우
+      when: plugin_check.stdout == ""
+      register: plugin_enable_check
+      changed_when: plugin_enable_check.rc == 0
 
     # Count Ansible rabbitmq hosts Nodes
     - name: Count the number of nodes in the group
       set_fact:
         quorum_cluster_size: "{{ groups['rabbitmq'] | length }}"
-
+        
     # Create advanced config for rewrite clurster node size
     - name: Add RabbitMQ advanced configuration
       copy:
@@ -109,65 +125,47 @@
         owner: root
         group: rabbitmq
         mode: '0644'
-      
-    # Enable & Execute RabbitMQ-Server
-    - name: Restart rabbitmq server
-      service:
-        name: rabbitmq-server
-        state: restarted
 
-    # Download & Install command rabbitmqamdin 
-    - name: Download rabbitmqadmin
-      get_url:
-        url: http://localhost:15672/cli/rabbitmqadmin
-        dest: /tmp/rabbitmqadmin
-        mode: '0755'
-        owner: rabbitmq
-        group: rabbitmq
-      ignore_errors: yes  # 이미 존재 하는 경우
-
-    - name: Move rabbitmqadmin to /sbin
-      command: mv /tmp/rabbitmqadmin /sbin
-      args:
-        creates: /sbin/rabbitmqadmin
-      ignore_errors: yes   # 이미 존재 하는 경우
-
-    # Prepare Rabbitmq Clustering
-    - name: Read the Erlang Cookie from first master server
-      delegate_to: "{{ groups['rabbitmq'][0] }}"
+    # Configure erlang cookie
+    - name: Read Erlang cookie from the first node
       slurp:
         src: /var/lib/rabbitmq/.erlang.cookie
-      register: erlang_cookie_1
-      tags: ['erlang_cookie']
-
-    - name: Set Erlang Cookie content as variable
-      set_fact:
-        erlang_cookie_value: "{{ erlang_cookie_1.content | b64decode }}"
-      tags: ['erlang_cookie']
-
-    # Init erlang cookie
-    - name: Stop RabbitMQ application on second node
-      shell: "sudo rm -rf /var/lib/rabbitmq/.erlang.cookie"
+      register: erlang_cookie
+      delegate_to: "{{ groups['rabbitmq'][0] }}"
       when: inventory_hostname in groups['rabbitmq'][1:]
-      ignore_errors: yes
 
-    - name: Change Erlang Cookie on each server in rabbitmq group
+    - name: Write Erlang cookie to other nodes
       copy:
+        content: "{{ erlang_cookie.content | b64decode }}"
         dest: /var/lib/rabbitmq/.erlang.cookie
-        content: "{{ erlang_cookie_value }}"
         owner: rabbitmq
         group: rabbitmq
         mode: '0400'
-      when: inventory_hostname in groups['rabbitmq']
-      tags: ['erlang_cookie']
+      when: inventory_hostname in groups['rabbitmq'][1:]
 
-    - name: Ensure the RabbitMQ service is restarted on each server in rabbitmq group
-      service:
+    - name: Display contents of .erlang.cookie
+      shell: sudo cat /var/lib/rabbitmq/.erlang.cookie
+      register: erlang_cookie_content
+      changed_when: false
+      failed_when: erlang_cookie_content.rc != 0
+
+    - name: Debug .erlang.cookie content
+      debug:
+        var: erlang_cookie_content.stdout
+
+    - name: Ensure RabbitMQ service is enabled and restarted on all nodes
+      systemd:
         name: rabbitmq-server
         state: restarted
-      when: inventory_hostname in groups['rabbitmq'][1:]
-      tags: ['rabbitmq_service']
+      when: inventory_hostname in groups['rabbitmq']
 
+    - name: Wait for RabbitMQ service to stabilize on all nodes
+      ansible.builtin.wait_for:
+        port: 5672  # RabbitMQ의 기본 포트
+        timeout: 5  # 안정화를 위해 5초 대기
+      when: inventory_hostname in groups['rabbitmq']
+      delegate_to: "{{ inventory_hostname }}"
+        
     - name: Stop RabbitMQ application on second node
       shell: "sudo rabbitmqctl stop_app"
       when: inventory_hostname in groups['rabbitmq'][1:]
@@ -176,39 +174,24 @@
       shell: "sudo rabbitmqctl reset"
       when: inventory_hostname in groups['rabbitmq'][1:]
       tags: ['rabbitmq_reset']
-
+      
     - name: Clustering secondary nodes
       shell: "sudo rabbitmqctl join_cluster rabbit@{{ hostvars[groups['rabbitmq'][0]].ansible_hostname }}"
       when: inventory_hostname in groups['rabbitmq'][1:]
-      retries: 3
-      delay: 5
       register: join_status
       failed_when: >
         (join_status.rc != 0) and
         ('thinks it\'s clustered with node' not in join_status.stderr)
       ignore_errors: yes
       tags: ['rabbitmq_cluster']
-      
-    - name: Start RabbitMQ application on second node
-      shell: "sudo rabbitmqctl start_app"
+
+    # Restart rabbitmq-server
+    - name: Start RabbitMQ application
+      shell: sudo rabbitmqctl start_app
       when: inventory_hostname in groups['rabbitmq'][1:]
-      tags: ['rabbitmq_start_app']
-
-    - name: Verify clustering status
-      shell: "sudo rabbitmqctl cluster_status"
-      register: final_cluster_status
-      when: inventory_hostname == groups['rabbitmq'][0]
-      tags: ['rabbitmq_verify']
-
-    - name: Display clustering status
-      debug:
-        var: final_cluster_status
-      when: inventory_hostname == groups['rabbitmq'][0]
-      tags: ['Display_rabbitmq_verify']
 
     - name: Add Replication node group
       shell: "sudo rabbitmq-queues grow rabbit@{{ ansible_hostname }} all --membership voter"
-      when: inventory_hostname in groups['rabbitmq'][0:]
       ignore_errors: yes  # 이미 설정되어 있는 경우
       tags: ['rabbitmq_replication']
 
