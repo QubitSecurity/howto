@@ -1,4 +1,5 @@
 `Solr`, `Kafak`, `Redis`, `MySQL` 등 다양한 어플리케이션 상태를 점검합니다.
+
 ---
 
 ## 1. Solr 상태 점검
@@ -37,3 +38,16 @@ cat check_status_redis.log
 ```
 
 ---
+
+## 4. MySQL 상태 점검
+- [ ] Status=OK 인지 점검합니다.
+
+```
+# Usage: ./check_mysql_status.sh <master_host.txt> <slave_host.txt>
+
+cat check_status_mysql.log
+```
+
+---
+
+
