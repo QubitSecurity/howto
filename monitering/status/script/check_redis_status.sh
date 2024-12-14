@@ -26,6 +26,8 @@ REDIS_SLAVES=(
 # Set the log file path for normal operation
 LOG_FILE="check_status_redis.log"
 
+echo "==========================================" >> "$LOG_FILE"
+
 # Function to check the status of a Redis node
 check_redis_node() {
     local node=$1
@@ -82,6 +84,13 @@ done
 # If all checks pass, log an OK status to the specified log file
 if $status_ok; then
     echo "$TIMESTAMP | Status=OK, Redis Cluster is running properly with ${#REDIS_MASTERS[@]} masters and ${#REDIS_SLAVES[@]} slaves on port $REDIS_PORT" >> $LOG_FILE
+else
+    echo "$TIMESTAMP | Status=ERROR, Issues detected in Redis Cluster" >> $LOG_FILE
+fi
+
+echo "==========================================" >> "$LOG_FILE"
+
+if $status_ok; then
     exit 0 # OK
 else
     exit 2 # CRITICAL
