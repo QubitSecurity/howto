@@ -32,8 +32,6 @@ cat check_status_solr-syslog.log
 ./check_disk_solr_status.sh http://10.100.61.69:8983 solr-weblog
 
 cat check_status_solr-weblog.log
-
-
 ```
 
 ---
