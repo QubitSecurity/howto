@@ -17,6 +17,8 @@ COLLECTION_NAME="$2"
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 LOG_FILE="$SCRIPT_DIR/check_status_${COLLECTION_NAME}.log"
 
+echo "==========================================" >> "$LOG_FILE"
+
 # Retrieve the status information from Solr using curl
 response=$(curl -s $SOLR_URL/solr/admin/collections?action=CLUSTERSTATUS)
 
@@ -33,21 +35,29 @@ status_ok=true
 if [ "$recovering_count" -gt 0 ]; then
     message="CRITICAL: $recovering_count core(s) are in recovering state on Solr instance $SOLR_URL, collection $COLLECTION_NAME"
     logger -t $LOG_TAG -p local0.err "$message"
-    echo "$TIMESTAMP | $message" >> $LOG_FILE
+    echo "$TIMESTAMP | $message" >> "$LOG_FILE"
     status_ok=false
 fi
 
 if [ "$down_count" -gt 0 ]; then
     message="CRITICAL: $down_count core(s) are in down state on Solr instance $SOLR_URL, collection $COLLECTION_NAME"
     logger -t $LOG_TAG -p local0.err "$message"
-    echo "$TIMESTAMP | $message" >> $LOG_FILE
+    echo "$TIMESTAMP | $message" >> "$LOG_FILE"
     status_ok=false
 fi
 
 # If all checks pass, log an OK status to the specified log file
 if $status_ok; then
     message="Status=OK, Solr_URL=$SOLR_URL, Collection=$COLLECTION_NAME"
-    echo "$TIMESTAMP | $message" >> $LOG_FILE
+    echo "$TIMESTAMP | $message" >> "$LOG_FILE"
+else
+    message="Status=ERROR, Solr_URL=$SOLR_URL, Collection=$COLLECTION_NAME"
+    echo "$TIMESTAMP | $message" >> "$LOG_FILE"
+fi
+
+echo "==========================================" >> "$LOG_FILE"
+
+if $status_ok; then
     exit 0 # OK
 else
     exit 2 # CRITICAL
