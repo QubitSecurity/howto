@@ -24,6 +24,8 @@ KAFKA_SCRIPT_PATH="/home/username/kafka/bin"
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 LOG_FILE="$SCRIPT_DIR/check_status_kafka.log"
 
+echo "==========================================" >> "$LOG_FILE"
+
 # Define the lag threshold (in number of messages)
 LAG_THRESHOLD=10000  # Set your threshold value here
 
@@ -89,6 +91,14 @@ done
 if $status_ok; then
     message="Status=OK, Topic=$TOPIC, Lag=$current_lag, Threshold=$LAG_THRESHOLD, Offline_Partitions=$offline_partitions_total, Partitions_without_Leader=$partitions_without_leader_total, Kafka_Brokers=${#KAFKA_BROKERS[@]}"
     echo "$TIMESTAMP | $message" >> $LOG_FILE
+else
+    message="Status=ERROR, Issues detected in Kafka Cluster"
+    echo "$TIMESTAMP | $message" >> $LOG_FILE
+fi
+
+echo "==========================================" >> "$LOG_FILE"
+
+if $status_ok; then
     exit 0 # OK
 else
     exit 2 # CRITICAL
