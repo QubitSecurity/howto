@@ -26,3 +26,14 @@ cat check_status_redis.log
 ```
 
 ---
+
+## 3. Kafka Brocker 상태 점검
+- [ ] Redis Cluster Status=OK 인지 점검합니다.
+
+```
+# Usage: ./check_kafka_status.sh <KAFKA_BROKERS_FILE>
+
+cat check_status_kafka.log
+```
+
+---
