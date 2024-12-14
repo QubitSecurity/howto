@@ -7,6 +7,8 @@ Ansible 을 이용하여 서버의 상태를 점검한다.
 - [ ] check_disk_usage_?percent.log 파일에 저장됩니다.
 
 ```
+# ./check_disk_usage.sh [Disk_Usage] [Target hosts]
+
 ./check_disk_usage.sh 70% solr-weblog
 
 cat check_disk_usage_70percent.log
