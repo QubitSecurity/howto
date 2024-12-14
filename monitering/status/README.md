@@ -1,4 +1,5 @@
 `Solr`, `Kafak`, `Redis`, `MySQL` 등 다양한 어플리케이션 상태를 점검합니다.
+---
 
 ## 1. Solr 상태 점검
 - [ ] Solr Collection Status=OK 인지 점검합니다.
