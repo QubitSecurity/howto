@@ -17,6 +17,9 @@ fi
 
 KAFKA_BROKERS=($(cat "$1"))
 
+# Define the base path for Kafka scripts
+KAFKA_SCRIPT_PATH="/home/sysadmin/kafka/bin"
+
 # Set the log file path based on the script directory
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 LOG_FILE="$SCRIPT_DIR/check_status_kafka.log"
@@ -39,7 +42,7 @@ status_ok=true
 # Loop through each broker and perform checks
 for BROKER in "${KAFKA_BROKERS[@]}"; do
     # Fetch the current lag using kafka-consumer-groups.sh command
-    current_lag=$(~/kafka/bin/kafka-consumer-groups.sh --bootstrap-server $BROKER --describe --group $CONSUMER_GROUP | grep $TOPIC | awk '{print $6}')
+    current_lag=$($KAFKA_SCRIPT_PATH/kafka-consumer-groups.sh --bootstrap-server $BROKER --describe --group $CONSUMER_GROUP | grep $TOPIC | awk '{print $6}')
 
     # Ensure current_lag is an integer; set to 0 if empty or invalid
     current_lag=${current_lag:-0}
@@ -48,8 +51,8 @@ for BROKER in "${KAFKA_BROKERS[@]}"; do
     fi
 
     # Run Kafka-topics command to check the cluster status using --bootstrap-server
-    offline_partitions=$(~/kafka/bin/kafka-topics.sh --describe --bootstrap-server $BROKER | grep "Offline" | wc -l)
-    partitions_without_leader=$(~/kafka/bin/kafka-topics.sh --describe --bootstrap-server $BROKER | grep "Leader: -1" | wc -l)
+    offline_partitions=$($KAFKA_SCRIPT_PATH/kafka-topics.sh --describe --bootstrap-server $BROKER | grep "Offline" | wc -l)
+    partitions_without_leader=$($KAFKA_SCRIPT_PATH/kafka-topics.sh --describe --bootstrap-server $BROKER | grep "Leader: -1" | wc -l)
 
     # Aggregate the counts
     offline_partitions_total=$((offline_partitions_total + offline_partitions))
