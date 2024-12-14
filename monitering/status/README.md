@@ -18,7 +18,7 @@ cat check_status_solr-weblog.log
 ---
 
 ## 2. Kafka Brocker 상태 점검
-- [ ] Topic=sys || Topic=web  Lag=0 인지 점검합니다.
+- [ ] Topic=sys || Topic=web, Lag=0 인지 점검합니다.
 
 ```
 # Usage: ./check_kafka_status.sh <KAFKA_BROKERS_FILE>
