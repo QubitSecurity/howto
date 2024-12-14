@@ -18,7 +18,7 @@ fi
 KAFKA_BROKERS=($(cat "$1"))
 
 # Define the base path for Kafka scripts
-KAFKA_SCRIPT_PATH="/home/sysadmin/kafka/bin"
+KAFKA_SCRIPT_PATH="/home/username/kafka/bin"
 
 # Set the log file path based on the script directory
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
