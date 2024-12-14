@@ -35,6 +35,8 @@ MYSQL_PASSWORD="password"
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 LOG_FILE="$SCRIPT_DIR/check_status_mysql.log"
 
+echo "==========================================" >> "$LOG_FILE"
+
 # Function to test MySQL connection
 function test_mysql_connection {
     local host=$1
