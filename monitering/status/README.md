@@ -15,26 +15,25 @@ cat check_status_solr-syslog.log
 
 cat check_status_solr-weblog.log
 ```
-
 ---
-## 2. Redis 상태 점검
+
+## 2. Kafka Brocker 상태 점검
+- [ ] Topic=sys || Topic=web  Lag=0 인지 점검합니다.
+
+```
+# Usage: ./check_kafka_status.sh <KAFKA_BROKERS_FILE>
+
+cat check_status_kafka.log
+```
+---
+
+## 3. Redis 상태 점검
 - [ ] Redis Cluster Status=OK 인지 점검합니다.
 
 ```
 # Usage: ./check_redis_status.sh
 
 cat check_status_redis.log
-```
-
----
-
-## 3. Kafka Brocker 상태 점검
-- [ ] Redis Cluster Status=OK 인지 점검합니다.
-
-```
-# Usage: ./check_kafka_status.sh <KAFKA_BROKERS_FILE>
-
-cat check_status_kafka.log
 ```
 
 ---
