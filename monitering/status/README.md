@@ -16,3 +16,13 @@ cat check_status_solr-weblog.log
 ```
 
 ---
+## 2. Redis 상태 점검
+- [ ] Redis Cluster Status=OK 인지 점검합니다.
+
+```
+# Usage: ./check_redis_status.sh
+
+cat check_status_redis.log
+```
+
+---
