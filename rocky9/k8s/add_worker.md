@@ -2,7 +2,7 @@
 
 
 
-#### 기존 클러스터링 마스터 노드에서 클러스터링 값 추출
+#### 기존 클러스터링 마스터 노드에서 클러스터링 토큰 확인
 ```
 kubeadm token create --print-join-command
 
