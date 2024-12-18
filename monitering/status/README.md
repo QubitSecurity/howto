@@ -16,6 +16,13 @@ cat check_status_solr-syslog.log
 
 cat check_status_solr-weblog.log
 ```
+
+```log
+$ tail check_status_solr-weblog.log
+2024-12-14 09:56:46 | Status=OK, Solr_URL=http://10.100.61.69:8983, Collection=solr-weblog
+2024-12-18 13:34:34 | CRITICAL: 9 core(s) are in recovering state on Solr instance http://10.100.61.69:8983, collection solr-weblog
+```
+
 ---
 
 ## 2. Kafka Brocker 상태 점검
