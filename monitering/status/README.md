@@ -2,6 +2,15 @@
 
 ---
 
+## 0. 스케줄러 동작
+- [ ] 매2분마다 자동으로 동작하면 프로그램 동작 상태를 확인한다.
+
+```bash
+# Usage: ./schedule_script.sh
+
+tail -f check_status_solr-weblog.log
+```
+
 ## 1. Solr 상태 점검
 - [ ] Solr Collection Status=OK 인지 점검합니다.
 
