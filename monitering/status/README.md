@@ -44,6 +44,11 @@ cat check_status_kafka.log
 cat check_status_redis.log
 ```
 
+```log
+$ tail check_status_redis.log
+2024-12-18 13:47:57 | Status=OK, Redis Cluster is running properly with 5 masters and 5 slaves on port 6381
+```
+
 ---
 
 ## 4. MySQL 상태 점검
