@@ -28,6 +28,11 @@ Solr에서는 병합 작업(Optimize)을 **Shard 단위**로 수행할 수 있�
        ```
 ---
 
+- 실행 스크립트
+[generate_shard_files.sh](script/generate_shard_files.sh)
+
+---
+
 ### **Shard 단위 병합의 장점**
 
 1. **리소스 관리**:
