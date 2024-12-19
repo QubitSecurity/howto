@@ -1,4 +1,4 @@
-`Solr`, `Kafak`, `Redis`, `MySQL` 등 다양한 어플리케이션 상태를 점검합니다.
+`Kafak`, `Redis`, `MySQL`, `Solr` 등 다양한 어플리케이션 상태를 점검합니다.
 
 ---
 
@@ -81,6 +81,7 @@ $ tail check_status_solr-weblog.log
 ansible solr-weblog -i /home/sysadmin/ansible/hosts --private-key="~/.ssh/id_rsa" -m shell     -a "grep -E 'OutOfMemoryError|Heap Space|Full GC|Pause' /home/sysadmin/solr/server/logs/solr_gc.log || echo 'No match found'"
 ```
 
+---
 
 ## 6. 병합
 👉 [병합을 위한 shard 정보 수집 방법](About-optimize.md)
