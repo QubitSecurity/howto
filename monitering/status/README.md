@@ -72,4 +72,6 @@ cat check_status_mysql.log
 
 ---
 
+## 5. 병합
+- [병합을 위한 shard 정보 수집 방법](About-optimize.md)
 
