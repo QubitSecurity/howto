@@ -54,4 +54,12 @@ curl -s "http://10.100.61.149:8983/solr/admin/cores?action=STATUS"
 curl -s "http://127.0.0.1:8983/solr/admin/cores?action=STATUS"
 
  
+# 로그 확인하기
+
+tail -f ./solr/server/logs/solr.log | grep -E "error|warn|merge|commit"
+
+
+### CLI 명령어 (삭제된 오래된 버전의 명령어)
+./solr/bin/solr optimize -c weblog_shard1_replica_n722 -s 100
+
 
