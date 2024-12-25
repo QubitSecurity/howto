@@ -1,7 +1,7 @@
 
 # inversion check
- 1024  curl "http://10.100.61.84:8983/solr/weblog_shard91_replica_n858/replication?command=details"
- 1025  curl "http://10.100.61.85:8983/solr/weblog_shard91_replica_n888/replication?command=details"
+ curl "http://10.100.61.84:8983/solr/weblog_shard91_replica_n858/replication?command=details"
+ curl "http://10.100.61.85:8983/solr/weblog_shard91_replica_n888/replication?command=details"
 
 
  # 리플리카 추가 삭제
@@ -47,7 +47,11 @@
 
  curl -s "http://10.100.61.84:8983/solr/admin/collections?action=CLUSTERSTATUS&collection=weblog" | jq '.cluster.collections.weblog.shards.shard91.replicas'
 
+# 병합 상태 확인
 
+curl -s "http://10.100.61.149:8983/solr/admin/cores?action=STATUS"
+
+curl -s "http://127.0.0.1:8983/solr/admin/cores?action=STATUS"
 
  
 
