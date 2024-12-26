@@ -63,3 +63,9 @@ tail -f ./solr/server/logs/solr.log | grep -E "error|warn|merge|commit"
 ./solr/bin/solr optimize -c weblog_shard1_replica_n722 -s 100
 
 
+---
+
+curl "http://10.100.61.149:8983/solr/admin/collections?action=ADDREPLICA&collection=weblog&shard=shard1&node=10.100.61.148:8983_solr"
+
+ curl -s "http://10.100.61.149:8983/solr/admin/collections?action=CLUSTERSTATUS&collection=weblog" | jq '.cluster.collections.weblog.shards.shard1.replicas'
+ 
