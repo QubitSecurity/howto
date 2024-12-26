@@ -11,4 +11,4 @@ jq '.weblog.shards | to_entries[] | select(.value.replicas != null) | .key as $s
 # http://10.100.61.149:8983/solr/admin/collections?action=CREATESHARD&shard=shard90&collection=weblog&createNodeSet=10.100.61.76:8983_solr
 
 
-# http://10.100.61.149:8983/solr/admin/collections?action=CREATESHARD&shard=shard91&collection=weblog&createNodeSet=10.100.61.84:8983_solr
+# http://10.100.61.149:8983/solr/admin/collections?action=CREATESHARD&shard=shard1&collection=weblog&createNodeSet=10.100.61.148:8983_solr
