@@ -196,5 +196,34 @@ ingress yaml 다운로드
 curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/cloud/deploy.yaml -O
 ```
 
+## 5 구조
+```
+graph TD
+    subgraph "Deploy"
+        Jenkins[Jenkins<br>kubectl]
+    end
+
+    subgraph K8s[K8S Cluster]
+        subgraph master[master_cluster]
+            Master1
+            Master2
+            Master3
+        end
+        subgraph slave[slave_cluster]
+            Slave1
+            Slave2
+            Slave3
+        end
+        subgraph Haproxy[Haproxy LB]
+            Haproxy1[Haproxy-Active]
+            Haproxy2[Haproxy-Standby]
+        end
+    end
+
+Deploy --Deployment--> Haproxy
+slave --Cluster Communication--> Haproxy
+master <--Distributes Requests--> Haproxy
+master --Control Plane Communication--> slave
+```
 
 
