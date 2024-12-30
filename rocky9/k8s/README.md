@@ -197,7 +197,7 @@ curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11
 ```
 
 ## 5 구조
-```
+```mermaid
 graph TD
     subgraph "Deploy"
         Jenkins[Jenkins<br>kubectl]
