@@ -189,7 +189,7 @@ crio 재실행
 systemctl restart crio
 ```
 
-## 4. ingress 설정
+## 4. ingress 설정(필요 시.)
 ### 4.1 ingress 설치
 ```
 ingress yaml 다운로드
