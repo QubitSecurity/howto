@@ -4,15 +4,16 @@ ansible hosts 파일 경로 : /home/qubit/ansible/hosts
 실행 경로 : (/usr/lib/systemd/system/redis.service
 
 파일 종류
-redis(nojson).yml - ansible을 통해 redis 를 다운로드, 설치, 실행하는 yml
-redis(json).yml - ansible을 통해 redis 를 다운로드, 설치, 실행, json 모듈 적용 yml
-cluser.yml - ansible을 통해 실행되는 redis를 clustering 하는 yml(redis(nojson).ym 혹은 redis(json).yml 이후 실행)
+redis(init).yml - ansible을 통해 redis 를 다운로드, 설치, 실행하는 yml (모듈: rejson, redisearch)
+cluser(init).yml - ansible을 통해 실행되는 redis를 clustering 하는 yml(redis(init).yml 이후 실행)
+
+redis(add_node).yml - ansible을 통해 redis 를 다운로드, 설치, 실행 후 기존 클러스터에 반영  (모듈: rejson, redisearch)
 ```
 
 ### 1. 설치 방법
 ```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis(nojson).yml
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis(json).yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis(init).yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis(add_node).yml
 ```
 
 ### 2. 서비스 전체 종료
