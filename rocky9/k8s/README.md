@@ -210,9 +210,9 @@ graph TD
             Master3
         end
         subgraph slave[slave_cluster]
-            Slave1
-            Slave2
-            Slave3
+            Worker1
+            Worker2
+            Worker3
         end
         subgraph Haproxy[Haproxy LB]
             Haproxy1[Haproxy-Active]
