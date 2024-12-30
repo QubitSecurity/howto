@@ -1,7 +1,7 @@
 ### 0. 실행 환경
 ```
 ansible hosts 파일 경로 : /home/qubit/ansible/hosts
-실행 경로 : (/usr/lib/systemd/system/redis.service
+실행 경로 : (/usr/lib/systemd/system/redis.service)
 
 파일 종류
 redis-init.yml - ansible을 통해 redis 를 다운로드, 설치, 실행하는 yml (모듈: rejson, redisearch)
