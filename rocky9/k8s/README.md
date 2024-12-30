@@ -91,7 +91,7 @@ systemctl status crio
 ## 2. 멀티노드 구성
 ### 2.1 멀티노드 기본 구성 형태
 ```
-haproxy 2(master1, backup1)
+haproxy 2(Active1, Standby1)
 master 3
 worker 3
 ```
@@ -114,7 +114,7 @@ kubeadm init --control-plane-endpoint=10.100.10.100:46443 --upload-certs --pod-n
 노드 생성 확인
 kubectl get nodes -o wide
 
-정상 초기화 시, 발생 화면 예시
+result:
 Your Kubernetes control-plane has initialized successfully!
 
 To start using your cluster, you need to run the following as a regular user:
@@ -152,16 +152,16 @@ kubeadm join 10.100.10.100:46443 --token mampsb.c5v2zpwz2tv591no \
 ```
 위 초기화 시, 결과 내용을 사용하여 설정
 예시:
-  kubeadm join 10.100.10.100:46443 --token mampsb.c5v2zpwz2tv591no \
-        --discovery-token-ca-cert-hash sha256:8e17a7bd1a787bc92ffea30ac3b16662eaabb49f99fa8419c4231dc1254f53b9 \
+kubeadm join xxx.xxx.xxx.xxx:xxxxx --token mampsb.c5v2zpwz2tv591no \
+        --discovery-token-ca-cert-hash sha256:8e17a7bd1a7xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx231dc1254f53b9
         --control-plane --certificate-key 44cfa6b69a8d32063d461c6b4833a1a50b90f2408cf48d8805f3c14861e857e0
 ```
 ### 3. worker 노드 설정(all worker 노드)
 ```
 위 초기화 시, 결과 내용을 사용하여 설정
 예시 :
-kubeadm join 10.100.10.100:46443 --token mampsb.c5v2zpwz2tv591no \
-        --discovery-token-ca-cert-hash sha256:8e17a7bd1a787bc92ffea30ac3b16662eaabb49f99fa8419c4231dc1254f53b9
+kubeadm join xxx.xxx.xxx.xxx:xxxxx --token mampsb.c5v2zpwz2tv591no \
+        --discovery-token-ca-cert-hash sha256:8e17a7bd1a7xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx231dc1254f53b9
 ```
 
 ## 3. CNI(calico) 설정
@@ -176,7 +176,7 @@ curl https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/ca
 ```
 vi calico.yaml
   - name: CALICO_IPV4POOL_CIDR
-    value: "192.168.0.0/16  
+    value: "xxx.xxx.xxx.xxx/xx"  
 -> 클러스터 초기화 할때 pod 네트워크 설정과 동일
 ```
 ### 3.3 calico 배포
