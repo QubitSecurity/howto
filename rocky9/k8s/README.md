@@ -222,7 +222,7 @@ graph TD
 
 Deploy --Deployment--> Haproxy
 slave --Cluster Communication--> Haproxy
-master <--Distributes Requests--> Haproxy
+master <--Distributes Requests <br> Cluster Communication--> Haproxy
 master --Control Plane Communication--> slave
 ```
 
