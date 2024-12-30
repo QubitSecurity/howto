@@ -13,11 +13,11 @@ redis-add_node.yml - ansible을 통해 redis 를 다운로드, 설치, 실행 �
 
 ### 1. 설치 방법
 ```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis(init).yml
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/cluster(init).yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis-init.yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/cluster-init.yml
 
 (노드 추가)
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis(add_node).yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/redis-add_node.yml
 ```
 
 ### 2. 서비스 전체 종료
