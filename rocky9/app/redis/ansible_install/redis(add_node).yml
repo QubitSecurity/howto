@@ -1,0 +1,240 @@
+---
+- name: Add Redis node 
+  hosts: redis
+  become: yes
+  vars:
+    redis_stack_version: "X.X.X-vXX"
+    redis_user: "qubit"
+    redis_group: "qubit"
+    redis_config_path: "/etc/redis/"
+    proxy: "http://xxx.xxx.xxx.xxx:3128/"
+    sysctl_settings:
+      - { key: 'fs.file-max', value: '2097152' }
+      - { key: 'net.ipv4.ip_local_port_range', value: '1024 65500' }
+      - { key: 'net.core.rmem_default', value: '26214400' }
+      - { key: 'net.core.rmem_max', value: '26214400' }
+      - { key: 'net.core.wmem_default', value: '262144' }
+      - { key: 'net.core.wmem_max', value: '1048576' }
+      - { key: 'vm.overcommit_memory', value: '1' }
+
+  tasks:
+    - name: Check if Redis service is already running
+      shell: systemctl is-active redis
+      register: redis_status
+      ignore_errors: true
+
+    - name: Skip tasks on the current host if Redis is already running
+      meta: end_host
+      when: redis_status.rc == 0
+      
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Install remi repository
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf -y install https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+      
+    - name: Install necessary dependencies
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - java-21-openjdk-devel
+        - wget
+        - tar
+        - python3-libsemanage
+        - policycoreutils-python-utils
+        - python3-pip
+
+    - name: Ensure each sysctl setting is present in sysctl.conf
+      lineinfile:
+        path: /etc/sysctl.conf
+        regexp: "^{{ item.key }}\\s*="
+        line: "{{ item.key }} = {{ item.value }}"
+        state: present
+      loop: "{{ sysctl_settings }}"
+
+    - name: Set Transparent Huge Pages to 'never'
+      shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled
+      register: thp_result
+      ignore_errors: true
+      changed_when: thp_result.rc == 0
+
+    - name: Append limits for redis in /etc/security/limits.conf
+      lineinfile:
+        path: /etc/security/limits.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        insertafter: EOF
+      with_items:
+        - { regexp: '^redis\s+soft\s+nofile\s+65536', line: 'redis              soft    nofile  65536' }
+        - { regexp: '^redis\s+hard\s+nofile\s+65536', line: 'redis              hard    nofile  65536' }
+        - { regexp: '^redis\s+soft\s+nproc\s+unlimited', line: 'redis              soft    nproc   unlimited' }
+        - { regexp: '^redis\s+hard\s+nproc\s+unlimited', line: 'redis              hard    nproc   unlimited' }
+
+    - name: Apply sysctl settings
+      shell: sudo sysctl -p
+      
+    - name: Configure dnf to use proxy
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: "^proxy="
+        line: "proxy={{ proxy }}"
+        state: present
+
+    - name: Module Reset Redis 
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf -y module reset redis
+    
+    - name: Module Check Redis 
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf module list redis
+
+    - name: Install Redis 
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      #shell: sudo dnf module -y install redis
+      shell: sudo dnf module -y install redis:remi-7.2
+      #shell: sudo dnf -y install redis
+
+    - name: Download Redis-Stack
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      get_url:
+        #url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel8.x86_64.tar.gz"
+        url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel9.x86_64.tar.gz"
+        dest: /tmp/redis-stack-server-{{redis_stack_version}}.tgz
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+
+    - name: Extract Redis-Stack
+      become: yes
+      unarchive:
+        src: "/tmp/redis-stack-server-{{redis_stack_version}}.tgz"
+        dest: "/tmp"
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+        remote_src: yes
+
+    - name: Create Redis Module directories
+      file:
+        path: "{{redis_config_path}}/module"
+        state: directory
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+      become: yes
+        
+    - name: Copy Redis Module 
+      shell: sudo cp /tmp/redis-stack-server-{{redis_stack_version}}/lib/* {{redis_config_path}}/module
+
+    #Default Configration
+    - name: Set bind config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^bind 127.0.0.1 -::1'
+        line: 'bind *'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    - name: Set protected-mode config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^protected-mode'
+        line: 'protected-mode no'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    #Clustering Configration
+    - name: Set cluster-enabled config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^cluster-enabled'
+        line: 'cluster-enabled yes'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    - name: Set cluster-config-file config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^cluster-config-file'
+        line: 'cluster-config-file nodes-6379.conf'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+
+    - name: Set cluster-node-timeout config in redis.conf
+      lineinfile:
+        path: "{{redis_config_path}}/redis.conf"
+        regexp: '^cluster-node-timeout'
+        line: 'cluster-node-timeout 5000'
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+    
+    # Rejson, RediSearch Module Configuration
+    - name: Set loadmodule configurations for Redis modules
+      lineinfile:
+        path: "{{ redis_config_path }}/redis.conf"
+        line: "loadmodule {{ redis_config_path }}/module/{{ item }}.so"
+        create: yes
+        owner: "{{ redis_user }}"
+        group: "{{ redis_group }}"
+        mode: '0755'
+      loop:
+        - rejson
+        - redisearch
+        # - libredisgears_v8_plugin
+        # - redisgears
+
+    - name: Redis 모듈의 SELinux 컨텍스트 확인
+      command: sudo semanage fcontext -l | grep /etc/redis/module/
+      register: redis_module_seinfo
+      failed_when: false
+      changed_when: false
+
+    - name: Redis 모듈에 대한 SELinux 컨텍스트 변경
+      shell: sudo chcon -R -u system_u -t redis_exec_t /etc/redis/module/
+      when: "'system_u:object_r:redis_exec_t:s0' not in redis_module_seinfo.stdout"
+      become: yes
+      become_user: root
+
+    - name: Enable & Execute Redis first
+      shell: sudo systemctl enable --now redis
+      ignore_errors: yes
+      become: yes
+      register: redis_start_result
+
+    - name: Enable & Execute Redis second
+      shell: sudo systemctl enable --now redis
+
+    # Add Cluster node
+    - name: Add new Redis node to cluster
+      command: >
+        redis-cli --cluster add-node {{ ansible_host }}:6379  {{ hostvars[groups['redis'][0]].ansible_host | default(groups['redis'][0]) }}:6379    
+
+
+
