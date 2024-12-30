@@ -1,5 +1,5 @@
 ---
-- name: Install Redis from source
+- name: Install Redis from package
   hosts: redis
   become: yes
   vars:
@@ -7,7 +7,7 @@
     redis_user: "qubit"
     redis_group: "qubit"
     redis_config_path: "/etc/redis/"
-    proxy: "http://172.16.10.20:3128/"
+    proxy: "http://xxx.xxx.xxx.xxx:3128/"
     sysctl_settings:
       - { key: 'fs.file-max', value: '2097152' }
       - { key: 'net.ipv4.ip_local_port_range', value: '1024 65500' }
@@ -18,12 +18,27 @@
       - { key: 'vm.overcommit_memory', value: '1' }
 
   tasks:
+    - name: Check if Redis service is already running
+      shell: systemctl is-active redis
+      register: redis_status
+      ignore_errors: true
+
+    - name: Skip tasks on the current host if Redis is already running
+      meta: end_host
+      when: redis_status.rc == 0
+      
     - name: Stop and disable firewalld
       systemd:
         name: firewalld
         state: stopped
         enabled: no
 
+    - name: Install remi repository
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf -y install https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+      
     - name: Install necessary dependencies
       environment:
         http_proxy: "{{proxy}}"
@@ -37,6 +52,7 @@
         - tar
         - python3-libsemanage
         - policycoreutils-python-utils
+        - python3-pip
 
     - name: Ensure each sysctl setting is present in sysctl.conf
       lineinfile:
@@ -76,23 +92,32 @@
         state: present
 
     - name: Module Reset Redis 
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
       shell: sudo dnf -y module reset redis
-      
+
     - name: Module Check Redis 
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
       shell: sudo dnf module list redis
 
     - name: Install Redis 
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
       #shell: sudo dnf module -y install redis
       shell: sudo dnf module -y install redis:remi-7.2
-
+      #shell: sudo dnf -y install redis
 
     - name: Download Redis-Stack
       environment:
         http_proxy: "{{proxy}}"
         https_proxy: "{{proxy}}"
       get_url:
-        url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel8.x86_64.tar.gz"
-        #url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel9.x86_64.tar.gz"
+        #url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel8.x86_64.tar.gz"
+        url: "https://packages.redis.io/redis-stack/redis-stack-server-{{redis_stack_version}}.rhel9.x86_64.tar.gz"
         dest: /tmp/redis-stack-server-{{redis_stack_version}}.tgz
         owner: "{{ redis_user }}"
         group: "{{ redis_group }}"
@@ -113,6 +138,7 @@
         state: directory
         owner: "{{ redis_user }}"
         group: "{{ redis_group }}"
+      become: yes
         
     - name: Copy Redis Module 
       shell: sudo cp /tmp/redis-stack-server-{{redis_stack_version}}/lib/* {{redis_config_path}}/module
@@ -168,93 +194,39 @@
         owner: "{{ redis_user }}"
         group: "{{ redis_group }}"
         mode: '0755'
-    
-    #JSON Module Configuration
-    - name: Set cluster-node-timeout config in redis.conf
+
+    # Rejson, RediSearch Module Configuration
+    - name: Set loadmodule configurations for Redis modules
       lineinfile:
-        path: "{{redis_config_path}}/redis.conf"
-        regexp: '^loadmodule '
-        line: 'loadmodule {{redis_config_path}}module/rejson.so'
+        path: "{{ redis_config_path }}/redis.conf"
+        line: "loadmodule {{ redis_config_path }}/module/{{ item }}.so"
         create: yes
         owner: "{{ redis_user }}"
         group: "{{ redis_group }}"
-        mode: '0755' 
-       
+        mode: '0755'
+      loop:
+        - rejson
+        - redisearch
+        # - libredisgears_v8_plugin
+        # - redisgears
+
+    - name: Check SELinux context redis module
+      command: sudo semanage fcontext -l | grep /etc/redis/module/
+      register: redis_module_seinfo
+      failed_when: false
+      changed_when: false
+
+    - name: Change SELinux context redis module
+      shell: sudo chcon -R -u system_u -t redis_exec_t /etc/redis/module/
+      when: "'system_u:object_r:redis_exec_t:s0' not in redis_module_seinfo.stdout"
+      become: yes
+      become_user: root
+
     - name: Enable & Execute Redis first
       shell: sudo systemctl enable --now redis
       ignore_errors: yes
+      become: yes
       register: redis_start_result
-      until: redis_start_result.rc == 0
-      retries: 2  # 원하는 시도 횟수로 설정 (예: 5번)
-      delay: 3  # 재시도 사이의 대기 시간 (초)
-
-    - name: Identify Denied Actions
-      shell: ausearch -m avc -ts recent | audit2allow -a -M redis_rejson
-      ignore_errors: yes
-      become: yes
-      become_user: root
-      register: identify_result
-      until: identify_result.rc == 0
-      retries: 5  # 원하는 횟수로 설정 (예: 5번 시도)
-      delay: 3  # 재시도 사이의 대기 시간 (초)
-
-    - name: Load Policy
-      shell: semodule -i redis_rejson.pp
-      ignore_errors: yes
-      become: yes
-      become_user: root
-      register: load_policy_result
-      until: load_policy_result.rc == 0
-      retries: 5  # 원하는 횟수로 설정
-      delay: 3  # 재시도 사이의 대기 시간 (초)
-
-    - name: Restore SELinux Rules
-      shell: sudo restorecon -Rv {{redis_config_path}}
 
     - name: Enable & Execute Redis second
       shell: sudo systemctl enable --now redis
-      
-    #Configure Sentinel
-    - name: Configure Redis Sentinel
-      copy:
-        dest: "{{redis_config_path}}/sentinel1.conf"
-        content: |
-          port 26379
-          dir "/tmp"
-          sentinel monitor mymaster {{ ansible_host }} 6379 2
-          sentinel down-after-milliseconds mymaster 500
-          sentinel failover-timeout mymaster 1000
-          sentinel parallel-syncs mymaster 1
-          /etc/selinux/config
-        owner: "{{ redis_user }}"
-        group: "{{ redis_group }}"
-        mode: '0755'
-          
-    - name: Create systemd service file for Redis Sentinel1
-      copy:
-        dest: /etc/systemd/system/redis-sentinel1.service
-        content: |
-          [Unit]
-          Description=Redis Sentinel
-          After=network.target
-
-          [Service]
-          ExecStart=/bin/redis-server {{redis_config_path}}sentinel.conf --sentinel
-          #ExecStart=/bin/redis-server {{redis_config_path}}sentinel.conf --sentinel 1>/dev/null 2>&1 &
-          ExecStop=/bin/kill -s TERM $MAINPID
-          Restart=always
-          User=redis
-          Group=redis
-
-          [Install]
-          WantedBy=multi-user.target
-
-    - name: Reload systemd daemon
-      systemd:
-        daemon_reload: yes
-
-    - name: Enable and start Redis Sentinel service
-      systemd:
-        name: redis-sentinel1
-        state: restarted
-        enabled: yes
