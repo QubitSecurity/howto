@@ -220,10 +220,10 @@ graph TD
         end
     end
 
-Deploy --Deployment--> Haproxy
+Deploy --APP Deployment--> Haproxy
 slave --Cluster Communication--> Haproxy
 master <--Distributes Requests <br> Cluster Communication--> Haproxy
-master --Control Plane Communication--> slave
+master --Control Plane Communication --> slave
 ```
 
 
