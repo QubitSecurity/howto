@@ -7,6 +7,7 @@ ansible hosts 파일 경로 : /home/qubit/ansible/hosts
 redis(init).yml - ansible을 통해 redis 를 다운로드, 설치, 실행하는 yml (모듈: rejson, redisearch)
 cluser(init).yml - ansible을 통해 실행되는 redis를 clustering 하는 yml(redis(init).yml 이후 실행)
 
+(노드 추가)
 redis(add_node).yml - ansible을 통해 redis 를 다운로드, 설치, 실행 후 기존 클러스터에 반영  (모듈: rejson, redisearch)
 ```
 
