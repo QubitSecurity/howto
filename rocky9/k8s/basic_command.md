@@ -46,7 +46,7 @@ kubectl get all  -n [namespace]
 kubectl delete all  -n [namespace]
 ```
 
-### 클러스터 명령ㅓㅇ
+### 클러스터 명령어
 ```
 kubectl config view --raw
 kubeadm reset
