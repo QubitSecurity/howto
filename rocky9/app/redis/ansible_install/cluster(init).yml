@@ -2,17 +2,18 @@
 - name: Configure Redis Cluster
   hosts: redis
   gather_facts: no
-  vars:
+   vars:
     redis_port: 6379
     # Redis 노드 주소를 포맷하여 하나의 문자열로 생성
-    combined_redis_master_addresses: "{{ groups['redis-master'] | map('regex_replace', '^(.*)$', '\\1:' + redis_port | string) | join(' ') }}"
-    total_nodes: "{{ groups['redis-master'] | length }}"  # 그룹의
-    cluster_replicas: "{{ 1 if (total_nodes | int) % 2 == 0 else 0 }}"   # 짝수이면 1로 설정, 홀수이면 0으로 설정
+    combined_redis_addresses: "{{ groups['redis'] | map('regex_replace', '^(.*)$', '\\1:' + redis_port | string) | join(' ') }}"
 
   tasks:
     #Reset Clustering
+    - name: Restart All Node
+      command: sudo systemctl restart redis
+
     - name: Flush all data from Redis
-      command: redis-cli -h {{ ansible_host }} -p 6379 CLUSTER RESET
+      command: redis-cli -h {{ ansible_host }} -p 6379 FLUSHALL && redis-cli -h {{ ansible_host }} -p 6379 FLUSHDB && redis-cli -h {{ ansible_host }} -p 6379 CLUSTER RESET
       register: reset_result
       ignore_errors: yes  # 오류가 발생해도 계속 진행하도록 설정
       
@@ -22,16 +23,15 @@
 
     - name: Show combined Redis node addresses
       debug:
-        msg: "{{ combined_redis_master_addresses }}"
+        msg: "{{ combined_redis_addresses }}"
 
     - name: Create Redis cluster
       command: >
-        redis-cli --cluster create {{ combined_redis_master_addresses }} --cluster-yes --cluster-replicas 1
-      when: inventory_hostname == groups['redis-master'][0]  # 첫 번째 마스터 노드에서 클러스터를 생성
+        redis-cli --cluster create {{ combined_redis_addresses }} --cluster-yes --cluster-replicas 1
+      when: inventory_hostname == groups['redis'][0]  # 첫 번째 마스터 노드에서 클러스터를 생성
       register: cluster_result
 
     - name: Show cluster creation result
       debug:
         var: cluster_result.stdout
-      when: inventory_hostname == groups['redis-master'][0]
-      
+      when: inventory_hostname == groups['redis'][0]
