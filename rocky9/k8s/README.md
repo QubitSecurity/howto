@@ -1,4 +1,4 @@
-https://docs.google.com/document/d/10oGbVS5J1_eOFbTyfC8IxD2swWSOfiWX5FZvizfcwFo/edit?tab=t.0
+
 
 ## 0. 사전준비
 ### 0.1 selinux 비활성화
