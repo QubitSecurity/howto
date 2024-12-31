@@ -109,7 +109,7 @@ vi /etc/haproxy/haproxy.cfg
 ### 2.3 클러스터 초기화 설정(1번 master 노드)
 ```
 클러스터 초기화(첫번째 master 진행)
-kubeadm init --control-plane-endpoint=10.100.10.100:46443 --upload-certs --pod-network-cidr=192.168.0.0/16
+kubeadm init --control-plane-endpoint=192.168.xxx.xxx:46443 --upload-certs --pod-network-cidr=10.10.0.0/16
 --control-plane-endpoint : haproxy 연결
 --pod-network-cidr : pod 네트워크 대역 설정
 --upload-certs : control plane 노드 간에 인증서를 공유
@@ -135,7 +135,7 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 
 You can now join any number of the control-plane node running the following command on each as root:
 
-  kubeadm join 10.100.10.100:46443 --token mampsb.c5v2zpwz2tv591no \
+  kubeadm join 192.168.xxx.xxx:46443 --token mampsb.c5v2zpwz2tv591no \
         --discovery-token-ca-cert-hash sha256:8e17a7bd1a787bc92ffea30ac3b16662eaabb49f99fa8419c4231dc1254f53b9 \
         --control-plane --certificate-key 44cfa6b69a8d32063d461c6b4833a1a50b90f2408cf48d8805f3c14861e857e0
 
@@ -145,7 +145,7 @@ As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you c
 
 Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join 10.100.10.100:46443 --token mampsb.c5v2zpwz2tv591no \
+kubeadm join 192.168.xxx.xxx:46443 --token mampsb.c5v2zpwz2tv591no \
         --discovery-token-ca-cert-hash sha256:8e17a7bd1a787bc92ffea30ac3b16662eaabb49f99fa8419c4231dc1254f53b9
 
 ```
@@ -154,7 +154,7 @@ kubeadm join 10.100.10.100:46443 --token mampsb.c5v2zpwz2tv591no \
 ```
 위 초기화 시, 결과 내용을 사용하여 설정
 예시:
-kubeadm join xxx.xxx.xxx.xxx:xxxxx --token mampsb.c5v2zpwz2tv591no \
+kubeadm join 192.168.xxx.xxx:46443 --token mampsb.c5v2zpwz2tv591no \
         --discovery-token-ca-cert-hash sha256:8e17a7bd1a7xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx231dc1254f53b9
         --control-plane --certificate-key 44cfa6b69a8d32063d461c6b4833a1a50b90f2408cf48d8805f3c14861e857e0
 ```
@@ -162,7 +162,7 @@ kubeadm join xxx.xxx.xxx.xxx:xxxxx --token mampsb.c5v2zpwz2tv591no \
 ```
 위 초기화 시, 결과 내용을 사용하여 설정
 예시 :
-kubeadm join xxx.xxx.xxx.xxx:xxxxx --token mampsb.c5v2zpwz2tv591no \
+kubeadm join 192.168.xxx.xxx:46443 --token mampsb.c5v2zpwz2tv591no \
         --discovery-token-ca-cert-hash sha256:8e17a7bd1a7xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx231dc1254f53b9
 ```
 
