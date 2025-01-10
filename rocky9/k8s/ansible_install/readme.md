@@ -11,6 +11,9 @@ k8s-worker.yml - k8s 클러스터링 worker node 설치
 
 ### 1. 설치 방법
 ```
+먼저  각 yml 파일 상단에 있는 변수를 맞게 지정
+
+이후 아래 순서대로 yml 파일 실행
 ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/k8s/k8s-haproxy.yml
 ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/k8s/k8s-master.yml
 ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/k8s/k8s-worker.yml
