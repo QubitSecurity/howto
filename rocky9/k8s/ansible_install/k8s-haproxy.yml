@@ -1,0 +1,240 @@
+---
+- name: Install K8S Cluster Haproxy install
+  hosts: k8s-node-haproxy
+  become: yes
+  vars:
+    proxy: "http://172.16.10.20:3128/"
+    cluster_vip_ip: "192.168.100.160"
+
+  tasks:
+    - name: Disable Selinux forever
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: "^SELINUX=enforcing"
+        line: "SELINUX=permissive"
+        state: present
+
+    - name: Disable Selinux now
+      shell: setenforce Permissive
+      become: yes
+      
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Create /etc/modules-load.d/k8s.conf with required modules
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          overlay
+          br_netfilter
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Load kernel modules
+      shell: |
+        modprobe overlay
+        modprobe br_netfilter
+      become: yes
+
+    - name: Create /etc/sysctl.d/k8s.conf with required settings
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Apply sysctl settings
+      command: sysctl --system
+
+    - name: Swapoff
+      shell: swapoff -a
+      become: yes
+
+    - name: Create /etc/yum.repos.d/kubernetes.repo
+      copy:
+        dest: /etc/yum.repos.d/kubernetes.repo
+        content: |
+            [kubernetes]
+            name=Kubernetes
+            baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create /etc/yum.repos.d/cri-o.repo
+      copy:
+        dest: /etc/yum.repos.d/cri-o.repo
+        content: |
+            [cri-o]
+            name=CRI-O
+            baseurl=https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/rpm/
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/rpm/repodata/repomd.xml.key
+        owner: root
+        group: root
+        mode: '0644'
+        
+    - name: Install Dependency Package
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf -y install conntrack container-selinux ebtables ethtool iptables socat
+      
+    - name: Install haproxy
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf install -y haproxy
+
+    - name: Backup haproxy.cfg
+      shell: sudo cp /etc/haproxy/haproxy.cfg  /etc/haproxy/haproxy.cfg_orig
+
+    - name: Backup haproxy.cfg
+      shell: sudo rm -rf /etc/haproxy/haproxy.cfg
+
+    - name: Create /etc/haproxy/haproxy.cfg
+      copy:
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+          global
+              daemon
+              maxconn 8192
+              log 127.0.0.1 local2 warning
+              user haproxy
+              group haproxy
+              chroot /var/lib/haproxy
+              pidfile /var/run/haproxy.pid
+              stats socket /var/run/haproxy.sock mode 777 level admin expose-fd listeners
+              nbthread 4
+              ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA
+              ssl-default-bind-options ssl-min-ver TLSv1.0
+
+          defaults
+              mode tcp
+              log global
+              option dontlognull
+              timeout connect 600s
+              timeout client 600s
+              timeout server 600s
+
+          frontend kubernetes-master-lb
+              bind 0.0.0.0:46443
+              option tcplog
+              mode tcp
+              default_backend kubernetes-master-nodes
+
+          backend kubernetes-master-nodes
+              mode tcp
+              balance roundrobin
+              option tcp-check
+              option tcplog
+          {% for host in groups['k8s-node-master'] %}
+              server master{{ loop.index }} {{ host }}:6443 check
+          {% endfor %}
+
+          listen stats
+              bind *:8888
+              mode http
+              stats enable
+              stats uri /haproxy?stats
+              stats auth hauser:passsword
+              stats refresh 30s
+              stats show-node
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Start Haproxy node
+      shell: sudo systemctl start haproxy
+
+    #keepalived
+    - name: Install keepalive
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf install -y keepalived
+
+    - name: Backup haproxy.cfg
+      shell: sudo cp /etc/keepalived/keepalived.conf  /etc/keepalived/keepalived.conf_orig
+
+    - name: Backup haproxy.cfg
+      shell: sudo rm -rf /etc/keepalived/keepalived.conf
+
+    - name: Create Master /etc/keepalived/keepalived.conf
+      copy:
+        dest: /etc/keepalived/keepalived.conf
+        content: |
+            global_defs {
+            #    notification_email {
+            #        admin@example.com
+            #    }
+            #    notification_email_from keepalived@example.com
+            #    smtp_server 192.168.1.1
+            #    smtp_connect_timeout 30
+                router_id LVS_DEVEL
+            }
+
+            vrrp_instance VI_1 {
+                state MASTER  
+                interface enp1s0 
+                virtual_router_id 51
+                priority 101  
+                advert_int 1
+                authentication {
+                    auth_type PASS
+                    auth_pass 1234 
+                }
+                virtual_ipaddress {
+                    {{cluster_vip_ip}}/32  
+                }
+        owner: root
+        group: root
+        mode: '0644'
+      when: inventory_hostname == groups['k8s-node-haproxy'][0]
+
+    - name: Create Backup /etc/keepalived/keepalived.conf
+      copy:
+        dest: /etc/keepalived/keepalived.conf
+        content: |
+            global_defs {
+            #    notification_email {
+            #        admin@example.com
+            #    }
+            #    notification_email_from keepalived@example.com
+            #    smtp_server 192.168.1.1
+            #    smtp_connect_timeout 30
+                router_id LVS_DEVEL
+            }
+
+            vrrp_instance VI_1 {
+                state BACKUP
+                interface enp1s0  
+                virtual_router_id 51
+                priority 100  
+                advert_int 1
+                authentication {
+                    auth_type PASS
+                    auth_pass 1234  
+                }
+                virtual_ipaddress {
+                    {{cluster_vip_ip}}/32 
+                }
+        owner: root
+        group: root
+        mode: '0644'
+      when: inventory_hostname == groups['k8s-node-haproxy'][1]
+
+    - name: Start Haproxy node
+      shell: sudo systemctl start keepalived
