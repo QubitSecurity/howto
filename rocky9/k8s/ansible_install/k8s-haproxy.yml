@@ -1,6 +1,6 @@
 ---
 - name: Install K8S Cluster Haproxy
-  hosts: k8s-node-haproxy
+  hosts: k8s-node-haproxy #클러스터링 haproxy 대상 hosts 그룹
   become: yes
   vars:
     proxy: "http://111.111.111.111:3128/" #패키지 설치 필요에 따라 proxy 설정
