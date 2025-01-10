@@ -1,5 +1,5 @@
 ---
-- name: Install K8S Cluster Worker install
+- name: Install K8S Cluster Worker
   hosts: k8s-node-worker
   become: yes
   vars:
