@@ -3,7 +3,7 @@
   hosts: k8s-node-master
   become: yes
   vars:
-    proxy: "http://172.16.10.20:3128/"
+    proxy: "http://111.111.111.111:3128/"
     cluster_vip_ip: "192.168.100.160"
     cluster_cidr: "10.0.0.0"
 
