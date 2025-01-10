@@ -1,0 +1,208 @@
+---
+- name: Install K8S Cluster Master install
+  hosts: k8s-node-master
+  become: yes
+  vars:
+    proxy: "http://172.16.10.20:3128/"
+    cluster_vip_ip: "192.168.100.160"
+    cluster_cidr: "10.0.0.0"
+
+  tasks:
+    - name: Disable Selinux forever
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: "^SELINUX=enforcing"
+        line: "SELINUX=permissive"
+        state: present
+
+    - name: Disable Selinux now
+      shell: setenforce Permissive
+      become: yes
+      
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Create /etc/modules-load.d/k8s.conf with required modules
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          overlay
+          br_netfilter
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Load kernel modules
+      shell: |
+        modprobe overlay
+        modprobe br_netfilter
+      become: yes
+
+    - name: Create /etc/sysctl.d/k8s.conf with required settings
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Apply sysctl settings
+      command: sysctl --system
+
+    - name: Swapoff
+      shell: swapoff -a
+      become: yes
+
+    - name: Create /etc/yum.repos.d/kubernetes.repo
+      copy:
+        dest: /etc/yum.repos.d/kubernetes.repo
+        content: |
+            [kubernetes]
+            name=Kubernetes
+            baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create /etc/yum.repos.d/cri-o.repo
+      copy:
+        dest: /etc/yum.repos.d/cri-o.repo
+        content: |
+            [cri-o]
+            name=CRI-O
+            baseurl=https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/rpm/
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/rpm/repodata/repomd.xml.key
+        owner: root
+        group: root
+        mode: '0644'
+        
+    - name: Install Dependency Package
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf -y install conntrack container-selinux ebtables ethtool iptables socat
+      
+    - name: Install kube & cri-o
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf install -y --repo cri-o --repo kubernetes cri-o kubeadm kubectl kubelet
+
+    - name: Start Master node
+      shell: sudo systemctl start kubelet && sudo systemctl start crio
+      
+    - name: Create Cluster
+      shell: |
+        sudo kubeadm init --control-plane-endpoint={{cluster_vip_ip}}:46443 \
+          --upload-certs --pod-network-cidr={{cluster_cidr}}/16
+      register: kubeadm_init_output
+      when: inventory_hostname == groups['k8s-node-master'][0]  # 첫 번째 마스터 노드에서 클러스터를 생성
+
+    - name: Restart kubelet
+      command: sudo systemctl restart kubelet
+      when: inventory_hostname == groups['k8s-node-master'][0] 
+      become: yes
+    
+    - name: Debug kubeadm init output
+      debug:
+        msg: "{{ kubeadm_init_output.stdout | default('No output found') }}"
+      when: kubeadm_init_output is defined and kubeadm_init_output.stdout is defined and kubeadm_init_output.stdout != ''
+
+    - name: Debug regex search result with less strict pattern
+      debug:
+        msg: >-
+          "Regex search result: {{
+            kubeadm_init_output.stdout
+            | regex_search('kubeadm join .+ \\\n\t--discovery-token-ca-cert-hash .+ \\\n\t--control-plane --certificate-key .+', multiline=True, ignorecase=True)
+            | regex_replace('\\\n\t', ' ')
+            | default('No match found')
+          }}"
+      when: kubeadm_init_output is defined and kubeadm_init_output.stdout is defined and kubeadm_init_output.stdout != ''
+
+    - name: Extract kubeadm join control-plane command
+      set_fact:
+        control_plane_join_command: >-
+          {{
+            kubeadm_init_output.stdout
+            | regex_search('kubeadm join .+ \\\n\t--discovery-token-ca-cert-hash .+ \\\n\t--control-plane --certificate-key .+', multiline=True, ignorecase=True)
+            | regex_replace('\\\n\t', ' ')
+            | default('No match found')
+          }}
+      when: kubeadm_init_output is defined and kubeadm_init_output.stdout is defined and kubeadm_init_output.stdout != ''
+
+    - name: Display control-plane join command
+      debug:
+        msg: "{{ control_plane_join_command }}"
+      when: control_plane_join_command is defined and control_plane_join_command != ''
+
+    - name: Add Cluster Master
+      command: "sudo {{ hostvars[groups['k8s-node-master'][0]].control_plane_join_command }}"
+      when: 
+        - inventory_hostname in groups['k8s-node-master']
+        - inventory_hostname != groups['k8s-node-master'][0]  # 두 번째 노드부터 실행
+        - hostvars[groups['k8s-node-master'][0]].control_plane_join_command is defined
+        - hostvars[groups['k8s-node-master'][0]].control_plane_join_command != 'No match found'
+      become: yes
+
+    - name: Create /etc/cluster.sh script
+      copy:
+        dest: /root/kube-cluster.sh
+        content: |
+          #!/bin/bash
+          mkdir -p $HOME/.kube && \
+          cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && \
+          chown $(id -u):$(id -g) $HOME/.kube/config
+        mode: '0755'
+
+    - name: Execute the cluster.sh script
+      command: sudo /etc/cluster.sh
+      become: yes
+
+    #Calico config & deployment
+    - name: Download calico.yaml to /root
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
+        dest: /root/calico.yaml
+        mode: '0644'
+      when: inventory_hostname == groups['k8s-node-master'][0]
+      become: yes
+      
+    - name: Configure calico.yaml 1
+      lineinfile:
+        path: /root/calico.yaml
+        regexp: "^            # - name: CALICO_IPV4POOL_CIDR"
+        line: "            - name: CALICO_IPV4POOL_CIDR"
+        state: present
+      when: inventory_hostname == groups['k8s-node-master'][0]
+      become: yes
+      
+    - name: Configure calico.yaml 2
+      lineinfile:
+        path: /root/calico.yaml
+        regexp: "^            #   value: \"192.168.0.0/16\""
+        line: "              value: \"{{cluster_cidr}}/16\""
+        state: present
+      when: inventory_hostname == groups['k8s-node-master'][0]
+      become: yes
+
+    - name: Deployment calico
+      shell: sudo kubectl apply -f /root/calico.yaml --validate=false
+      when: inventory_hostname == groups['k8s-node-master'][0] 
+      become: yes
+
+    - name: Restart crio
+      command: sudo systemctl restart crio 
+      when: inventory_hostname == groups['k8s-node-master'][0] 
+      become: yes
+
