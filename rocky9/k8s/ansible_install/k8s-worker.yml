@@ -58,6 +58,14 @@
       shell: swapoff -a
       become: yes
 
+    - name: Add current node IP and hostname to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_default_ipv4.address }} {{ ansible_hostname }}"
+        create: yes
+        state: present
+      become: yes
+
     - name: Create /etc/yum.repos.d/kubernetes.repo
       copy:
         dest: /etc/yum.repos.d/kubernetes.repo
