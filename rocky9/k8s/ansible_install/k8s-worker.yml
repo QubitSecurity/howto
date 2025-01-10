@@ -1,0 +1,131 @@
+---
+- name: Install K8S Cluster Worker install
+  hosts: k8s-node-worker
+  become: yes
+  vars:
+    proxy: "http://172.16.10.20:3128/"
+    cluster_ip: "192.168.100.160"
+
+  tasks:
+    - name: Disable Selinux forever
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: "^SELINUX=enforcing"
+        line: "SELINUX=permissive"
+        state: present
+
+    - name: Disable Selinux now
+      shell: setenforce Permissive
+      become: yes
+      
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Create /etc/modules-load.d/k8s.conf with required modules
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          overlay
+          br_netfilter
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Load kernel modules
+      shell: |
+        modprobe overlay
+        modprobe br_netfilter
+      become: yes
+
+    - name: Create /etc/sysctl.d/k8s.conf with required settings
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Apply sysctl settings
+      command: sysctl --system
+
+    - name: Swapoff
+      shell: swapoff -a
+      become: yes
+
+    - name: Create /etc/yum.repos.d/kubernetes.repo
+      copy:
+        dest: /etc/yum.repos.d/kubernetes.repo
+        content: |
+            [kubernetes]
+            name=Kubernetes
+            baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create /etc/yum.repos.d/cri-o.repo
+      copy:
+        dest: /etc/yum.repos.d/cri-o.repo
+        content: |
+            [cri-o]
+            name=CRI-O
+            baseurl=https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/rpm/
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://pkgs.k8s.io/addons:/cri-o:/prerelease:/main/rpm/repodata/repomd.xml.key
+        owner: root
+        group: root
+        mode: '0644'
+        
+    - name: Install Dependency Package
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf -y install conntrack container-selinux ebtables ethtool iptables socat
+      
+    - name: Install kube & cri-o
+      # environment:
+        # http_proxy: "{{proxy}}"
+        # https_proxy: "{{proxy}}"
+      shell: sudo dnf install -y --repo cri-o --repo kubernetes cri-o kubeadm kubectl kubelet
+
+    - name: Start Master node
+      shell: sudo systemctl start kubelet && sudo systemctl start crio
+   
+    - name: Fetch kubeadm join command from the first master node
+      shell: kubeadm token create --print-join-command
+      register: kubeadm_worker_init_output
+      delegate_to: "{{ groups['k8s-node-master'][0] }}"  # 첫 번째 마스터 노드에서 실행
+      run_once: true  # 중복 실행 방지
+      
+    - name: Extract kubeadm join command
+      set_fact:
+        worker_join_command: >-
+          {{
+            kubeadm_worker_init_output.stdout
+            | regex_search('kubeadm join .+ ', multiline=True, ignorecase=True)
+            | default('No match found')
+          }}
+      when: kubeadm_worker_init_output is defined and kubeadm_worker_init_output.stdout != ''
+
+    - name: Display control-plane join command
+      debug:
+        msg: "{{ worker_join_command }}"
+      when: worker_join_command is defined and worker_join_command != ''
+
+    - name: Join worker nodes to the cluster
+      command: "{{ worker_join_command }}"
+      when:
+        - worker_join_command is defined
+        - worker_join_command != 'No match found'
+      become: yes
+      
