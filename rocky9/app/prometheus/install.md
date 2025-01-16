@@ -1,1 +1,42 @@
 
+
+### 1. Prometheus 다운로드 및 저장
+```
+다운로드
+wget https://github.com/prometheus/prometheus/releases/download/v3.0.1/prometheus-3.0.1.linux-386.tar.gz
+
+압축해제
+sudo tar -xzvf /tmp/prometheus-3.0.1.linux-386.tar.gz  -C /opt
+
+심볼릭 링크 생성
+ln -s /opt/prometheus-3.0.1.linux-386/ /opt/prometheus
+
+실행파일 복사
+sudo cp /opt/prometheus-3.0.1.linux-386/prometheus /sbin
+sudo cp /opt/prometheus-3.0.1.linux-386/promtool /sbin
+```
+
+### 2. 서비스 파일 등록
+```
+vi /etc/systemd/system/prometheus.service
+
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=prometheus --config.file=/opt/prometheus/prometheus.yml --storage.tsdb.path=/opt/prometheus/ --web.enable-lifecycle --web.enable-admin-api --storage.tsdb.retention.time=1s
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 3. 서비스 로드 및 실행
+```
+sudo systemctl daemon-reload
+sudo systemctl enable --now prometheus
+```
