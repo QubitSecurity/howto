@@ -1,5 +1,5 @@
 
-
+## Prometheus
 ### 1. Prometheus 다운로드 및 저장
 ```
 다운로드
@@ -40,3 +40,32 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 sudo systemctl enable --now prometheus
 ```
+
+### 4. 프로메테우스 웹 UI
+```
+http://IP:9090
+```
+
+## Grafana
+### 1. grafana 설치
+```
+sudo dnf install -y https://dl.grafana.com/enterprise/release/grafana-enterprise-11.4.0-1.x86_64.rpm
+
+※ 참고
+https://grafana.com/grafana/download?pg=oss-graf&plcmt=hero-btn-1
+
+sudo systemctl enable --now grafana-server
+
+```
+### 2. 접속(default)
+```
+http://IP:3000
+
+기본 계정
+admin / admin
+
+```
+
+
+
+
