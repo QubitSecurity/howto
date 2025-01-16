@@ -55,10 +55,10 @@ http://IP:9090
 ### 1. grafana 설치
 ```
 sudo dnf install -y https://dl.grafana.com/enterprise/release/grafana-enterprise-11.4.0-1.x86_64.rpm
-
-※ 참고
+※ 참고 - 설치 방법
 https://grafana.com/grafana/download?pg=oss-graf&plcmt=hero-btn-1
 
+서비스 활성화
 sudo systemctl enable --now grafana-server
 
 ```
