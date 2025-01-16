@@ -20,7 +20,11 @@ cp linux-amd64/helm /sbin/
 ## Prometheus+Grafana
 ```
 helm 을 통해 설치하는 경우 stack을 제공하여 프로메테우스와 그라파나 함께 설치 가능.
+
+※ git clone을 통해 파일 다운로드하여 배포 전 yaml 파일을 수정하여 사용 가능
+git clone https://github.com/prometheus-community/helm-charts
 ```
+
 ### 1. 설치
 ```
 프로메테우스 helm charts 레포지포리 등록
