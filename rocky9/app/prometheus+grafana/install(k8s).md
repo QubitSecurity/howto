@@ -99,7 +99,7 @@ kubectl edit service -n monitoring prometheus-kube-prometheus-prometheus
 http://IP:31000
 ※svc 수정으로 작성된 포트
 
-그라파나의 초기 비밀번호 확인
+그라파나 초기 비밀번호 확인
 kubectl get secret -n monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
 
 프로메테우스 웹 UI 접속
