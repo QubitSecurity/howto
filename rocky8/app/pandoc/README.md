@@ -2,12 +2,27 @@
 > https://github.com/jgm/pandoc/blob/main/INSTALL.md
 > https://downloads.haskell.org/~ghc/latest/
 
+
+## 0. Pre request apps
+
+```
+dnf groupinstall "Development Tools"
+```
+
 ## 1. Install
 
 ### 1.1 Download & Install
 
 ```
 curl -sSL https://get.haskellstack.org/ | sh
+```
+
+```
+stack install pandoc
+```
+
+```
+export PATH=$HOME/.local/bin:$PATH
 ```
 
 ```
