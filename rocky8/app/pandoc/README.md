@@ -3,7 +3,7 @@
 > https://downloads.haskell.org/~ghc/latest/
 
 
-## 0. Pre request apps
+## 0. Prerequisite apps
 
 ```
 dnf groupinstall "Development Tools"
