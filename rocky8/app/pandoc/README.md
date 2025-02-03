@@ -1,5 +1,6 @@
 # pandoc
-> https://dev.mysql.com/downloads/repo/yum/
+> https://github.com/jgm/pandoc/blob/main/INSTALL.md
+> https://downloads.haskell.org/~ghc/latest/
 
 ## 1. Install
 
@@ -17,8 +18,7 @@ stack --version
 ### 1.2 Install Pandoc from source
 
 ```
-git clone https://github.com/jgm/pandoc.git
-cd pandoc
+wget https://github.com/jgm/pandoc/releases/download/3.6.2/pandoc-3.6.2-linux-arm64.tar.gz
 ```
 
 
