@@ -6,11 +6,34 @@
 ### 1.1 Download & Install
 
 ```
+curl -sSL https://get.haskellstack.org/ | sh
 ```
 
-### 1.2 Config
+```
+stack --version
+```
 
-    mysql_secure_installation
+
+### 1.2 Install Pandoc from source
+
+```
+git clone https://github.com/jgm/pandoc.git
+cd pandoc
+```
+
+
+```
+stack setup
+stack install
+```
+
+```
+```
+
+```
+pandoc --version
+```
+
 
 ## 2. Reinstall Tex Live
 
