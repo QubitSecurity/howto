@@ -53,16 +53,16 @@ graph LR;
     %% Solr Subgraph
     subgraph Solr[Solr Group]
         direction TB
-        SolrProcesses1[SolrProcesses1<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
-        SolrProcesses2[SolrProcesses1<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
+        SolrServer1[SolrServer1:8983]
+        SolrServer2[SolrServer2:8983]
     end
 hosts -->|설치| Solr
 
-SolrProcesses1 --> Zookeeper1
-SolrProcesses1 --> Zookeeper2
-SolrProcesses1 --> Zookeeper3
-SolrProcesses2 --> Zookeeper1
-SolrProcesses2 --> Zookeeper2
-SolrProcesses2 --> Zookeeper3
+SolrServer1 --> Zookeeper1
+SolrServer1 --> Zookeeper2
+SolrServer1 --> Zookeeper3
+SolrServer2 --> Zookeeper1
+SolrServer2 --> Zookeeper2
+SolrServer2 --> Zookeeper3
 ```
 
