@@ -30,7 +30,8 @@ Restconf API를 통해 Rule 적용에 따라 Rule data 업로드가 필요한 �
 ```
 ### 1. 설정 룰셋 생성
 ```
-curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test" \
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  \
+-X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test" \
 -H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
 ```
 
