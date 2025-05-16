@@ -121,5 +121,5 @@ Outbound Interface: NAT 처리 후 트래픽이 나갈 인터페이스
 (상단 배너)Network →(왼쪽 배너)Interface → (메인)Interface List에서 확인 가능.
 ```
 ![f11](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f11.png)
-![f14](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f14.png)
+![f16](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f16.png)
 ![f13](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f13.png)
