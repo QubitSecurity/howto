@@ -11,21 +11,19 @@ Huawei 방화벽 장비를 이용한 기본 NAT 설정
 ```
 (상단 배너) Network → (왼쪽 배너) Interface → (메인) 설정할 포트 지정
 (※ ex. WAN0/0/0 에서 설정)
-
-
-
 ```
 ![f1](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f1.png)
+![f2](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f2.png)
+![f3](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f3.png)
+
 ### 1.2 LAN 설정
 ```
 (상단 배너)Network →(왼쪽 배너)Interface →(메인) 설정할 포트 지정 
 (※ex. GE/0/0/3에서 설정)
-
-
-
-
-
 ```
+![f4](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f4.png)
+![f5](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f5.png)
+![f6](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f6.png)
 
 ### 1.3 설정 설명
 ```
@@ -58,6 +56,8 @@ IPv6 MTU: IPv6 패킷의 최대 전송 단위 (Maximum Transmission Unit) 설정
 ```
 (상단 배너)Policy →(왼쪽 배너)Security Policy →(메인) Add Security Policy
 ```
+![f7](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f7.png)
+![f8](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f8.png)
 
 ### 2.2 Security Policy 설정 설명
 ```
@@ -92,7 +92,8 @@ User-Defined Persistent Connection (SP): 사용자 정의 지속 연결 설정, 
 ```
 (상단 배너)Policy →(왼쪽 배너)NAT Policy →(메인)Add
 ```
-
+![f9](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f9.png)
+![f10](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f10.png)
 ### 3.2 NAT Policy 설정 설명
 ```
 General Settings 
@@ -119,3 +120,6 @@ Outbound Interface: NAT 처리 후 트래픽이 나갈 인터페이스
 ```
 (상단 배너)Network →(왼쪽 배너)Interface → (메인)Interface List에서 확인 가능.
 ```
+![f11](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f11.png)
+![f12](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f12.png)
+![f13](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f13.png)
