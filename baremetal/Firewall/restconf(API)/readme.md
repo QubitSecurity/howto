@@ -28,7 +28,52 @@ Restconf API를 통해 Rule 적용에 따라 Rule data 업로드가 필요한 �
   </service>
 
 ```
-### 설정 룰셋 생성
+### 1. 설정 룰셋 생성
 ```
-curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test" -H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test" \
+-H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+```
+
+### 2. 설정 룰셋 변경
+```
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test" \
+-H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+```
+
+### 3. Rule 순서 처음에 룰 생성
+```
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test?insert=first" \
+-H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+```
+
+### 4. Rule 순서 마지막에 룰 생성
+```
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test?insert=last" \
+-H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+```
+
+### 5. 특정 룰 뒤에 생성
+```
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test?insert=after&key=[name=’another_rule’]" \
+-H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+```
+
+### 6. 특정 룰 앞에 생성
+```
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X PUT "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test?insert=before&key=[name=’another_rule’]" \
+-H "Content-Type: application/yang-data+xml" -H "Accept: application/yang-data+xml" -d @test.xml"
+```
+
+### 7. 특정 설정 룰셋 삭제
+```
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X DELETE "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=test
+```
+
+
+### 8. 룰 조회
+```
+전체 룰 조회
+curl -v -k -u "<restconf_ID>:<restconf_PW>" -X GET "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy"
+특정 룰 조회
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X GET "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=web
 ```
