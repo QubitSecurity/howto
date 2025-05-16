@@ -80,7 +80,9 @@ curl -v -k -u "<restconf_ID>:<restconf_PW>"  \
 ### 8. 룰 조회
 ```
 전체 룰 조회
-curl -v -k -u "<restconf_ID>:<restconf_PW>" -X GET "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy"
+curl -v -k -u "<restconf_ID>:<restconf_PW>" \
+-X GET "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy"
 특정 룰 조회
-curl -v -k -u "<restconf_ID>:<restconf_PW>"  -X GET "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=web
+curl -v -k -u "<restconf_ID>:<restconf_PW>"  \
+-X GET "https://<Firewall_IP>:1025/restconf/data/huawei-security-policy:sec-policy/vsys=public/static-policy/rule=web
 ```
