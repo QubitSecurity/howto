@@ -5,17 +5,17 @@ Restconf API 통신은 HTTPS 기반에서 동작하며, 기본 인증서가 설�
 Restconf API를 통해 Rule 적용에 따라 Rule data 업로드가 필요한 경우(Rule 생성, 변경 등) xml 형태로 업로드 가능
 ```
 
-### 0. xml 파일 형식
+### 0. xml 파일 형식(example.)
 ```
 <rule>
   <desc>just for test</desc>
   <source-zone>untrust</source-zone>
   <destination-zone>trust</destination-zone>
   <source-ip>
-    <address-ipv4>192.168.10.11/32</address-ipv4>
+    <address-ipv4>192.168.1.1/32</address-ipv4>
   </source-ip>
   <destination-ip>
-    <address-ipv4>10.10.12.0/24</address-ipv4>
+    <address-ipv4>1.1.1.0/24</address-ipv4>
   </destination-ip>
   <service>
     <service-object>http</service-object>
