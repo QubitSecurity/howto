@@ -11,11 +11,11 @@ Huawei 방화벽 장비를 이용한 기본 NAT 설정
 ```
 (상단 배너) Network → (왼쪽 배너) Interface → (메인) 설정할 포트 지정
 (※ ex. WAN0/0/0 에서 설정)
-![f1](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f1.png)
+
 
 
 ```
-
+![f1](https://github.com/QubitSecurity/howto/blob/main/baremetal/Firewall/NAT%20Config/images/f1.png)
 ### 1.2 LAN 설정
 ```
 (상단 배너)Network →(왼쪽 배너)Interface →(메인) 설정할 포트 지정 
