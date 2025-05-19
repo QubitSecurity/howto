@@ -19,10 +19,12 @@ Developer Services > Kubernetes Clusters (OKE)
 Quick create 로 진행하여 필요한 구성요소를 한번에 생성.
 
 클러스터 이름을 정의한 후, 쿠버네티스 형태를 정의.
-여기는 Public endpoint / Managed / Private workers 로 진행
-스펙도 기존 선택 VM. Standard.E3.Flex 로 1core / 8GB 로 진행
-OS는 Oracle Linux 8(기본 선택) 진행
-Node 수는 3개 설정 
+
+EX. 
+Public endpoint / Managed / Private workers 설정
+Standard.E3.Flex 로 1core / 8GB 선택
+Oracle Linux 8(기본 선택) 선택
+Node 수는 3개 설정
 
 일정 시간이 지난 후 클러스터와 노드가 생성되었는지 확인
 클러스터 상태 확인
