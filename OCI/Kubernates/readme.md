@@ -1,5 +1,6 @@
-### 0. 설명
-OCI를 통한 Kubernates 구축
+## 0. 설명
+OCI(Oracle Cloud Infrastructure)를 통한 Kubernates 구축
+관리형 Kubernates로, Worker 노드만 생성
 
 ## 1. OCI Kubernates 구축
 ### 1.1 Compartments 생성
@@ -72,7 +73,26 @@ Bastion Instance 생성 확인<br>
 ![k24](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k24.png) <br>
 
 <br><br>
-### 2.2 Bastion oci-cli 설치
+### 2.2 Tenancy ocid 확인
+User ocid 확인<br>
+OCI 클라우드 오른쪽 위 프로필 아이콘 클릭  →Profile 하단 User settings 클릭.<br>
+![k39](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k39.png) <br>
+계정 profile →User information → 하단 OCID 
+user OCID 조회 및 복사 가능.
+![k40](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k40.png) <br>
+
+Tenancy.ocid 확인 <br>
+OCI 클라우드 오른쪽 위 프로필 아이콘 클릭  →Profile 하단 Tenancy 클릭.<br>
+![k41](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k41.png) <br>
+
+
+Tenancy details 하단 →Tenancy information→OCID <br>
+tenancy OCID 조회 및 복사 가능. <br>
+![k42](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k42.png) <br>
+
+
+<br><br>
+### 2.3 Bastion oci-cli 설치
 Python3 업데이트 <br>
 Repository 업데이트 <br>
 sudo dnf -y update <br>
@@ -94,7 +114,7 @@ pip3 install /root/oci-cli/oci_cli-*-py3-none-any.whl <br> <br>
 
 oci-cli 설정 <br>
 oci setup config <br>
-![k26](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k26.png) <br>
+![k43](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k43.png) <br>
 cat /root/.oci/oci_api_key_public.pem <br>
 ![k27](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k27.png) <br>
 오른쪽 상단 프로필 클릭 > User settings > 좌측 API keys <br>
@@ -105,7 +125,7 @@ oci os ns get<br>
 
 
 <br> <br>
-### 2.3 Bastion kubernates 연동
+### 2.4 Bastion kubernates 연동
 ```
 kubectl 설치
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" 
