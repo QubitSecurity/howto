@@ -14,7 +14,7 @@ Create Compartments 진행 <br>
 Child Compartments 생성 확인 <br>
 ![k5](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k5.png) <br>
 
-<br> <br>
+<br><br>
 ### 1.2 Kubernate Clusters 생성
 Developer Services > Kubernetes Clusters (OKE)<br>
 ![k6](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k6.png) <br>
@@ -40,10 +40,10 @@ Node Pool 내  워커 노드 상태 확인
 ![k14](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k14.png) <br>
 ![k15](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k15.png) <br>
 ![k16](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k16.png) <br>
-<br><br>
 
 
-## 2. Bastion 구축
+<br><br><br>
+## 2. Bastion 구축 (Worker 노드 제어용)
 ### 2.1 Bastion 인스턴스 생성
 Navigation menu  → 왼쪽 배너 Compute → 오른쪽 배너 Instances  <br>
 ![k17](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k17.png) <br>
@@ -141,6 +141,8 @@ Local Access에서 필요한 config 내용 복사 (ex. public endpoint 사용) <
 bastion에서 실행 및 Worker Node 연결 확인 <br>
 ![k32](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k32.png) <br>
 
+
+<br><br><br>
 ## 3. Container Registry 구성
 ### 3.1 image pull/push 테스트(ex. Test Image - nginx)
 docker 설치 <br>
