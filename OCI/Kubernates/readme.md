@@ -176,6 +176,6 @@ docker images <br>
 
 k8s 시크릿 생성 및 확인<br>
 kubectl create secret docker-registry ocirsecret --docker-server=ap-seoul-1.ocir.io --docker-username='<register 네임스페이스>/<oci 계정>' --docker-password='<생성 token 값>' --docker-email='<oci 계정>' <br>
-kubectl get secrets <br
+kubectl get secrets <br>
 
 
