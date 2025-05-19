@@ -3,10 +3,10 @@ OCI를 통한 Kubernates 구축
 
 ## 1. OCI Kubernates 구축
 ### 1.1 Compartments 생성
-Identity & Security > Compartments > qubitsec <br>
+Identity & Security > Compartments > [정의할 Compartments 이름] <br>
 ![k1](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k1.png) <br>
 ![k2](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k2.png) <br>
-Root Compartments 하위, Child Compartments 로 생성. <br>
+Root Compartments 하위, Child Compartments 로 생성. (Compartments 경로는 상이할 수 있음.) <br>
 ![k3](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k3.png) <br>
 Create Compartments 진행 <br>
 ![k4](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k4.png) <br>
@@ -71,6 +71,7 @@ ssh 공개 키 업로드. (사용 가능한 ssh key 쌍이 없는 경우, Genera
 Bastion Instance 생성 확인<br>
 ![k24](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k24.png) <br>
 
+<br><br>
 ### 2.2 Bastion oci-cli 설치
 Python3 업데이트 <br>
 Repository 업데이트 <br>
@@ -121,7 +122,7 @@ bastion에서 실행 및 Worker Node 연결 확인 <br>
 ![k32](https://github.com/QubitSecurity/howto/blob/main/OCI/Kubernates/images/k32.png) <br>
 
 ## 3. Container Registry 구성
-### 3.0 image pull/push 테스트(ex. Test Image - nginx)
+### 3.1 image pull/push 테스트(ex. Test Image - nginx)
 docker 설치 <br>
 dnf install docker <br><br>
 
