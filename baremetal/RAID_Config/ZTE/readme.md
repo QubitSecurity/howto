@@ -9,7 +9,7 @@
 2. Advanded 하단 ZTE SmartROC로 시작하는 메뉴 진입<br><br>
 ![z2](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z2.jpg)
 
-3.Array Configration 진입<br><br>
+3. Array Configration 진입<br><br>
 ![z3](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z3.jpg)
 
 4. Create Array 진입<br><br>
@@ -27,8 +27,7 @@
 8. RAID 구성 완료<br><br>
 ![z8](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z8.jpg)
 
-<br><br>
-<br><br>
+<br><br><br><br>
 ### 2. Hot Spare 설정
 
 1. Array Configration 진입<br><br>
