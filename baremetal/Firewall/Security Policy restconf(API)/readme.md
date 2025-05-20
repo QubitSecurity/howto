@@ -3,6 +3,7 @@
 Security Policy(FW Rule) Restconf 
 Restconf API 통신은 HTTPS 기반에서 동작하며, 기본 인증서가 설정되어 있음
 Restconf API를 통해 Rule 적용에 따라 Rule data 업로드가 필요한 경우(Rule 생성, 변경 등) xml 형태로 업로드 가능
+최초 장비 셋팅 시, restconf API를 활성화하고 접속 포트 확인(ex. 1025 등)
 ```
 
 ### 0.2 xml 파일 형식(예시)
