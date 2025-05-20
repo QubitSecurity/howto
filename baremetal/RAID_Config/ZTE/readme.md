@@ -3,7 +3,7 @@
 ※ 서버에 HDD 장착 후 정상 녹색 점등 확인
 
 ### 1. RAID 설정
-1. 서버 On 후, ‘F2’ 혹은 'DEL' 키 입력으로 BIOS 진입<br><br>
+1. 서버 On 후, 'F2' 혹은 'DEL' 키 입력으로 BIOS 진입<br><br>
 ![z1](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z1.jpg)
 
 2. Advanded 하단 ZTE SmartROC로 시작하는 메뉴 진입<br><br>
