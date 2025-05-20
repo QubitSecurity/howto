@@ -3,22 +3,22 @@
 ※ 서버에 HDD 장착 후 정상 녹색 점등 확인
 
 ### 1. RAID 설정
-1. 서버 On 후, ‘F2’ 키 입력으로 BIOS 진입<br><br>
+1. 서버 On 후, ‘F2’ 혹은 'DEL' 키 입력으로 BIOS 진입<br><br>
 ![z1](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z1.jpg)
 
 2. Advanded 하단 ZTE SmartROC로 시작하는 메뉴 진입<br><br>
 ![z2](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z2.jpg)
 
-3. Array Configration 진입<br><br>
+3. Array Configuration 진입<br><br>
 ![z3](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z3.jpg)
 
 4. Create Array 진입<br><br>
 ![z4](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z4.jpg)
 
-5. RAID 연결할 Disk를 Enable로 변경 후 Proceed to net Form<br><br>
+5. RAID 연결할 Disk를 Enabled 로 변경 후 Proceed to next Form<br><br>
 ![z5](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z5.jpg)
 
-6. RAID 레벨 선택 후 Proceed to net Form<br><br>
+6. RAID 레벨 선택 후 Proceed to next Form<br><br>
 ![z6](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z6.jpg)
 
 7. Submit Changes<br><br>
@@ -30,7 +30,7 @@
 <br><br><br><br>
 ### 2. Hot Spare 설정
 
-1. Array Configration 진입<br><br>
+1. Array Configuration 진입<br><br>
 ![z3](https://github.com/QubitSecurity/howto/blob/main/baremetal/RAID_Config/ZTE/images/z3.jpg)
 
 2. Manage Arrays 진입<br><br>
