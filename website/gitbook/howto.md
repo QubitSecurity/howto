@@ -134,5 +134,7 @@ This repository contains multi-language and multi-version product documentation.
 
 ---
 
+![문서구조](img/make-spaces-en.png)
+
 ![문서구조](img/make-spaces.png)
 
