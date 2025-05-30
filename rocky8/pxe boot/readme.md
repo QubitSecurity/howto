@@ -1,5 +1,5 @@
 ## 0. 사전 설명
-PXE 부팅으로 다른 시스템 OS 설치
+PXE 부팅으로 다른 시스템 OS 설치<br>
 dhcp와 tftp, httpd 를 같은 서버에서 동작하고 OS iso 파일 마운트
 
 <br><br>
