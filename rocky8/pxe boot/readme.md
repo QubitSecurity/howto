@@ -25,6 +25,9 @@ option pxelinux.pathprefix code 210 = text;
 option pxelinux.reboottime code 211 = unsigned integer 32;
 option architecture-type code 93 = unsigned integer 16;
 
+# ※예시 dhcp 범위 설정
+# 대역 10.10.11.0/24
+# 할당 범위 10.10.11.240~243
 subnet 10.10.11.0 netmask 255.255.255.0 {
         option routers 10.10.10.1;
         range 10.10.11.240 10.10.11.243;
