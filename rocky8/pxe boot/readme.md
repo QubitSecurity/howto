@@ -10,6 +10,8 @@ dnf -y install dhcp-server
 ```
 ### 1.2 dhcpd.conf 설정
 ```
+vi /etc/dhcp/dhcpd.conf
+
 #
 # DHCP Server Configuration file.
 #   see /usr/share/doc/dhcp-server/dhcpd.conf.example
