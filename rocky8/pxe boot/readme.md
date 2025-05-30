@@ -27,10 +27,10 @@ option architecture-type code 93 = unsigned integer 16;
 
 # ※예시 dhcp 범위 설정
 # 대역 10.10.11.0/24
-# 할당 범위 10.10.11.240~243
+# 할당 범위 10.10.11.240~249
 subnet 10.10.11.0 netmask 255.255.255.0 {
-        option routers 10.10.10.1;
-        range 10.10.11.240 10.10.11.243;
+#        option routers 10.10.10.1;
+        range 10.10.11.240 10.10.11.249;
         filename "pxelinux.0";
         next-server 10.10.11.253; #tftp 서버(동일)
 }
