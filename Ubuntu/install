@@ -1,1 +1,81 @@
+## 1. **Ubuntu OS 설치 과정 (USB)**
 
+```
+
+①. **USB 부팅 설정:**  
+   USB 드라이브를 컴퓨터에 연결한 뒤,컴퓨터를 부팅합니다.   
+   부팅 중, f2를 연속으로 눌러 BIOS/UEFI 설정으로 이동합니다.  
+   Boot menu → Boot 1st boot device에서 USB를 선택한 뒤, BIOS를 빠져나와 Ubuntu 설치를 시작합니다.
+
+②. **Ubuntu OS 설치:**  
+   설치 과정 중에 언어 선택 화면이 나타납니다. 원하는 언어를 선택하고 다음 화면으로 넘어갑니다.   
+     
+③. **네트워크 연결:**   
+   설치 중, 네트워크에 연결하라는 화면이 나타납니다. 해당 과정은 필수적인 요소는 아니기 때문에, 생략하고 진행하셔도 됩니다.
+
+④. **설치 방식 설정:**  
+   Ubuntu를 설치할 방법을 선택합니다. 현재 디스크를 삭제한 후 새로 os를 설치하는 방법,파티션을 지정하여 지정된 disk에 설치하는 방법 2가지가 있습니다.    
+     
+⑤. **시간대 설정:**  
+   Ubuntu의 시간대를 설정합니다. 시간 동기화가 이루어지지 않을 시, 추후 인터넷 연결에 지장을 줄 수 있어 반드시 설정 해야 합니다.  
+     
+⑥. **사용자 계정 설정:**  
+   사용자 이름, 컴퓨터 이름, 비밀번호 등을 설정합니다. 기본적으로 처음 만들어지는 계정은 root 권한을 가지게 됩니다.  
+     
+⑦. **설치 시작:**  
+   “Install” 버튼을 클릭하여 Ubuntu 설치를 진행합니다.  
+     
+⑧. **시스템 재부팅:**  
+   USB 드라이브를 제거한 후, 시스템을 재부팅 합니다.  
+     
+⑨. **Ubuntu 재부팅 및 초기 설정:**  
+   재부팅 후, 설정한 사용자 계정으로 로그인 및 기본 설정을 완료합니다.
+
+```
+
+### **2. Ubuntu root password 설정**
+
+```
+
+* **root 비밀번호 설정:**  
+  * 바탕화면 마우스 우클릭 → open in terminal,
+
+* **root 계정 접속**  
+  * 바탕화면 마우스 우클릭 → open in terminal,
+
+| sudo passwd → 계정 암호 입력 후, root 비밀번호 설정. |
+| :---- |
+
+```
+
+### 3. **네트워크 설정(proxy):**
+
+```
+ * Setting →network→proxy→network proxy on
+
+| \<추가할 내용\> \-http\_proxy:(프록시 ip)\-https\_proxy:(프록시 ip) |
+| :---- |
+
+* **vi /etc/profile.d/pproxy.sh** 
+| \<추가할 내용\> export http\_proxy=http://(프록시 ip,port) export https\_proxy=http://(프록시 ip,port) export no\_proxy=localhost,127.0.0.1,172.16.\*.\* 
+→입력 후, source/etc/profile.d/pproxy.sh |
+| :---- |
+
+```
+### 4. **Ubuntu 한국어 패치 및 설정**
+
+* **한국어 언어팩 설치**  
+  * **open in terminal**
+```
+| apt update  :설치 가능한 리스트 업데이트 apt install language-pack-ko :한국 언어팩 설치 \* 언어 설치 완료 후, 재부팅 필수  |
+| :---- |
+```
+
+* **한국어 키보드 설치**  
+  * **open in terminal**
+ * **Setting→keyboard→layout→한국어(Hangul)-Preferences**
+
+```
+| 한영전환키→add→원하는 키 입력 및 확인   |
+| :---- |
+```
