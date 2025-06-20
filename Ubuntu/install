@@ -1,7 +1,6 @@
-## Ubuntu Setting 
+## 0. Ubuntu Setting
 
-### 1. Ubuntu OS 설치 과정 (USB)
-
+### 1 Ubuntu OS 설치 과정 (USB)
 ```
 ①. USB 부팅 설정
 USB 드라이브를 연결하고 부팅 → F2 등으로 BIOS 진입 → Boot 순서를 USB로 설정 후 저장 및 재부팅
@@ -31,63 +30,51 @@ USB 드라이브를 연결하고 부팅 → F2 등으로 BIOS 진입 → Boot �
 계정 로그인 후 기본 설정 완료
 ```
 
----
-
 ### 2. Ubuntu root password 설정
 
-* 바탕화면에서 우클릭 → "Open in Terminal"
+바탕화면에서 우클릭 → "Open in Terminal"
 
-```bash
+```
+bash
 sudo passwd root
-```
 
-```
 sudo passwd → 계정 암호 입력 후, root 비밀번호 설정
 ```
-
----
 
 ### 3. 네트워크 설정 (Proxy)
 
 #### GUI 설정
-
 ```
 Settings → Network → Proxy → Manual 설정
 http_proxy=(프록시 IP)
 https_proxy=(프록시 IP)
 ```
-
 #### 환경 변수 설정
 
-```bash
-sudo vi /etc/profile.d/pproxy.sh
 ```
+bash
+sudo vi /etc/profile.d/pproxy.sh
 
-```bash
+bash
 export http_proxy=http://(프록시 IP:PORT)
 export https_proxy=http://(프록시 IP:PORT)
 export no_proxy=localhost,127.0.0.1,172.16.*.*
-```
 
-```bash
+bash
 source /etc/profile.d/pproxy.sh
 ```
-
----
 
 ### 4. Ubuntu 한국어 패치 및 입력기 설정
 
 #### 한국어 언어팩 설치
 
-```bash
+```
+bash
 sudo apt update
 sudo apt install language-pack-ko
-```
 
-```
 설치 후 재부팅 필수
 ```
-
 #### 한국어 키보드 설정
 
 ```
