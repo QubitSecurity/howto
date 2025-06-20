@@ -58,7 +58,7 @@ sudo vi /etc/profile.d/pproxy.sh
 bash
 export http_proxy=http://(프록시 IP:PORT)
 export https_proxy=http://(프록시 IP:PORT)
-export no_proxy=localhost,127.0.0.1,172.16.*.*
+export no_proxy=localhost,127.0.0.1
 
 bash
 source /etc/profile.d/pproxy.sh
