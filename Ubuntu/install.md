@@ -30,8 +30,8 @@ USB 드라이브를 연결하고 부팅 → F2 등으로 BIOS 진입 → Boot �
 ⑨. Ubuntu 초기 설정 완료
 계정 로그인 후 기본 설정 완료
 ```
+##
 
----
 
 ### 2. Ubuntu root password 설정
 
@@ -44,8 +44,8 @@ sudo passwd root
 ```text
 sudo passwd → 계정 암호 입력 후, root 비밀번호 설정
 ```
+##
 
----
 
 ### 3. 네트워크 설정 (Proxy)
 
@@ -72,12 +72,12 @@ export no_proxy=localhost,127.0.0.1,172.16.*.*
 ```bash
 source /etc/profile.d/pproxy.sh
 ```
+##
 
----
 
 ### 4. Ubuntu 한국어 패치 및 입력기 설정
 
-### 한국어 언어팩 설치
+* 한국어 언어팩 설치
 
 ```bash
 sudo apt update
@@ -88,7 +88,7 @@ sudo apt install language-pack-ko
 설치 후 재부팅 필수
 ```
 
-### 한국어 키보드 설정
+* 한국어 키보드 설정
 
 ```text
 Settings → Keyboard → Input Sources → + → Korean (Hangul) 추가
