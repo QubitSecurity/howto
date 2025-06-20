@@ -2,7 +2,7 @@
 
 ### 1. Ubuntu OS 설치 과정 (USB)
 
-```none
+```
 ①. USB 부팅 설정
 USB 드라이브를 연결하고 부팅 → F2 등으로 BIOS 진입 → Boot 순서를 USB로 설정 후 저장 및 재부팅
 
@@ -41,7 +41,7 @@ USB 드라이브를 연결하고 부팅 → F2 등으로 BIOS 진입 → Boot �
 sudo passwd root
 ```
 
-```none
+```
 sudo passwd → 계정 암호 입력 후, root 비밀번호 설정
 ```
 
@@ -51,7 +51,7 @@ sudo passwd → 계정 암호 입력 후, root 비밀번호 설정
 
 #### GUI 설정
 
-```none
+```
 Settings → Network → Proxy → Manual 설정
 http_proxy=(프록시 IP)
 https_proxy=(프록시 IP)
@@ -84,13 +84,13 @@ sudo apt update
 sudo apt install language-pack-ko
 ```
 
-```none
+```
 설치 후 재부팅 필수
 ```
 
 #### 한국어 키보드 설정
 
-```none
+```
 Settings → Keyboard → Input Sources → + → Korean (Hangul) 추가
 한영 전환 키 설정: Preferences → 원하는 키 지정
 ```
