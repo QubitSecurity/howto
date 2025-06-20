@@ -1,61 +1,56 @@
-# 1. **Ubuntu OS 설치 과정 (USB)**
+## 1. Ubuntu OS 설치 과정 (USB)
 
-1. **USB 부팅 설정**  
-   - USB 드라이브를 컴퓨터에 연결하고 부팅  
-   - 부팅 중 `F2` (또는 `Del`, `Esc`, `F12` 등) 키로 BIOS/UEFI 진입  
-   - Boot 순서를 USB로 설정 후 저장 및 재부팅
-
-2. **Ubuntu OS 설치**  
-   - 언어 선택 → "Next" 클릭
-
-3. **네트워크 연결**  
-   - 네트워크 연결은 선택사항 (필수가 아님)
-
-4. **설치 방식 설정**  
-   - 전체 디스크 초기화 설치  
-   - 또는 파티션 지정 설치 (Something else)
-
-5. **시간대 설정**  
-   - 위치를 수동 또는 자동으로 설정  
-   - NTP 동기화를 위해 인터넷 연결 권장
-
-6. **사용자 계정 설정**  
-   - 사용자명, 컴퓨터 이름, 비밀번호 입력  
-   - 기본 계정은 root 권한 포함
-
-7. **설치 시작**  
-   - "Install Now" 클릭 → 파티션 확인 후 설치 진행
-
-8. **시스템 재부팅**  
-   - 설치 완료 후 USB 제거 → "Restart Now"
-
-9. **Ubuntu 초기 설정 완료**  
-   - 계정 로그인 및 기타 기본 설정
+| 단계 | 설명 |
+|------|------|
+| ① USB 부팅 설정 | USB 드라이브 연결 후 부팅 → F2 등으로 BIOS 진입 → 부팅 순서를 USB로 설정 |
+| ② Ubuntu OS 설치 | 언어 선택 후 "Next" 클릭 |
+| ③ 네트워크 연결 | 네트워크 연결은 선택 사항. 생략 가능 |
+| ④ 설치 방식 설정 | 디스크 전체 삭제 or 파티션 수동 지정 |
+| ⑤ 시간대 설정 | 위치 수동/자동 설정, NTP 동기화 추천 |
+| ⑥ 사용자 계정 설정 | 사용자명, 컴퓨터 이름, 비밀번호 설정 (root 권한 포함) |
+| ⑦ 설치 시작 | "Install Now" 클릭 후 설치 진행 |
+| ⑧ 시스템 재부팅 | 설치 완료 후 USB 제거 → "Restart Now" |
+| ⑨ 초기 설정 완료 | 계정 로그인 및 기타 설정 마무리 |
 
 ---
 
-## 2. **Ubuntu root password 설정**
+## 2. Ubuntu root password 설정
+
+### 1. root 비밀번호 설정
+
+- 바탕화면 우클릭 → **Open in Terminal**
+- 명령어 입력:
 
 ```bash
-# 터미널 열기 (바탕화면 우클릭 → Open in Terminal)
 sudo passwd root
 ```
 
-- 현재 계정 암호 입력 후 root 암호 새로 입력
+- 계정 비밀번호 입력 후, root 비밀번호 새로 입력
+
+| 명령어 | 설명 |
+|--------|------|
+| `sudo passwd` | 계정 암호 입력 후 root 비밀번호 설정 |
 
 ---
 
-## 3. **네트워크 설정 (Proxy)**
+## 3. 네트워크 설정 (Proxy)
 
-**GUI 설정**  
+### 1. GUI 설정
+
 - Settings → Network → Proxy → Manual  
-- HTTP/HTTPS Proxy 항목에 프록시 IP:PORT 입력
+- 프록시 입력:  
+  - HTTP: `http://프록시IP:포트`  
+  - HTTPS: `http://프록시IP:포트`
 
-**환경변수 설정 (터미널):**
+### 2. 환경변수 설정
+
+1. 스크립트 생성
 
 ```bash
-sudo vi /etc/profile.d/proxy.sh
+sudo vi /etc/profile.d/pproxy.sh
 ```
+
+2. 내용 입력
 
 ```bash
 export http_proxy="http://프록시IP:포트"
@@ -63,13 +58,15 @@ export https_proxy="http://프록시IP:포트"
 export no_proxy="localhost,127.0.0.1,172.16.*.*"
 ```
 
+3. 적용
+
 ```bash
-source /etc/profile.d/proxy.sh
+source /etc/profile.d/pproxy.sh
 ```
 
 ---
 
-## 4. **Ubuntu 한국어 패치 및 설정**
+## 4. Ubuntu 한국어 패치 및 입력기 설정
 
 ### 4-1. 언어팩 설치
 
@@ -78,14 +75,13 @@ sudo apt update
 sudo apt install language-pack-ko
 ```
 
-- 설치 후 재부팅 필수
+- 설치 후 반드시 재부팅
 
-### 4-2. 한글 입력기 추가 및 설정
+### 4-2. 한글 입력기 설정
 
-- Settings → Keyboard → Input Sources → `+` → "Korean (Hangul)" 추가  
-- 한영 전환 키 지정: Preferences → Switch to next source using → 원하는 키 입력
+| 항목 | 설명 |
+|------|------|
+| 입력기 추가 | Settings → Keyboard → Input Sources → `+` → Korean (Hangul) |
+| 전환 키 설정 | Preferences → 원하는 키로 한영 전환 키 지정 |
 
----
-
-> ⚠️ 설치 후에는 반드시 재부팅하세요.  
-> 설정 파일 변경 시 `source` 명령어로 적용합니다.
+> ⚠️ 설정 후 `source` 명령어나 재부팅으로 적용하세요.
