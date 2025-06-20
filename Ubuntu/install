@@ -40,25 +40,41 @@
 
 ## 2. Ubuntu root password 설정
 
-* 바탕화면에서 우클릭 → "Open in Terminal"  
-* 아래 명령어 입력 후 root 비밀번호 설정
+* 바탕화면에서 우클릭 → "Open in Terminal"
 
-| sudo passwd → 계정 암호 입력 후 root 비밀번호 설정 |
+```bash
+sudo passwd root
+```
+
+| sudo passwd → 계정 암호 입력 후, root 비밀번호 설정 |
 | :---- |
 
 ---
 
 ## 3. 네트워크 설정 (Proxy)
 
-* GUI 설정: Settings → Network → Proxy → Manual
+* GUI 설정  
+| Settings → Network → Proxy → Manual 설정 |
+| :---- |
 
 | http_proxy=(프록시 IP) https_proxy=(프록시 IP) |
 | :---- |
 
-* 환경 변수 설정 스크립트 경로: `/etc/profile.d/pproxy.sh`
+* 환경 변수 설정
 
-| export http_proxy=http://(프록시 IP:PORT) <br> export https_proxy=http://(프록시 IP:PORT) <br> export no_proxy=localhost,127.0.0.1,172.16.*.* <br> → 입력 후 `source /etc/profile.d/pproxy.sh` |
-| :---- |
+```bash
+sudo vi /etc/profile.d/pproxy.sh
+```
+
+```bash
+export http_proxy=http://(프록시 IP:PORT)
+export https_proxy=http://(프록시 IP:PORT)
+export no_proxy=localhost,127.0.0.1,172.16.*.*
+```
+
+```bash
+source /etc/profile.d/pproxy.sh
+```
 
 ---
 
@@ -66,13 +82,17 @@
 
 ### 한국어 언어팩 설치
 
-| apt update <br> apt install language-pack-ko <br> 설치 후 재부팅 필수 |
+```bash
+sudo apt update
+sudo apt install language-pack-ko
+```
+
+| 설치 후 재부팅 필수 |
 | :---- |
 
 ### 한국어 키보드 설정
 
 | Settings → Keyboard → Input Sources → + → Korean (Hangul) 추가 |
 | :---- |
-
 | 한영 전환 키 설정: Preferences → 원하는 키 지정 |
 | :---- |
