@@ -1,10 +1,8 @@
-### shell script 전체 코드 
+## shell script 전체 코드 
 - (IP 변경, Hostname 변경, ssh 포트 변경) 
 - bash shell 사용
 
-###
 
-###
 ```
 #!/bin/bash
 set -euo pipefail
