@@ -3,13 +3,13 @@
   hosts: zk
   become: true
   vars:
-    zookeeper_version: "X.X.X"
+    host_group: zk
+    zookeeper_version: "3.9.3"
     zookeeper_home: "/opt"
-    zookeeper_user: "qubit"
-    zookeeper_group: "qubit"
+    zookeeper_user: "user"
+    zookeeper_group: "user"
     zookeeper_ip: "{{ ansible_host }}"
-    proxy: "http://172.16.10.20:3128/"
-    
+    proxy: "http://xxx.xxx.xxx.xxx:3128/"
   tasks:
     - name: Stop and disable firewalld
       systemd:
@@ -26,9 +26,9 @@
         state: present
       loop:
         - libXft
-        - java-21-openjdk-devel
         - wget
         - tar
+        - java-21-openjdk-devel
 
     - name: Download ZooKeeper
       environment:
@@ -44,8 +44,8 @@
       file:
         path: "{{ zookeeper_home }}"
         state: directory
-        owner: qubit
-        group: qubit
+        owner: "{{ zookeeper_user }}"
+        group: "{{ zookeeper_group }}"
         mode: '0755'
      
     - name: Extract ZooKeeper for zookeeper
@@ -61,29 +61,47 @@
       file:
         path: "{{ zookeeper_home }}/apache-zookeeper-{{zookeeper_version}}-bin/data"
         state: directory
-        owner: qubit
-        group: qubit
+        owner: "{{ zookeeper_user }}"
+        group: "{{ zookeeper_group }}"
         mode: '0755'
 
     - name: Create myid file for zookeeper
       copy:
         dest: "{{ zookeeper_home }}/apache-zookeeper-{{zookeeper_version}}-bin/data/myid"
-        content: "{{ groups['zk'].index(inventory_hostname) + 1 }}"
+        content: "{{ groups[host_group].index(inventory_hostname) + 1 }}"
         owner: "{{ zookeeper_user }}"
         group: "{{ zookeeper_group }}"
         mode: '0644'
 
     - name: Configure zookeeper properties
-      template:
-        src: zoo.cfg.j2
+      copy:
         dest: "/opt/apache-zookeeper-{{zookeeper_version}}-bin/conf/zoo.cfg"
-        owner: qubit
-        group: qubit
-        mode: '0644'
+        content: |
+            tickTime=4000
+            initLimit=10
+            syncLimit=5
+            dataDir=/opt/apache-zookeeper-{{zookeeper_version}}-bin/data
+            dataLogDir=/opt/apache-zookeeper-{{zookeeper_version}}-bin/logs
+            clientPort=2181
+            admin.serverPort=8081
+            autopurge.snapRetainCount=6
+            autopurge.purgeInterval=48
+            4lw.commands.whitelist=mntr,conf,ruok,srvr
+
+            {% for item in range(0, groups[host_group] | length) %}
+            server.{{ item + 1 }}={{ hostvars[groups[host_group][item]].ansible_host | default(groups[host_group][item]) }}:2888:3888:participant;2181
+            {% endfor %}
+
+    - name: Create a symbolic link from /opt/zk to actual zookeeper directory
+      file:
+        src: "{{ zookeeper_home }}/apache-zookeeper-{{zookeeper_version}}-bin"
+        dest: "{{ zookeeper_home }}/zk"
+        owner: "{{ zookeeper_user }}"
+        group: "{{ zookeeper_group }}"
+        state: link
         
     - name: Start ZooKeeper for zookeeper
-      command: "{{ zookeeper_home }}/apache-zookeeper-{{zookeeper_version}}-bin/bin/zkServer.sh start {{ zookeeper_home }}/apache-zookeeper-X.X.X-bin/conf/zoo.cfg"
+      command: "{{ zookeeper_home }}/zk/bin/zkServer.sh start {{ zookeeper_home }}/zk/conf/zoo.cfg"
       become: true
       become_user: "{{ zookeeper_user }}"
       register: zookeeper_start
-
