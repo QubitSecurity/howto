@@ -1,13 +1,14 @@
 ---
-- name: Add Redis node 
-  hosts: redis
+- name: Install Redis from package and configure cluster addition
+  hosts: redis-add #추가 노드는 별로 그룹핑을 통해 설치
   become: yes
   vars:
-    redis_stack_version: "X.X.X-vXX"
-    redis_user: "qubit"
-    redis_group: "qubit"
-    redis_config_path: "/etc/redis/"
+    redis_stack_version: "x.x.x-vxx"
+    redis_user: "user"
+    redis_group: "user"
+    redis_config_path: "/etc/redis"
     proxy: "http://xxx.xxx.xxx.xxx:3128/"
+    redis_add_group: "redis-add"
     sysctl_settings:
       - { key: 'fs.file-max', value: '2097152' }
       - { key: 'net.ipv4.ip_local_port_range', value: '1024 65500' }
@@ -16,6 +17,13 @@
       - { key: 'net.core.wmem_default', value: '262144' }
       - { key: 'net.core.wmem_max', value: '1048576' }
       - { key: 'vm.overcommit_memory', value: '1' }
+    cluster_existing_master: "{{ groups['redis'][0] }}"
+
+  pre_tasks: #그룹내 노드 개수가 홀수인 경우 본 태스크를 수행하지 않도록 함(master - slave 구조를 위해 한쌍씩 취급)
+    - name: Check if number of redis-add nodes is even
+      fail:
+        msg: "홀수 노드 개수 실패: redis-add 인벤토리의 노드 개수가 홀수입니다."
+      when: (groups[redis_add_group] | length) % 2 != 0
 
   tasks:
     - name: Check if Redis service is already running
@@ -95,13 +103,20 @@
       # environment:
         # http_proxy: "{{proxy}}"
         # https_proxy: "{{proxy}}"
-      shell: sudo dnf -y module reset redis
-    
+      shell: sudo dnf -y module reset redis 
+      
     - name: Module Check Redis 
       # environment:
         # http_proxy: "{{proxy}}"
         # https_proxy: "{{proxy}}"
       shell: sudo dnf module list redis
+
+    # - name: Enable Redis 
+       # environment:
+         # http_proxy: "{{proxy}}"
+         # https_proxy: "{{proxy}}"
+      # shell: sudo dnf module -y enable redis:7
+      # shell: sudo dnf module -y enable redis:remi-7.2
 
     - name: Install Redis 
       # environment:
@@ -227,14 +242,52 @@
       ignore_errors: yes
       become: yes
       register: redis_start_result
+  
+    - name: Identify Denied Actions
+      shell: ausearch -m avc -ts recent | audit2allow -a -M redis_rejson
+      ignore_errors: yes
+      become: yes
+      become_user: root
+      register: identify_result
+
+    - name: Load Policy
+      shell: semodule -i redis_rejson.pp
+      ignore_errors: yes
+      become: yes
+      become_user: root
+      register: load_policy_result
 
     - name: Enable & Execute Redis second
       shell: sudo systemctl enable --now redis
 
-    # Add Cluster node
-    - name: Add new Redis node to cluster
-      command: >
-        redis-cli --cluster add-node {{ ansible_host }}:6379  {{ hostvars[groups['redis'][0]].ansible_host | default(groups['redis'][0]) }}:6379    
+    # Added node clustering
+    - name: Cluster meet all redis-add nodes from all redis nodes
+      shell: |
+        for new_node in {{ groups[redis_add_group] | join(' ') }}; do
+          redis-cli -h {{ item }} -p 6379 CLUSTER MEET $new_node 6379
+        done
+      loop: "{{ groups['redis'] }}"
+      run_once: true
 
+    - name: Assign roles (slave of previous node for even indexed hosts)
+      shell: |
+        redis-cli -h {{ item.1 }} -p 6379 CLUSTER REPLICATE $(redis-cli -h {{ item.0 }} -p 6379 CLUSTER MYID)
+      loop: "{{ groups[redis_add_group] | batch(2) }}" #batch(2)는 [a, b, c, d] → [[a, b], [c, d]]
+      when: item | length == 2
+      run_once: true
 
+    - name: Wait for cluster gossip propagation #인터벌 5s
+      pause:
+        seconds: 5
+    
+    - name: Rebalance cluster
+      shell: redis-cli --cluster rebalance {{ cluster_existing_master }}:6379 --cluster-use-empty-masters --cluster-yes
+      register: rebalance_result
+      until: rebalance_result.rc == 0
+      retries: 3
+      delay: 5
+      run_once: true
 
+    - name: Show rebalance output
+      debug:
+        var: rebalance_result.stdout
