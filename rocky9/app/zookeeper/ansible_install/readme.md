@@ -39,12 +39,11 @@ graph LR;
     end
 
     %% Zookeeper Section
-    subgraph Zookeeper[Zookeeper]
+    subgraph Zookeeper[Zookeeper Cluster]
         direction TB
         Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
         Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
         Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
-        Zookeeper4[ZookeeperN<br>Zookeeper_NodeN:2888:3888:2181]
     end
 hosts -->|설치| Zookeeper
 ```
