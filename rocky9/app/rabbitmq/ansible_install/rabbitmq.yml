@@ -1,13 +1,14 @@
----
 - name: Install RabbitMQ Server
   hosts: rabbitmq
   become: yes
   vars:
-    rabbitmq_user: "qubit"
-    rabbitmq_group: "qubit"
+    rabbitmq_user: "user"
+    rabbitmq_group: "user"
     proxy: "http://xxx.xxx.xxx.xxx:3128/"
-    rabbitmq_mgt_user: "qubit"
-    rabbitmq_mgt_password: "password"
+    rabbitmq_mgt_user: "rabbitmq_user"
+    rabbitmq_mgt_password: "rabbitmq_password"
+    erlang_version: xx.x.x.x
+    rabbitmq_version: x.x.x
 
   tasks:
     # Stop and disable firewalld
@@ -33,7 +34,7 @@
       changed_when: false
 
     - name: Install Erlang if not installed
-      shell: sudo dnf -y install https://github.com/rabbitmq/erlang-rpm/releases/download/v26.2.5.5/erlang-26.2.5.5-1.el9.x86_64.rpm
+      shell: sudo dnf -y install https://github.com/rabbitmq/erlang-rpm/releases/download/v{{erlang_version}}/erlang-{{erlang_version}}-1.el9.x86_64.rpm
       environment:
         http_proxy: "{{ proxy }}"
         https_proxy: "{{ proxy }}"
@@ -47,7 +48,7 @@
       changed_when: false
 
     - name: Install RabbitMQ if not installed
-      shell: sudo dnf -y install https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.0.3/rabbitmq-server-4.0.3-1.el8.noarch.rpm
+      shell: sudo dnf -y install https://github.com/rabbitmq/rabbitmq-server/releases/download/v{{rabbitmq_version}}/rabbitmq-server-{{rabbitmq_version}}-1.el8.noarch.rpm
       environment:
         http_proxy: "{{ proxy }}"
         https_proxy: "{{ proxy }}"
@@ -79,6 +80,13 @@
         state: restarted
         enabled: yes
 
+    - name: Wait for RabbitMQ service to stabilize on all nodes
+      ansible.builtin.wait_for:
+        port: 5672  # RabbitMQ의 기본 포트
+        timeout: 5  # 안정화를 위해 5초 대기
+      when: inventory_hostname in groups['rabbitmq']
+      delegate_to: "{{ inventory_hostname }}"
+      
     # Create Management User
     - name: Check if management user already exists
       shell: rabbitmqctl list_users | grep -q {{ rabbitmq_mgt_user }}
@@ -93,6 +101,7 @@
         sudo rabbitmqctl set_permissions -p / {{ rabbitmq_mgt_user }} ".*" ".*" ".*"
       when: user_check.rc != 0
 
+    # Enable RabbitMQ management plugin
     - name: Check if RabbitMQ management plugin is enabled
       shell: rabbitmq-plugins list | grep -w 'rabbitmq_management' | grep -w 'E'
       register: plugin_check
@@ -122,7 +131,8 @@
               {quorum_commands_soft_limit, 64}
             ]}
           ].
-        owner: root
+        #owner: root
+        owner: rabbitmq
         group: rabbitmq
         mode: '0644'
 
@@ -199,5 +209,6 @@
       service:
         name: rabbitmq-server
         state: restarted
-      when: inventory_hostname in groups['rabbitmq']
+      when: inventory_hostname in groups['rabbitmq'][1:]
+      #run_once: false
       tags: ['rabbitmq_service']
