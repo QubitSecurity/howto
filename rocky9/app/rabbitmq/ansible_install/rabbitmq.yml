@@ -186,7 +186,8 @@
       tags: ['rabbitmq_reset']
       
     - name: Clustering secondary nodes
-      shell: "sudo rabbitmqctl join_cluster rabbit@{{ hostvars[groups['rabbitmq'][0]].ansible_hostname }}"
+      #shell: "sudo rabbitmqctl join_cluster rabbit@{{ hostvars[groups['rabbitmq'][0]].ansible_hostname }}" #disk 타입 설정
+      shell: "sudo rabbitmqctl join_cluster --ram rabbit@{{ hostvars[groups['rabbitmq'][0]].ansible_hostname }}" #ram 타입 설정
       when: inventory_hostname in groups['rabbitmq'][1:]
       register: join_status
       failed_when: >
