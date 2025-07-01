@@ -83,6 +83,16 @@ ansible solr-weblog -i /home/sysadmin/ansible/hosts --private-key="~/.ssh/id_rsa
 
 ---
 
-## 6. 병합(Optimize)
+## 6 Eureka Filter 서비스
+- [ ] `filter` 서비스를 점검합니다.
+
+```bash
+./check/filter_service.sh >> ./check/filter_service.log 2>&1
+```
+
+
+---
+
+## X. 병합(Optimize)
 👉 [병합을 위한 shard 정보 수집 방법](About-optimize.md)
 
