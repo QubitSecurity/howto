@@ -84,7 +84,7 @@ ansible solr-weblog -i /home/sysadmin/ansible/hosts --private-key="~/.ssh/id_rsa
 ---
 
 ## 6 Eureka Filter 서비스
-- [ ] `filter` 서비스를 점검합니다.
+- [ ] `filter` 서비스를 점검합니다. [code](./eureka/check_filter.sh)
 
 ```bash
 ./check/filter_service.sh >> ./check/filter_service.log 2>&1
