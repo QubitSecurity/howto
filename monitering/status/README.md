@@ -3,6 +3,4 @@
 
 ## 2. MySQL : Replication 지연 점검 [👉](./check-mysql.md)
 
----
-
 ## X. 병합(Optimize) [👉](About-optimize.md)
