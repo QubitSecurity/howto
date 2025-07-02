@@ -6,6 +6,8 @@
 - 원격지 서버에 접속해야 하므로, ssh 를 사용  
 - ansible 설정 필요
 
+### 3. Kafka 상태 점검 [👉](./check-kafka.md)
+
 ---
 
 ### 9. MSA Filter [👉](./eureka/check_filter.sh)
