@@ -8,6 +8,8 @@
 
 ### 3. Kafka 상태 점검 [👉](./check-kafka.md)
 
+### 4. Redis 상태 점검 [👉](./check-redis.md)
+
 ---
 
 ### 9. MSA Filter [👉](./eureka/check_filter.sh)
