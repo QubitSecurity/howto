@@ -133,6 +133,6 @@ else
         for m in "${ERROR_MESSAGES[@]}"; do
             echo "- $m"
         done
-    } | mail -s "[ALERT] MySQL 복제 이상 ($HOSTNAME)" joo@qubitsec.com
+    } | mail -s "[ALERT] MySQL 복제 이상 ($HOSTNAME)" plura@qubitsec.com
     exit 2
 fi
