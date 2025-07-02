@@ -2,14 +2,57 @@
 
 ## 1. `mysql_replication_delay-021230.sh`
 
-### 📌 결과 해석
+### ✅ 스크립트의 판별 로직 기준 요약
 
-| 상황                            | 판단              |
-| ----------------------------- | --------------- |
-| `Seconds_Behind_Master = 150` | ✅ 정상            |
-| `Seconds_Behind_Master = 250` | ❌ 오류, 지연 초과     |
-| `Log_Position_Diff = 5MB`     | ✅ 정상            |
-| `Log_Position_Diff = 25MB`    | ❌ 오류, 포지션 차이 초과 |
+| 항목                                      | 조건 설명                                                   |
+| --------------------------------------- | ------------------------------------------------------- |
+| `Seconds_Behind_Master`                 | 200초 이상이면 ❌ 오류로 판단                                      |
+| `Slave_IO_Running`, `Slave_SQL_Running` | 둘 중 하나라도 `Yes`가 아니면 ❌ 오류                                |
+| `Log_File` 불일치                          | Master/Slave의 `File` 값 다르면 ❌ 오류                         |
+| `Log_Position_Diff` 차이                  | Slave가 Master보다 느리고 차이 > 20MB (20,000,000 bytes)이면 ❌ 오류 |
+
+---
+
+### 📌 결과 해석 예시 (스크립트 기준)
+
+| 상황                                                  | 판단              |
+| --------------------------------------------------- | --------------- |
+| `Seconds_Behind_Master = 150`                       | ✅ 정상            |
+| `Seconds_Behind_Master = 250`                       | ❌ 오류, 지연 초과     |
+| `Slave_IO_Running = No` 또는 `Slave_SQL_Running = No` | ❌ 오류, 복제 중단     |
+| `Log_File: mysql-bin.002732 / mysql-bin.002733`     | ❌ 오류, 로그 파일 불일치 |
+| `Log_Position_Diff = 5MB`                           | ✅ 정상            |
+| `Log_Position_Diff = 25MB`                          | ❌ 오류, 포지션 차이 초과 |
+
+---
+
+### 💡 참고
+
+* 스크립트 내에서 로그 포지션 차이는 다음 조건으로 계산됩니다:
+
+```bash
+pos_diff=$((MASTER_LOG_POS - slave_pos))
+[ $pos_diff -lt 0 ] && pos_diff=$(( -1 * pos_diff ))
+if [ "$pos_diff" -ge "$MAX_ALLOWED_LOG_POSITION_DIFF" ]; then
+    status="ERROR"
+```
+
+* `Seconds_Behind_Master`는 다음처럼 비교합니다:
+
+```bash
+if [ "$secs_behind" != "NULL" ] && [ "$secs_behind" -ge "$MAX_ALLOWED_DELAY" ]; then
+    status="ERROR"
+fi
+```
+
+---
+
+### 📤 메일 알림
+
+오류가 하나라도 발생하면 다음과 같이 메일로 발송됩니다:
+
+* 제목: `[ALERT] MySQL 복제 이상 (호스트이름)`
+* 내용: 모든 오류 메시지 목록
 
 ---
 
