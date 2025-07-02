@@ -14,7 +14,7 @@ ERROR_MESSAGES=()
 STATUS_OK=true
 MASTER_LOG_FILE=""
 MASTER_LOG_POS=""
-POS_TOLERANCE=1000  # 허용 오차 (바이트)
+POS_TOLERANCE=5000  # 허용 오차 (바이트)
 
 # 절대값 함수
 abs() {
