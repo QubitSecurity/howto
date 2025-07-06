@@ -97,7 +97,7 @@ fi
 
 ```ini
 [solr_nodes]
-061111-solr-web ansible_host=10.100.61.111 ansible_user=sysadmin
+061111-solr-web ansible_host=.61.111 ansible_user=sysadmin
 ```
 
 ---
