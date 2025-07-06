@@ -10,18 +10,30 @@ HOSTNAME=$(hostname)
 
 echo "[$DATE] ▶️ Solr 재시작 작업 시작 [$HOSTNAME]" | tee -a "$LOG_FILE"
 
-# Core 목록 자동 추출
-CORE_LIST=$(curl -s "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" | \
-  grep -o '"name":"[^"]*"' | cut -d':' -f2 | tr -d '"' | sort)
+##############################
+# 1. Solr Core 목록 감지
+##############################
+
+# 1차: Solr API로 시도
+CORE_LIST=$(curl -s --max-time 3 "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" \
+  | grep -o '"name":"[^"]*"' | cut -d':' -f2 | tr -d '"' | sort)
+
+# 2차: 실패 시 파일 시스템에서 감지
+if [ -z "$CORE_LIST" ]; then
+  CORE_LIST=$(find "$SOLR_DATA_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+  echo "[$DATE] 🔁 Solr API 실패 → 파일 시스템에서 Core 목록 감지: $CORE_LIST" | tee -a "$LOG_FILE"
+else
+  echo "[$DATE] ✅ Solr API를 통해 Core 목록 감지: $CORE_LIST" | tee -a "$LOG_FILE"
+fi
 
 if [ -z "$CORE_LIST" ]; then
-  echo "[$DATE] ⚠️ Core 목록을 찾을 수 없습니다. 종료합니다." | tee -a "$LOG_FILE"
+  echo "[$DATE] ❌ Core 목록을 감지하지 못했습니다. 스크립트 종료." | tee -a "$LOG_FILE"
   exit 1
 fi
 
-echo "[$DATE] 🔍 감지된 Core 목록: $CORE_LIST" | tee -a "$LOG_FILE"
-
-# Solr 종료 시도
+##############################
+# 2. Solr 종료 시도
+##############################
 SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}')
 if [ -z "$SOLR_PID" ]; then
   echo "[$DATE] ℹ️ 현재 Solr 프로세스가 없습니다." | tee -a "$LOG_FILE"
@@ -39,9 +51,14 @@ else
   fi
 fi
 
-# recovery 및 tlog 정리
-echo "[$DATE] 🧹 임시 파일 정리 중..." | tee -a "$LOG_FILE"
+##############################
+# 3. 각 Core 디렉토리 정리
+##############################
+echo "[$DATE] 🧹 recovery, tlog, write.lock 정리 시작..." | tee -a "$LOG_FILE"
+
 for CORE in $CORE_LIST; do
+  echo "[$DATE] 🔍 Core: $CORE" | tee -a "$LOG_FILE"
+
   for DIRTYPE in recovery tlog; do
     TARGET_DIR="$SOLR_DATA_DIR/$CORE/data/$DIRTYPE"
     if [ -d "$TARGET_DIR" ]; then
@@ -49,10 +66,7 @@ for CORE in $CORE_LIST; do
       rm -rf "$TARGET_DIR"/*
     fi
   done
-done
 
-# write.lock 삭제
-for CORE in $CORE_LIST; do
   LOCK_FILE="$SOLR_DATA_DIR/$CORE/data/index/write.lock"
   if [ -f "$LOCK_FILE" ]; then
     SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}')
@@ -60,17 +74,18 @@ for CORE in $CORE_LIST; do
       echo "[$DATE] 🔓 write.lock 제거: $LOCK_FILE" | tee -a "$LOG_FILE"
       rm -f "$LOCK_FILE"
     else
-      echo "[$DATE] ⛔ write.lock 존재, Solr가 실행 중이므로 삭제하지 않음: $LOCK_FILE" | tee -a "$LOG_FILE"
+      echo "[$DATE] ⛔ write.lock 존재하지만 Solr 실행 중 → 삭제 생략" | tee -a "$LOG_FILE"
     fi
   fi
 done
 
-# Solr 재시작
+##############################
+# 4. Solr 재시작
+##############################
 echo "[$DATE] 🔼 Solr start -cloud 수행 중..." | tee -a "$LOG_FILE"
 $SOLR_BIN start -cloud
 sleep 10
 
-# 상태 확인
 echo "[$DATE] 📡 상태 확인:" | tee -a "$LOG_FILE"
 $SOLR_BIN status | tee -a "$LOG_FILE"
 
