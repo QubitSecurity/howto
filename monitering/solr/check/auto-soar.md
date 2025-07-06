@@ -32,7 +32,7 @@ flowchart TD
   I --> J{여전히 Recovering 상태인가?}
   J -- 아니오 --> Z1[일시적 장애 - 종료]
   J -- 예 --> K[recovering-restart.sh 실행]
-  K --> L[Solr 재시작 시도]
+  K --> L[Solr 재시작 시도 <br> 메일 발송]
   L --> Z1[완료 및 로그 기록]
 ```
 
