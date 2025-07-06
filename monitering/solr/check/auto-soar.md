@@ -13,28 +13,29 @@
 
 ```mermaid
 flowchart TD
-    A[🕘 주기적 실행 (Cron 또는 수동)] --> B[🔍 solrweb_status-061069.sh 실행]
+    A[주기적 실행 (Cron 또는 수동)] --> B[solrweb_status-061069.sh 실행]
     B --> C{Solr 상태 응답 여부 확인}
-    C -- 실패 --> C1[❗ Solr 접속 실패]
-    C1 --> C2[🛎️ 메일 발송: 접속 실패 알림]
+    C -- 실패 --> C1[Solr 접속 실패]
+    C1 --> C2[메일 발송: 접속 실패 알림]
     C1 --> Z1[종료]
 
-    C -- 응답 OK --> D[📥 상태 파싱: recovering/down 여부]
+    C -- 응답 OK --> D[상태 파싱: recovering/down 여부]
     D --> E1{Recovering or Down 상태?}
 
-    E1 -- No --> Z1[✅ 정상 상태 - 종료]
+    E1 -- No --> Z1[정상 상태 - 종료]
 
-    E1 -- Yes --> F[📧 메일 발송: 장애 상태 보고]
-    F --> G[📂 로그 기록 및 상태 저장]
+    E1 -- Yes --> F[메일 발송: 장애 상태 보고]
+    F --> G[로그 기록 및 상태 저장]
 
-    G --> H[⏸️ 10분 대기 (Ansible pause)]
-    H --> I[🔁 재확인: solr_check.sh 실행]
+    G --> H[10분 대기 (Ansible pause)]
+    H --> I[재확인: solr_check.sh 실행]
 
     I --> J{여전히 Recovering?}
-    J -- No --> Z1[✅ 일시적 장애 - 종료]
-    J -- Yes --> K[🔧 recovering-restart.sh 자동 실행]
-    K --> L[🚀 Solr 재시작 시도]
-    L --> Z1[📡 완료 및 로그 기록]
+    J -- No --> Z1[일시적 장애 - 종료]
+    J -- Yes --> K[recovering-restart.sh 자동 실행]
+    K --> L[Solr 재시작 시도]
+    L --> Z1[완료 및 로그 기록]
+
 ```
 
 ---
