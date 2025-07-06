@@ -13,27 +13,27 @@
 
 ```mermaid
 flowchart TD
-  A[Scheduled Execution - Cron or Manual] --> B[Run solrweb_status.sh]
-  B --> C{Solr status response check}
+  A[주기적 실행 - 크론 또는 수동] --> B[solrweb_status.sh 실행]
+  B --> C{Solr 상태 응답 확인}
 
-  C -- Failed --> C1[Solr connection failed]
-  C1 --> C2[Send mail: connection failure]
-  C1 --> Z1[End]
+  C -- 실패 --> C1[Solr 접속 실패]
+  C1 --> C2[메일 발송 - 접속 실패 알림]
+  C1 --> Z1[종료]
 
-  C -- OK --> D[Parse status: recovering or down]
-  D --> E1{Is status recovering or down?}
+  C -- 응답 있음 --> D[상태 파싱 - recovering 또는 down 확인]
+  D --> E1{Recovering 또는 Down 상태인가?}
 
-  E1 -- No --> Z1[Normal - End]
-  E1 -- Yes --> F[Send mail: Solr issue report]
-  F --> G[Save logs and state]
-  G --> H[Wait 10 minutes]
-  H --> I[Re-run solr_check.sh]
+  E1 -- 아니오 --> Z1[정상 상태 - 종료]
+  E1 -- 예 --> F[메일 발송 - 장애 상태 보고]
+  F --> G[로그 저장 및 상태 기록]
+  G --> H[10분 대기]
+  H --> I[solr_check.sh 재실행]
 
-  I --> J{Still recovering?}
-  J -- No --> Z1[Temporary issue - End]
-  J -- Yes --> K[Run recovering-restart.sh]
-  K --> L[Try to restart Solr]
-  L --> Z1[Complete and log]
+  I --> J{여전히 Recovering 상태인가?}
+  J -- 아니오 --> Z1[일시적 장애 - 종료]
+  J -- 예 --> K[recovering-restart.sh 실행]
+  K --> L[Solr 재시작 시도]
+  L --> Z1[완료 및 로그 기록]
 ```
 
 ---
