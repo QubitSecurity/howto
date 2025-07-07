@@ -1,20 +1,19 @@
 ## 1. kafka
 ### 1.0. 실행 환경
 ```
-HOME 경로 : /opt/kafka/kafka_X.XX-X.X.X
-실행 파일 경로 : /etc/systemd/system/kafka.service
+HOME 경로 : /opt/kafka/bin/qubit_kafka_start.sh
 설정 파일 :/opt/kafka/config/server.propertise
 DATA 경로 : /opt/kafka/kafka-data/kafka-logs
 ```
 
 ### 1.1. 실행
 ```
-sudo systemctl start kakka
+sudo /opt/kafka/bin/qubit_kafka_start.sh
 ```
 
 ### 1.2. 종료
 ```
-sudo systemctl stop kakka
+sudo /opt/kafka/bin/kafka-server-stop.sh
 ```
 
 
