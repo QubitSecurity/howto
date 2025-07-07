@@ -6,8 +6,14 @@ cmak 실행 경로 : /opt/cmak
 akhq 실행 경로 : /opt/akhq
 
 파일 종류
-kafka.yml - ansible을 통해 kafka 를 다운로드, 설치, 실행하는 yml
-server.propertise.j2 - kafka 실행 설정 파일 생성을 위한 jinja2 파일
+kafka(zk).yml - ansible을 통해 kafka 를 다운로드, 설치, 실행하는 yml (zookerper 클러스터링)
+kafka-add-node(zk).yml - (노드 추가) ansible을 통해 kafka 를 다운로드, 설치, 실행하는 yml (zookerper 클러스터링)
+
+kafka(kraft).yml - ansible을 통해 kafka 를 다운로드, 설치, 실행하는 yml (kraft 클러스터링)
+kafka-add-node(kraft).yml - (노드 추가) ansible을 통해 kafka 를 다운로드, 설치, 실행하는 yml (kraft 클러스터링)
+
+reassign.yml - replicas 재배치 및 선호 리더 재선출 실행 yml
+
 cmak.yml - ansible을 통해 cmak, akhq 를 다운로드, 설치, 실행하는 yml
 application.conf.j2 - cmak 실행 설정 파일 생성을 위한 jinja2 파일
 ```
@@ -20,14 +26,14 @@ ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/cmak.yml
 
 ### 2. 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts kafka -m command -a "sudo systemctl stop kafka"
+ansible -i /home/qubit/ansible/hosts kafka -m command -a "sudo /opt/kafka/bin/kafka-server-start.sh"
 ansible -i /home/qubit/ansible/hosts kafkamain -m command -a "sudo systemctl stop cmak"
 ansible -i /home/qubit/ansible/hosts kafkamain -m command -a "sudo systemctl stop akhq"
 ```
 
 ### 3. 서비스 전체 설치 파일 삭제
 ```
-ansible -i /home/qubit/ansible/hosts kafka -m shell -a "sudo rm -rf /opt/kafka"
+ansible -i /home/qubit/ansible/hosts kafka -m shell -a "sudo rm -rf /opt/kafka*"
 ansible -i /home/qubit/ansible/hosts kafkamain -m shell -a "sudo rm -rf /opt/cmak"
 ansible -i /home/qubit/ansible/hosts kafkamain -m shell -a "sudo rm -rf /opt/akhq"
 ```
@@ -55,7 +61,6 @@ graph LR;
         Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
         Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
         Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
-        Zookeeper4[ZookeeperN<br>Zookeeper_NodeN:2888:3888:2181]
         
     end
 
@@ -74,17 +79,17 @@ graph LR;
     Kafka1 --> Zookeeper1
     Kafka1 --> Zookeeper2
     Kafka1 --> Zookeeper3
-    Kafka1 --> Zookeeper4
+
     Kafka2 --> Zookeeper1
     Kafka2 --> Zookeeper2
     Kafka2 --> Zookeeper3
-    Kafka2 --> Zookeeper4
+
     Kafka3 --> Zookeeper1
     Kafka3 --> Zookeeper2
     Kafka3 --> Zookeeper3
-    Kafka3 --> Zookeeper4
+
     Kafka4 --> Zookeeper1
     Kafka4 --> Zookeeper2
     Kafka4 --> Zookeeper3
-    Kafka4 --> Zookeeper4
+
 ```
