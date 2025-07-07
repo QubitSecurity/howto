@@ -1,0 +1,270 @@
+---
+- hosts: kafka
+  become: yes
+  vars:
+    kafka_version_major: "2.13-"
+    kafka_version_minor: "x.x.x"
+    kafka_home: "/opt"
+    kafka_user: "user"
+    kafka_group: "user"
+    jmx_port: "8781"
+    zk_group: "zk"
+    heap_opts: "-Xmx2G -Xms2G -XX:MinMetaspaceFreeRatio=50 -XX:MaxMetaspaceFreeRatio=80"
+    proxy: "http://xxx.xxx.xxx.xxx:3128/"
+
+  tasks:
+    - name: Stop and disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Configure dnf to use proxy
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: "^proxy="
+        line: "proxy={{ proxy }}"
+        state: present
+
+    - name: Install necessary dependencie
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libXft
+        - java-21-openjdk-devel
+        - wget
+        - tar
+        - unzip
+
+    - name: Ensure Kafka group exists
+      group:
+        name: "{{ kafka_group }}"
+        state: present
+
+    - name: Create Kafka user
+      user:
+        name: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        create_home: no
+
+    - name: Ensure Kafka home directory exists
+      file:
+        path: "{{ kafka_home }}"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+    - name: Download Kafka binaries
+      environment:
+        http_proxy: "{{proxy}}"
+        https_proxy: "{{proxy}}"
+
+      get_url:
+        url: "https://downloads.apache.org/kafka/{{ kafka_version_minor }}/kafka_{{ kafka_version_major }}{{kafka_version_minor}}.tgz"
+        # url: https://downloads.apache.org/kafka/3.8.0/kafka_2.12-3.8.0.tgz
+        # url: https://downloads.apache.org/kafka/3.7.1/kafka_2.12-3.7.1.tgz
+        dest: "/tmp/kafka_{{ kafka_version_major }}{{kafka_version_minor}}.tgz"
+
+    - name: Extract Kafka binaries
+      unarchive:
+        src: "/tmp/kafka_{{ kafka_version_major }}{{kafka_version_minor}}.tgz"
+        dest: "{{ kafka_home }}"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+        remote_src: yes
+
+    - name: Create a symbolic link from /opt/kafka to actual kafka directory
+      file:
+        src: "{{ kafka_home }}/kafka_{{ kafka_version_major }}{{kafka_version_minor}}"
+        dest: "{{ kafka_home }}/kafka"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        state: link
+
+    - name: Ensure Kafka data directory exists
+      file:
+        path: "{{ kafka_home }}/kafka-data"
+        state: directory
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+    # Socket Server Settings
+    - name: "Set broker.id in server.properties(default: broker.id=0)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^broker.id='
+        line: "broker.id={{ (ansible_play_hosts.index(inventory_hostname) + 1) }}"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    - name: "Set listeners in server.properties(default: isteners=PLAINTEXT://:9092)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^#listeners='
+        line: "listeners=PLAINTEXT://{{ ansible_host}}:9092"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    - name: "Set num.network.threads in server.properties(default: num.network.threads=3)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^num.network.threads='
+        line: "num.network.threads=10"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    - name: "Set log.dirs in server.properties(default: log.dirs=/tmp/kafka-logs)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^log.dirs='
+        line: "log.dirs={{kafka_home}}/kafka/kafka-data/kafka-logs"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    #  Internal Topic Settings
+    - name: "Set offsets.topic.replication.factor in server.properties(default: offsets.topic.replication.factor=1)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^offsets.topic.replication.factor='
+        line: "offsets.topic.replication.factor=2"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+        
+    - name: "Set transaction.state.log.replication.factor in server.properties(default: transaction.state.log.replication.factor=1)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^transaction.state.log.replication.factor='
+        line: "transaction.state.log.replication.factor=2"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    - name: "Set transaction.state.log.min.isr in server.properties(default: transaction.state.log.min.isr=1)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^transaction.state.log.min.isr='
+        line: "transaction.state.log.min.isr=2"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    #Log Flush Policy
+    - name: "Set log.flush.interval.ms=600000r in server.properties(default: log.flush.interval.ms=600000)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^#log.flush.interval.ms='
+        line: "log.flush.interval.ms=600000"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    # Log Retention Policy
+    - name: "Set log.retention.hours in server.properties(default: log.retention.hours=168)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^log.retention.hours='
+        line: "log.retention.hours=48"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    - name: "Set log.segment.bytes in server.properties (default: log.segment.bytes=1073741824)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^log.segment.bytes='
+        line: "log.segment.bytes=536870912"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+        
+    # Zookeeper config
+    - name: "Set log.segment.bytes in server.properties(default: localhost:2181)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^zookeeper.connect='
+        line: "zookeeper.connect={{ groups[zk_group] | join(':2181,') }}:2181"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+        
+    - name: "Set zookeeper.connection.timeout.ms in server.properties(default:18000)"
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        regexp: '^zookeeper.connection.timeout.ms='
+        line: "zookeeper.connection.timeout.ms=6000"
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+
+    # Group Coordinator Settings
+    - name: Append Kafka tuning options to the end of server.properties
+      lineinfile:
+        path: "{{ kafka_home }}/kafka/config/server.properties"
+        line: "{{ item }}"
+        insertafter: EOF
+        create: yes
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0644'
+      loop:
+        - "log.roll.hours=12"
+        - "message.max.bytes=10000000"
+        - "delete.topic.enable=true"
+        - "inter.broker.protocol.version={{kafka_version_minor}}"
+        - "log.message.format.version={{kafka_version_minor}}"
+        - "auto.leader.rebalance.enable=true"
+
+    - name: Create Kafka start file
+      copy:
+        dest: "{{kafka_home}}/kafka/bin/qubit_kakfa_start.sh"
+        content: |
+            #!/bin/bash
+            KAFKA_HOME="{{kafka_home}}/kafka"
+            KAFKA_PARAM="-daemon $KAFKA_HOME/config/server.properties"
+            KAFKA_HEAP_OPTS="{{heap_opts}}"
+            JMX_RMI_PORT=8782
+            JMX_PORT=8781
+            KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=$JMX_RMI_PORT"
+
+            export KAFKA_HOME KAFKA_PARAM KAFKA_HEAP_OPTS JMX_RMI_PORT JMX_PORT KAFKA_JMX_OPTS
+
+            nohup $KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_PARAM &
+
+            for ((j = 0; j < 10; j++))
+            do
+                    echo "kafka-server-start ... wait (10-$j)  second"
+                    sleep 1
+            done
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_group }}"
+        mode: '0755'
+
+    - name: Start kafka
+      command: "{{ kafka_home}}/kafka/bin/qubit_kakfa_start.sh"
+      become: true
+      become_user: "{{ kafka_user }}"
+      register: kafka_start
