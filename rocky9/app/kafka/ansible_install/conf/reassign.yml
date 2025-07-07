@@ -1,0 +1,97 @@
+---
+- name: Kafka Reassignment & Leader Election (Dynamic for All Topics)
+  hosts: kafka-add[0] #기존 노드는 클러스터링 되었다고 가정하고 추가 노드 발생 시 첫번째 노드로 재배치 및 선호 리더 재선출한다고 가정.
+  gather_facts: no
+  vars:
+    kafka_bin_dir: /opt/kafka/bin
+    kafka_work_dir: /opt/kafka
+
+  tasks:
+    - name: Get list of kafka nodes
+      add_host:
+        name: "{{ item }}"
+        groups: dynamic_kafka
+      with_inventory_hostnames: kafka
+
+    - name: Get list of kafka-add nodes
+      add_host:
+        name: "{{ item }}"
+        groups: dynamic_kafka
+      with_inventory_hostnames: kafka-add
+
+    - name: Set broker count
+      set_fact:
+        broker_count: "{{ groups['dynamic_kafka'] | length }}"
+
+    - name: Generate broker ID list (e.g. 1,2,3,4,...)
+      set_fact:
+        kafka_broker_list: "{{ range(1, broker_count | int + 1) | join(',') }}"
+
+    - name: Set kafka bootstrap server (first host in kafka group)
+      set_fact:
+        kafka_bootstrap: "{{ hostvars[groups['kafka'][0]]['inventory_hostname'] }}:9092"
+
+    - name: Show broker_count
+      debug:
+        msg: "Broker count: {{ broker_count }}"
+
+    - name: Show kafka_broker_list
+      debug:
+        msg: "Kafka broker list: {{ kafka_broker_list }}"
+
+    - name: Show kafka_bootstrap
+      debug:
+        msg: "Kafka bootstrap server: {{ kafka_bootstrap }}"
+
+    - name: Get list of all Kafka topics (including internal)
+      shell: "{{ kafka_bin_dir }}/kafka-topics.sh --bootstrap-server {{ kafka_bootstrap }} --list"
+      register: kafka_topic_list
+
+    - name: Build topic list JSON entries as dicts
+      set_fact:
+        kafka_topics_formatted: "{{ kafka_topic_list.stdout_lines | map('trim') | map('community.general.dict_kv', 'topic') | list }}"
+
+      
+    - name: Show kafka_bootstrap
+      debug:
+        msg: "Kafka bootstrap server: {{ kafka_topics_formatted }}"
+        
+    - name: Create full JSON for --topics-to-move-json-file
+      copy:
+        dest: "{{ kafka_work_dir }}/all-topics.json"
+        content: |
+          {
+            "version": 1,
+            "topics": [
+            {% for item in kafka_topics_formatted %}
+            {{ item }}{% if not loop.last %},{% endif %}
+            {% endfor %}
+            ]
+          }
+
+    - name: Generate reassignment plan for all topics
+      shell: >
+        {{ kafka_bin_dir }}/kafka-reassign-partitions.sh \
+        --bootstrap-server {{ kafka_bootstrap }} \
+        --topics-to-move-json-file {{ kafka_work_dir }}/all-topics.json \
+        --broker-list {{ kafka_broker_list }} \
+        --generate > {{ kafka_work_dir }}/reassign-plan.json
+
+    - name: Extract only proposed reassignment JSON
+      shell: |
+        awk '/Proposed partition reassignment configuration/{flag=1;next}/Current partition replica assignment/{flag=0}flag' \
+        {{ kafka_work_dir }}/reassign-plan.json > {{ kafka_work_dir }}/reassign-new.json
+
+    - name: Apply reassignment
+      shell: >
+        {{ kafka_bin_dir }}/kafka-reassign-partitions.sh \
+        --bootstrap-server {{ kafka_bootstrap }} \
+        --reassignment-json-file {{ kafka_work_dir }}/reassign-new.json \
+        --execute
+
+    - name: Elect preferred leaders
+      shell: >
+        {{ kafka_bin_dir }}/kafka-leader-election.sh \
+        --bootstrap-server {{ kafka_bootstrap }} \
+        --election-type PREFERRED \
+        --all-topic-partitions
