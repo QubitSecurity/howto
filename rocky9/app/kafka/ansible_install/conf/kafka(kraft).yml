@@ -3,7 +3,7 @@
   become: yes
   vars:
     kafka_version_major: "2.13-"
-    kafka_version_minor: "4.0.0"
+    kafka_version_minor: "x.x.x"
     kafka_home: "/opt"
     kafka_user: "user"
     kafka_group: "user"
