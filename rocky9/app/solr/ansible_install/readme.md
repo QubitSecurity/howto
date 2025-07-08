@@ -7,17 +7,17 @@ ansible hosts 파일 경로 : /home/qubit/ansible/hosts
 실행 경로 : /opt/solr
 
 파일 종류
-solr-single.yml - ansible을 통해 solr 를 다운로드, 설치, 실행하는 yml(단일 프로세스 단일 노드)
+single-port.yml - ansible을 통해 solr 를 다운로드, 설치, 실행하는 yml(단일 프로세스 단일 노드)
 ```
 
 ### 설치 방법
 ```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/solr-single.yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/single-port.yml
 ```
 
 ### 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts solr -m command -a "sudo systemctl stop solr"
+ansible -i /home/qubit/ansible/hosts solr -m command -a "/opt/solr/bin/solr stop -all"
 ```
 
 ### 서비스 전체 설치 파일 삭제
@@ -80,12 +80,12 @@ solr.yml - ansible을 통해 solr 를 다운로드, 설치, 실행하는 yml
 
 ### 설치 방법
 ```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/solr.yml
+ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/multi-port.yml
 ```
 
 ### 서비스 전체 종료
 ```
-ansible -i /home/qubit/ansible/hosts solr -m command -a "sudo systemctl stop solr*"
+ansible -i /home/qubit/ansible/hosts solr -m command -a "sudo /opt/solr/bin/solr stop -all*"
 ```
 
 ### 서비스 전체 설치 파일 삭제
