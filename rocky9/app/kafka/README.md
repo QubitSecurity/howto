@@ -1,6 +1,8 @@
-## [설치](install.md)
+## [설치](./ansible_install/readme.md)
 - ansible 스크립트를 통한 kafka 설치 및 클러스터링.
 - ansible 스크립트를 통한 cmak, akhq 설치.
+
+## [시작](start.md)
 - kafka 및 cmak, akhq 실행 명령어.
 
 ## 클러스터링
