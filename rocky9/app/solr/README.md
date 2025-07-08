@@ -1,39 +1,21 @@
-## 1. Solr
+## [설치 - single port](./ansible_install/cloud/readme.md)
+- ansible 스크립트를 통한 단일 포트 solr 설치.
 
-### 1.0 Config
+## [설치 - multi port](./ansible_install/baremetal/readme.md)
+- ansible 스크립트를 통한 다중 포트 solr 설치.
 
-```
-vi /etc/security/limits.conf
+## [시작 - single port](single.md)
+- solr 단일 포트 클러스터링 노드 시작.
 
-username              soft    nofile  65536
-username              hard    nofile  65536
-username              soft    nproc   unlimited
-username              hard    nproc   unlimited
-```
+## [시작 - multi port](baremetal.md)
+- solr 단일 포트 클러스터링 노드 시작.
 
-### 1.1 Run and Stop
-```
-barematel.md - baremetal 구조의 solr 실행 방법
-cloud.md - cloud 구조의 solr 실행 방법
-```
+## 클러스터링
+1) [KVM vs Multi Port]
+- solr 클러스터링 방법 비교
 
-```
-~/solr/bin/solr start -cloud
-```
-```
-~/solr/bin/solr stop
-```
-<hr/>
 
-```
-vi ~/solr/bin/solr.in.sh
 
-#SOLR_HEAP="512m"
-SOLR_HEAP="16g"
 
-# Add to end
-# Zookeeper config
-. /home/$("whoami")/solr_zookeeper/*.conf
-```
 
-<hr/>
+
