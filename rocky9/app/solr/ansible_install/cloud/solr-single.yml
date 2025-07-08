@@ -1,17 +1,32 @@
 ---
-- hosts: solr-single
+- hosts: solr
   become: yes
   vars:
-    solr_version: "X.X.X"
+    solr_version: "9.8.1"
     solr_home: "/opt"
-    solr_user: "qubit"
-    solr_group: "qubit"
+    solr_user: "user"
+    solr_group: "user"
     solr_port_base: 8983
-    proxy: "http://xxx.xxx.xxx.xxx:3128/"
-    num_of_instances: 3  # 인스턴스 개수 지정
-    solr_heap: "3g"
+    proxy: "http://xxx.xxx.xxx.xxx0:3128/"
+    solr_heap: "3g" #solr heap size 정의
+    zk_group: zk #클러스터링 zookeeper 인벤토리 그룹 지정/
 
   tasks:
+    # Config limit.conf in system
+    - name: Configure system limits for {{ username }}
+      lineinfile:
+        path: /etc/security/limits.conf
+        state: present
+        create: yes
+        line: "{{ item }}"
+      with_items:
+        - "{{ solr_user }} soft nofile 65536"
+        - "{{ solr_user }} hard nofile 65536"
+        - "{{ solr_user }} soft nproc unlimited"
+        - "{{ solr_user }} hard nproc unlimited"
+      vars:
+        username: solr
+
     - name: Stop and disable firewalld
       systemd:
         name: firewalld
@@ -37,7 +52,7 @@
         http_proxy: "{{proxy}}"
         https_proxy: "{{proxy}}"
       get_url:
-        url: "https://www.apache.org/dyn/closer.lua/solr/solr/{{solr_version}}/solr-{{solr_version}}.tgz?action=download"
+        url: "https://archive.apache.org/dist/solr/solr/{{solr_version}}/solr-{{solr_version}}.tgz"
         dest: /tmp/solr-{{solr_version}}.tgz
         owner: "{{ solr_user }}"
         group: "{{ solr_group }}"
@@ -60,16 +75,47 @@
         mode: '0755'
         remote_src: yes
 
-    - name: Set SOLR_HEAP in solr.in.sh
+    # config solr heap size & zookeeper node in solr.in.sh
+    - name: 'Set SOLR_HEAP in solr.in.sh(default: #SOLR_HEAP="512m")'
       lineinfile:
         path: "{{ solr_home }}/solr-{{ solr_version }}/bin/solr.in.sh"
-        regexp: '^SOLR_HEAP='
+        regexp: '^#SOLR_HEAP='
         line: 'SOLR_HEAP="{{solr_heap}}"'
         create: yes
         owner: "{{ solr_user }}"
         group: "{{ solr_group }}"
         mode: '0755'
-      
+
+    - name: 'Set SOLR_HOST in solr.in.sh(default: #SOLR_HOST="192.168.1.1" )'
+      lineinfile:
+        path: "{{ solr_home }}/solr-{{ solr_version }}/bin/solr.in.sh"
+        regexp: '^#SOLR_HOST='
+        line: 'SOLR_HOST={{ansible_host}}'
+        create: yes
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        mode: '0755'  
+
+    - name: 'Set ZK_HOST in solr.in.sh(default: #ZK_HOST="" )'
+      lineinfile:
+        path: "{{ solr_home }}/solr-{{ solr_version }}/bin/solr.in.sh"
+        regexp: '^#ZK_HOST='
+        line: "ZK_HOST={{ groups[zk_group] | join(':2181,') }}:2181"
+        create: yes
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        mode: '0755'
+
+    - name: 'Set SORL_JETTY_HOST in solr.in.sh(default:#SOLR_JETTY_HOST="127.0.0.1" )'
+      lineinfile:
+        path: "{{ solr_home }}/solr-{{ solr_version }}/bin/solr.in.sh"
+        regexp: '^#SOLR_JETTY_HOST='
+        line: 'SOLR_JETTY_HOST=0.0.0.0'
+        create: yes
+        owner: "{{ solr_user }}"
+        group: "{{ solr_group }}"
+        mode: '0755'          
+
     - name: Create a symbolic link from /opt/solr to actual solr directory
       file:
         src: "{{ solr_home }}/solr-{{ solr_version }}"
@@ -77,37 +123,7 @@
         owner: "{{ solr_user }}"
         group: "{{ solr_group }}"
         state: link
-
+      
     - name: Change ownership of the symbolic link to solr_user and solr_group
       command: chown -h {{ solr_user }}:{{ solr_group }} "{{ solr_home }}/solr"
-
-    - name: Create Solr systemd service file for each instance
-      copy:
-        dest: "/etc/systemd/system/solr.service"
-        content: |
-          [Unit]
-          Description=Solr instance 
-          After=network.target
-
-          [Service]
-          Type=forking
-          User={{ solr_user }}
-          Group={{ solr_group }}
-          ExecStart={{ solr_home }}/solr/bin/solr start -c  -j "-Dhost={{ansible_host}}" "-Dsolr.jetty.host=0.0.0.0" -z "{{ groups['zk'] | join(':2181,') }}:2181"
-          ExecStop={{ solr_home }}/solr/bin/solr stop -all
-          Restart=on-failure
-
-          [Install]
-          WantedBy=multi-user.target
-
-          
-    - name: Reload systemd to apply new service files
-      systemd:
-        daemon_reload: yes
-
-    - name: Start and enable Solr service instances
-      systemd:
-        name: "solr"
-        state: restarted
-        enabled: yes
       
