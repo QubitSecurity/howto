@@ -1,10 +1,10 @@
-## [설치 - single port](./ansible_install/readme.md)
+## [설치](./ansible_install/readme.md)
 - ansible 스크립트를 통한 단일 포트 solr 설치.
 - ansible 스크립트를 통한 다중 포트 solr 설치.
 
-## [시작 - single port](start.md)
+## [시작](start.md)
 - solr 단일 포트 클러스터링 노드 시작.
-- solr 단일 포트 클러스터링 노드 시작.
+- solr 다중 포트 클러스터링 노드 시작.
 
 ## 클러스터링
 1) [KVM vs Multi Port]
