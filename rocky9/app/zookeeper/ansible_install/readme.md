@@ -1,6 +1,6 @@
 ### 0. 실행 환경
 ```
-ansible hosts 파일 경로 : /home/qubit/ansible/hosts
+ansible hosts 파일 경로 : /home/user/ansible/hosts
 zookeeper 실행 경로 : /opt
 
 파일 종류
