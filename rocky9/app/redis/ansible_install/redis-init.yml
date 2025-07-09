@@ -17,6 +17,13 @@
       - { key: 'net.core.wmem_max', value: '1048576' }
       - { key: 'vm.overcommit_memory', value: '1' }
 
+  #초기 redis 설치 노드는 반드시 master/slave 쌍을 이루기 위해 노드가 짝수가 맞는지 체크
+  pre_tasks:
+    - name: Check if number of init redis group nodes is even
+      fail:
+        msg: "홀수 노드 개수 실패: redis 인벤토리의 노드 개수가 홀수입니다."
+      when: (groups['redis'] | length) % 2 != 0
+
   tasks:
     - name: Check if Redis service is already running
       shell: systemctl is-active redis
@@ -148,6 +155,7 @@
         
     - name: Copy Redis Module 
       shell: sudo cp /tmp/redis-stack-server-{{redis_stack_version}}/lib/* {{redis_config_path}}/module
+
 
     #Default Configration
     - name: Set bind config in redis.conf
