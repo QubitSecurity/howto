@@ -64,7 +64,7 @@ graph LR;
     hosts --|설치|--> Mysql-Master
 	hosts --|설치|--> Mysql-Replica
 
-    Master1 --> Replica1
-    Master2 --> Replica2
-    MasterN --> ReplicaN
+    Master1 --|ansible inventory 0:0 pair|--> Replica1
+    Master2 --|ansible inventory 1:1 pair|--> Replica2
+    MasterN --|ansible inventory N:N pair|--> ReplicaN
 ```
