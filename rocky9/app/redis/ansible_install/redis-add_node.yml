@@ -9,6 +9,7 @@
     redis_config_path: "/etc/redis"
     proxy: "http://xxx.xxx.xxx.xxx:3128/"
     redis_add_group: "redis-add"
+    redis_orig_group: "redis"
     sysctl_settings:
       - { key: 'fs.file-max', value: '2097152' }
       - { key: 'net.ipv4.ip_local_port_range', value: '1024 65500' }
@@ -19,13 +20,14 @@
       - { key: 'vm.overcommit_memory', value: '1' }
     cluster_existing_master: "{{ groups['redis'][0] }}"
 
-  pre_tasks: #그룹내 노드 개수가 홀수인 경우 본 태스크를 수행하지 않도록 함(master - slave 구조를 위해 한쌍씩 취급)
+  pre_tasks:
     - name: Check if number of redis-add nodes is even
       fail:
         msg: "홀수 노드 개수 실패: redis-add 인벤토리의 노드 개수가 홀수입니다."
       when: (groups[redis_add_group] | length) % 2 != 0
 
   tasks:
+
     - name: Check if Redis service is already running
       shell: systemctl is-active redis
       register: redis_status
@@ -260,19 +262,19 @@
     - name: Enable & Execute Redis second
       shell: sudo systemctl enable --now redis
 
-    # Added node clustering
+    # Added node clustering and slot rebalancing
     - name: Cluster meet all redis-add nodes from all redis nodes
       shell: |
         for new_node in {{ groups[redis_add_group] | join(' ') }}; do
           redis-cli -h {{ item }} -p 6379 CLUSTER MEET $new_node 6379
         done
-      loop: "{{ groups['redis'] }}"
+      loop: "{{ groups[redis_orig_group] }}"
       run_once: true
 
     - name: Assign roles (slave of previous node for even indexed hosts)
       shell: |
         redis-cli -h {{ item.1 }} -p 6379 CLUSTER REPLICATE $(redis-cli -h {{ item.0 }} -p 6379 CLUSTER MYID)
-      loop: "{{ groups[redis_add_group] | batch(2) }}" #batch(2)는 [a, b, c, d] → [[a, b], [c, d]]
+      loop: "{{ groups[redis_add_group] | batch(2) }}" #batch(2)는 [a, b, c, d] → [[a, b], [c, d]] a,c=master / b,d=slave
       when: item | length == 2
       run_once: true
 
