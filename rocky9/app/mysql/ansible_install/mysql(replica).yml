@@ -1,15 +1,16 @@
 ---
 - name: Install MySQL Server
-  hosts: mysql-replica
+  hosts: mysql-slave
   become: yes
   vars:
-    mysql_user: "qubit"
-    mysql_group: "qubit"
+    mysql_user: "user"
+    mysql_group: "user"
     mysql_config_path: "/etc/mysql/"
-    proxy: "http://xxx.xxx.xxx.xxx.:3128/"
-    new_mysql_root_password: "PASSWORD"  # 새로 설정할 root 비밀번호
-    db_password : "password"
-    db_user : "user"
+    proxy: "http://xxx.xxx.xxx.xxx:3128/"
+    new_mysql_root_password: "Root_Password"  # 새로 설정할 root 비밀번호
+    db_password : "DB_user_Password"
+    db_user : "DB_user"
+
   tasks:
     - name: Stop and disable firewalld
       systemd:
@@ -68,11 +69,12 @@
         line: "log_timestamps = SYSTEM"
         create: yes
 
-    - name: Add MySQL Master configuration to /etc/my.cnf
-      blockinfile:
-        path: /etc/my.cnf
-        block: |
+    - name: Add master-specific settings to my.cnf
+      lineinfile:
+        path: "/etc/my.cnf"
+        line: |
           ### slave
+          slave-skip-errors=all
           server-id = {{ ansible_host.split('.')[-1] }}
           log-bin = /var/lib/mysql/mysql-bin
           read_only = 1
@@ -82,6 +84,7 @@
           sync_binlog = 1
           binlog_expire_logs_seconds = 604800  # 7일 (7 * 24 * 60 * 60 초)
           slow_query_log = 1
+        insertafter: EOF
 
     - name: Create and configure /etc/my.cnf.d/charset.cnf
       copy:
@@ -115,11 +118,7 @@
         -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ new_mysql_root_password }}';"
       ignore_errors: yes  # 초기 비밀번호가 이미 변경된 경우 오류 무시
 
-    # - name: Set MySQL root password to never expire
-      # shell: >
-        # mysql -u root -p{{new_mysql_root_password }} -e
-        # "ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;"
-
+    # Create Main User  (% 대신 실제 사용 대역으로 지정 필요 ex. 10.10.%  )
     - name: Create a MySQL user via SQL query
       shell: >
         mysql -u root -p'{{ new_mysql_root_password }}' -e "
@@ -127,7 +126,14 @@
         GRANT ALL PRIVILEGES ON *.* TO '{{ db_user }}'@'%' WITH GRANT OPTION;
         FLUSH PRIVILEGES;"
       ignore_errors: yes  # 이미 user가 생성된 경우
-         
+
+    # Lock Main User if password attempts 3
+    - name: Create a MySQL user via SQL query
+      shell: >
+        mysql -u root -p'{{ new_mysql_root_password }}' -e "
+        ALTER USER '{{ db_user }}'@'%' FAILED_LOGIN_ATTEMPTS 3 PASSWORD_LOCK_TIME 1;"
+      ignore_errors: yes 
+
     - name: Restart MySQL server
       service:
         name: mysqld
