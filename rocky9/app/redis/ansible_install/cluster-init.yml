@@ -7,7 +7,9 @@
     redis_add_group: "redis-add" # redis 노드 추가후 전체 클러스터링 초기화 시 추가 노드 그룹
     # Redis 노드 주소를 포맷하여 하나의 문자열로 생성
     combined_redis_addresses: "{{ (groups['redis'] + (groups[redis_add_group] if redis_add_group in groups else [])) | map('regex_replace', '^(.*)$', '\\1:' + redis_port | string) | join(' ') }}" #redis+redis_add_group 인벤토리 문자열 merge
+    #combined_redis_addresses: "{{ groups['redis'] | map('regex_replace', '^(.*)$', '\\1:' + redis_port | string) | join(' ') }}"
     total_nodes: "{{ groups['redis'] | length }}"
+    first_redis: "{{groups['redis'][0]}}"
     cluster_replicas: "{{ 1 if (total_nodes | int) % 2 == 0 else 0 }}"   # 짝수이면 1로 설정, 홀수이면 0으로 설정
 
   tasks:
@@ -46,11 +48,11 @@
     - name: Create Redis cluster
       command: >
         redis-cli --cluster create {{ combined_redis_addresses }} --cluster-yes --cluster-replicas 1
-      when: inventory_hostname == groups['redis'][0]  # 첫 번째 마스터 노드에서 클러스터를 생성
+      when: inventory_hostname == first_redis  # 첫 번째 redis 노드에서 클러스터를 생성
       register: cluster_result
 
     - name: Show cluster creation result
       debug:
         var: cluster_result.stdout
-      when: inventory_hostname == groups['redis'][0]
+      when: inventory_hostname == first_redis
       
