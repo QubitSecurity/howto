@@ -3,5 +3,5 @@
 
 
 ## [시작](start.md)
-- zookeeper실행
+- zookeeper 실행
 
