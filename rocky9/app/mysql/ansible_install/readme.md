@@ -46,7 +46,7 @@ graph LR;
     end
 
     %% Zookeeper Section
-    subgraph Mysql-Master Group
+    subgraph Mysql-Master-Group
         direction TB
         Master1[Master #1 Node]
 		Master2[Master #2 Node]
@@ -54,15 +54,15 @@ graph LR;
 		
 	end
 	    
-	subgraph Mysql-Replica Group
+	subgraph Mysql-Replica-Group
         Replica1[Replica #1 Node]      
         Replica2[Replica #2 Node]
         ReplicaN[Replica #N Node]
     end
 
 
-    hosts --|설치|--> Mysql-Master
-	hosts --|설치|--> Mysql-Replica
+    hosts --|설치|--> Mysql-Master-Group
+	hosts --|설치|--> Mysql-Replica-Group
 
     Master1 --|ansible Group 0:0 pair|--> Replica1
     Master2 --|ansible Group 1:1 pair|--> Replica2
