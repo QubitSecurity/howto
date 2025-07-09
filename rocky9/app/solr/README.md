@@ -7,7 +7,7 @@
 - solr 다중 포트 클러스터링 노드 시작.
 
 ## 클러스터링
-1) [KVM vs Multi Port]
+1) [KVM vs Baremetal(Multi Port)](./clustering/KVM vs Baremetal.md)
 - solr 클러스터링 방법 비교
 
 
