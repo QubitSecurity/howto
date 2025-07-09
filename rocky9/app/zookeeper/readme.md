@@ -3,5 +3,5 @@
 
 
 ## [시작](start.md)
-- mysql 실행
+- zookeeper실행
 
