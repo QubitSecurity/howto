@@ -1,4 +1,4 @@
-## [설치&제거](./ansible_install/readme.md)
+## [설치](./ansible_install/readme.md)
 - ansible 스크립트를 통한 mysql 설치 
 - replica mysql 동기화
 
