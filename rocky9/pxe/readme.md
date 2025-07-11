@@ -3,7 +3,7 @@
 - dhcp, tftp, http 활용
 
 ## [Kickstart](./kickstart/ks.cfg)
-- PXE 부팅을 통해 자동 설치될때, 기본 설정 자동화
-- ssh, ipv6 disable, ntp, cockpit, kvm 등 자동 설치
+- PXE 부팅을 통해 자동 설치될때, 기본 설정 자동화 스크립트
+- ssh, ipv6(disable), ntp, cockpit, kvm 등 자동 설치
 
 
