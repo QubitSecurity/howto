@@ -5,7 +5,7 @@ Ansible 을 이용하여 서버의 상태를 점검한다.
 graph TD
 
 subgraph USER
-    U1["사용자\n(웹 브라우저)"]
+    U1["사용자\n (웹 브라우저)"]
 end
 
 subgraph WEB_SERVER
