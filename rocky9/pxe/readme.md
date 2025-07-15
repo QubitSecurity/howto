@@ -5,6 +5,6 @@
 
 ## [Kickstart](./kickstart/ks.cfg)
 - PXE 부팅을 통해 자동 설치될때, 기본 설정 자동화 스크립트
-- ssh, ipv6(disable), ntp, cockpit, 로컬 repository 서버, kvm(로컬 repo서버) 등 자동 설치
+- ssh, ipv6(disable), ntp, cockpit, 로컬 repository 설정, kvm(로컬 repo서버) 등 자동 설치
 
 
