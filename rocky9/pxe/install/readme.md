@@ -127,3 +127,24 @@ menu title ######## PXE Boot Menu ########
  kernel rockylinux9/vmlinuz
  append initrd=rockylinux9/initrd.img ip=dhcp inst.repo=http://[PXE SERVER IP]:8080/pxe/rockylinux9 inst.ks=http://[PXE SERVER IP]:8080/pxe/ks.cfg
 ```
+
+## 6. UEFI 모드 추가
+### 6.1 관련 패키지 설치 및 복사
+```
+dnf install -y grub2-efi-x64 shim-x64
+
+cp /boot/efi/EFI/rocky/grubx64.efi /var/lib/tftpboot/EFI/BOOT/grubx64.efi
+cp /boot/efi/EFI/rocky/grubx64.efi /var/lib/tftpboot/EFI/BOOT/BOOTX64.EFI
+```
+### 6.2 grub.cfg 파일 생성
+```
+vi /var/lib/tftpboot/EFI/BOOT/grub.cfg
+
+set timeout=10
+set default=0
+
+menuentry "Install Rocky Linux 9 (UEFI)" {
+    linuxefi /rockylinux9/vmlinuz ip=dhcp inst.repo=http://[PXE SERVER IP]:8080/pxe/rockylinux9 inst.ks=http://[PXE SERVER IP]:8080/pxe/ks.cfg
+    initrdefi /rockylinux9/initrd.img
+}
+```
