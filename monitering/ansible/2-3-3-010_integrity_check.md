@@ -29,7 +29,7 @@ sha256sum build.gradle settings.gradle build/libs/app.jar > integrity-backend.tx
 
 ---
 
-### 3. **Frontend (pnpm 기반 React/Vue 등)**
+### 3. **Frontend (pnpm 기반 React)**
 
 #### 📌 대상 파일
 
