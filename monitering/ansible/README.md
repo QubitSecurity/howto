@@ -18,7 +18,7 @@ cat check_disk_usage_75percent.log
 ```
 
 ---
-## 2. Disk 사용량 점검
+## 2. 감사 DB 사용 가능성 확인
 - [ ] 마스터 DB에 test_insert_table 테이블을 만들어 INSERT 테스트 수행
 - [ ] INSERT 실패 또는 SELECT 확인 실패 시 문제로 간주
 - [ ] 실패 시 메일로 알림 전송
