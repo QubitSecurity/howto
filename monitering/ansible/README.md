@@ -6,7 +6,7 @@ Ansible 을 이용하여 서버의 상태를 점검한다.
 - [ ] check_disk_usage_?percent.log 파일에 저장됩니다.
 
 ```
-# Usage: ./check_disk_usage.sh <THRESHOLD%> <ANSIBLE_GROUP> [--debug]
+# Usage: ./scripts/check_disk_usage.sh <THRESHOLD%> <ANSIBLE_GROUP> [--debug]
 
 ./check_disk_usage.sh 70% solr-weblog
 
@@ -16,6 +16,20 @@ cat check_disk_usage_70percent.log
 
 cat check_disk_usage_75percent.log
 ```
+
+---
+## 2. Disk 사용량 점검
+- [ ] 마스터 DB에 test_insert_table 테이블을 만들어 INSERT 테스트 수행
+- [ ] INSERT 실패 또는 SELECT 확인 실패 시 문제로 간주
+- [ ] 실패 시 메일로 알림 전송
+
+```
+# Usage: ./scripts/mysql_insert_check.sh
+```
+
+---
+
+
 
 ---
 ## 9. 시간 동기화 점검
