@@ -27,13 +27,21 @@ cat check_disk_usage_75percent.log
 
 ---
 
-## 3. 데이터베이스 백
+## 3. 데이터베이스 백업
 - [ ] 마스터 DB에 test_insert_table 테이블을 만들어 INSERT 테스트 수행
 - [ ] INSERT 실패 또는 SELECT 확인 실패 시 문제로 간주
 - [ ] 실패 시 메일로 알림 전송
 
 ```
 # Usage: ./scripts/mysql_backup.sh
+```
+---
+
+## 4. SSL/TLS 인증서 검사
+- [ ] SSL 인증서의 만료일을 체크하고, 만료가 임박하면 경고 메일을 발송
+
+```
+# Usage: ./scripts/check_ssl_cert.sh
 ```
 
 ---
