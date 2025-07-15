@@ -5,7 +5,7 @@ Ansible 을 이용하여 서버의 상태를 점검한다.
 graph TD
 
 subgraph USER
-    U1["사용자\n (웹 브라우저)"]
+    U1["사용자<br>(웹 브라우저)"]
 end
 
 subgraph WEB_SERVER
@@ -14,15 +14,15 @@ subgraph WEB_SERVER
 end
 
 subgraph CHECK_MODULES
-    D1["Disk 사용량 점검\n(df, mount)"]
-    D2["감사 DB 점검\n(MySQL 접속)"]
-    D3["DB 백업 상태 점검\n(백업 파일, 로그)"]
-    D4["SSL 인증서 검사\n(만료일 확인)"]
+    D1["Disk 사용량 점검<br>(df, mount)"]
+    D2["감사 DB 점검<br>(MySQL 접속)"]
+    D3["DB 백업 상태 점검<br>(백업 파일, 로그)"]
+    D4["SSL 인증서 검사<br>(만료일 확인)"]
 end
 
 subgraph LOG_AND_ALERT
-    LOG["점검 로그 저장\n(DB 또는 파일)"]
-    ALERT["이상 감지 시 알림\n(Email, Slack)"]
+    LOG["점검 로그 저장<br>(DB 또는 파일)"]
+    ALERT["이상 감지 시 알림<br>(Email, Slack)"]
 end
 
 U1 --> WS
