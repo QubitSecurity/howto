@@ -22,10 +22,16 @@ option architecture-type code 93 = unsigned integer 16;
 
 # ※예시 dhcp 범위 설정
 # 대역 10.11.11.0/24
-# 할당 범위 10.11.11.230~234
+# 할당 범위 10.11.11.230~249 # UEFI 모드는 UEFI PXE 부팅 후 initrd 진입 시 네트워크 인터페이스가 초기화하고 다시 ip를 할당 받기에 dhcp 대역을 충분히 설정해야 한다.
+# 또한 /var/lib/dhcpd/dhcpd.leases 임대 관리 필요
 subnet 10.11.11.0 netmask 255.255.255.0 {
+        allow booting;
+        allow bootp;
+
+        default-lease-time 3600;
+        max-lease-time 7200;
         #option routers 192.168.122.1;
-        range 10.11.11.230 10.11.11.234;
+        range 10.11.11.230 10.11.11.249;
         #filename "pxelinux.0";
         next-server 10.11.11.242; #tftp 서버(동일)
 
@@ -144,7 +150,7 @@ set timeout=10
 set default=0
 
 menuentry "Install Rocky Linux 9 (UEFI)" {
-    linuxefi /rockylinux9/vmlinuz ip=dhcp inst.repo=http://[PXE SERVER IP]:8080/pxe/rockylinux9 inst.ks=http://[PXE SERVER IP]:8080/pxe/ks.cfg
+    linuxefi /rockylinux9/vmlinuz ip=dhcp rd.net.ifnames=0 biosdevname=0 inst.repo=http://[PXE SERVER IP]:8080/pxe/rockylinux9 inst.ks=http://[PXE SERVER IP]:8080/pxe/ks.cfg
     initrdefi /rockylinux9/initrd.img
 }
 ```
