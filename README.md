@@ -32,6 +32,12 @@
 - https://mirror.navercorp.com/rocky/8/isos/x86_64/
 - https://mirror.navercorp.com/rocky/9/isos/x86_64/
 
+## X. Epel Download
+
+- https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/
+- https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
+
+
 ## X. Useful Links
 
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
