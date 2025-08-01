@@ -1,7 +1,7 @@
 
 
 
-[nsible ~]$ curl -s "http://10.100.61.149:8983/solr/admin/cores?action=STATUS" | jq '.status | keys'
+[ansible ~]$ curl -s "http://10.100.61.149:8983/solr/admin/cores?action=STATUS" | jq '.status | keys'
 [
   "weblog_shard1_replica_n722"
 ]
