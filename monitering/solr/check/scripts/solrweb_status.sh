@@ -15,7 +15,7 @@ if [ $? -ne 0 ] || [ -z "$response" ]; then
   echo "[ALERT] Solr 접속 실패" | mail -s "[ALERT] Solr 접속 실패 ($SOLR_HOST)" joo@qubitsec.com
 
   # 장애 재확인 스크립트 호출
-  /home/sysadmin/check/solrweb_status_retry.sh
+  /home/sysadmin/check/solr_status_retry.sh
   exit 2
 fi
 
@@ -81,6 +81,6 @@ if $STATUS_OK; then
   exit 0
 else
   echo "$CURRENT_TIME | 장애 감지됨 → retry 스크립트 호출"
-  /home/sysadmin/check/solrweb_status_retry.sh
+  /home/sysadmin/check/solr_status_retry.sh
   exit 2
 fi
