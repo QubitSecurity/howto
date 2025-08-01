@@ -1,11 +1,10 @@
 #!/bin/bash
 
+# 공통 설정 불러오기
+source "$(dirname "$0")/solr_config_061069.conf"
+
 LOG_TAG="solr_check"
 CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-
-SOLR_HOST="10.100.61.69"
-SOLR_PORT="8983"
-SOLR_URL="http://$SOLR_HOST:$SOLR_PORT/solr/admin/collections?action=CLUSTERSTATUS"
 
 # 응답 확인
 response=$(curl -s --max-time 5 "$SOLR_URL")
