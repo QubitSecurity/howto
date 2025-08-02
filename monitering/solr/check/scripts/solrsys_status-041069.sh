@@ -20,6 +20,8 @@ if [ $? -ne 0 ] || [ -z "$response" ]; then
   exit 2
 fi
 
+### TEST 여기에 삽입
+
 # 상태 카운트 초기화
 declare -A STATE_COUNTS
 declare -A STATE_CORES
