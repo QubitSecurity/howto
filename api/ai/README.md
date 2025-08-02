@@ -11,8 +11,9 @@
 |----------------------|--------------------------|------------------------------------------------------------------------|-----------------------------------|
 | ChatGPT (OpenAI)     | API Key                 | [OpenAI Docs](https://platform.openai.com/docs)                        | GPT-4o 사용 가능                  |
 | Google Gemini        | OAuth 2.0 + API Key     | [Gemini API](https://ai.google.dev/)                                   | PaLM → Gemini로 통합              |
-| HyperCLOVA X         | OAuth / API Key         | [NAVER Cloud AI](https://guide.ncloud-docs.com/)                       | NCP Console에서 사전 설정 필요    |
 | Claude (Anthropic)   | API Key                 | [Anthropic API Docs](https://docs.anthropic.com/)                      | Claude 3 Opus / Sonnet / Haiku 지원 |
+| HyperCLOVA X         | OAuth / API Key         | [NAVER Cloud AI](https://guide.ncloud-docs.com/)                       | NCP Console에서 사전 설정 필요    |
+
 
 > ❌ **뤼튼 테크놀로지**(Wrtn Technologies)는 자체 LLM을 보유하고 있지 않으며,
 > 내부적으로 **GPT API를 프록시**하는 구조이므로 본 AI 연동 대상에서 제외합니다.
@@ -25,8 +26,9 @@
 |------------------|------------------------|------------------------------------------|
 | ChatGPT          | 🔲 API 키 발급 필요함     | 사용자 콘솔에서 직접 발급 필요               |
 | Gemini           | 🔲 API 키 발급 필요함     | Google Cloud Console 필요                  |
-| HyperCLOVA X     | 🔲 API 키 발급 필요함     | NCP Console > CLOVA Studio 필요            |
 | Claude           | 🔲 API 키 발급 필요함     | Anthropic Console > API Key 메뉴에서 발급   |
+| HyperCLOVA X     | 🔲 API 키 발급 필요함     | NCP Console > CLOVA Studio 필요            |
+
 
 ---
 
