@@ -12,7 +12,7 @@ source "$CONFIG_FILE"
 
 LOG_TAG="solr_check"
 CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-DOWN_LOG="./down_${SOLR_HOST}.log"
+DOWN_LOG="/tmp/down_${SOLR_HOST}.log"
 
 # 장애 카운트 파일 초기화
 [ ! -f "$DOWN_LOG" ] && echo 0 > "$DOWN_LOG"
@@ -31,9 +31,14 @@ if [ $? -ne 0 ] || [ -z "$response" ]; then
     sleep 60
     exec "$0" "$CONFIG_FILE"
   else
-    echo "$CURRENT_TIME | 3회 연속 장애 발생, 종료"
-    logger -t $LOG_TAG -p local0.err "3회 연속 장애 발생"
-    echo "[ALERT] Solr 3회 연속 장애 발생 ($SOLR_HOST)" | mail -s "[ALERT] Solr 장애 감지 ($SOLR_HOST)" joo@qubitsec.com
+    echo "$CURRENT_TIME | 3회 연속 접속 실패 발생, 종료"
+    logger -t $LOG_TAG -p local0.err "3회 연속 Solr 접속 실패 발생 ($SOLR_HOST)"
+    {
+      echo "[ALERT] Solr 3회 연속 접속 실패"
+      echo "시간: $CURRENT_TIME"
+      echo ""
+      echo "- Solr 접속 실패 ($SOLR_HOST:$SOLR_PORT)"
+    } | mail -s "[ALERT] Solr 3회 연속 접속 실패 ($SOLR_HOST)" joo@qubitsec.com
     exit 2
   fi
 fi
@@ -42,6 +47,7 @@ fi
 declare -A STATE_COUNTS
 declare -A STATE_CORES
 STATES=("leader" "active" "recovering" "down" "recovery_failed" "inactive")
+ERROR_STATES=("recovering" "down" "recovery_failed" "inactive")
 
 for state in "${STATES[@]}"; do
   STATE_COUNTS[$state]=0
@@ -75,12 +81,17 @@ done
 STATUS_OK=true
 ERROR_MESSAGES=()
 
+echo "$CURRENT_TIME | Solr 상태 요약 ($SOLR_HOST:$SOLR_PORT):"
 for state in "${STATES[@]}"; do
   count=${STATE_COUNTS[$state]}
   if [ "$count" -gt 0 ]; then
-    if [[ "$state" != "active" && "$state" != "leader" ]]; then
+    echo "- ${state^}: $count core(s) (${STATE_CORES[$state]})"
+
+    # 장애 상태일 경우만 CRITICAL 처리
+    if [[ " ${ERROR_STATES[@]} " =~ " $state " ]]; then
       msg="CRITICAL: $count core(s) in $state state: ${STATE_CORES[$state]}"
       logger -t "$LOG_TAG" -p local0.err "$msg"
+      echo "$CURRENT_TIME | $msg"
       ERROR_MESSAGES+=("$msg")
       STATUS_OK=false
     fi
@@ -97,20 +108,25 @@ if $STATUS_OK; then
   exit 0
 else
   down_count=$((down_count + 1))
+  echo "$down_count" > "$DOWN_LOG"
+  echo "$CURRENT_TIME | 장애 감지 (${down_count}/3 회차)"
+
   if [ "$down_count" -le 3 ]; then
-    echo "$down_count" > "$DOWN_LOG"
-    echo "$CURRENT_TIME | 장애 감지 (${down_count}/3 회차)"
     sleep 60
     exec "$0" "$CONFIG_FILE"
   else
     {
       echo "[ALERT] Solr 3회 연속 장애 감지"
-      echo "실행 시간: $CURRENT_TIME"
+      echo "대상: $SOLR_HOST:$SOLR_PORT"
+      echo "시간: $CURRENT_TIME"
+      echo ""
+      echo "장애 상세:"
       for m in "${ERROR_MESSAGES[@]}"; do
         echo "- $m"
       done
-    } | mail -s "[ALERT] Solr 장애 감지 ($SOLR_HOST)" joo@qubitsec.com
-    logger -t "$LOG_TAG" -p local0.err "3회 연속 장애 발생"
+    } | mail -s "[ALERT] Solr 3회 연속 장애 감지 ($SOLR_HOST)" joo@qubitsec.com
+
+    logger -t "$LOG_TAG" -p local0.err "3회 연속 장애 발생 on $SOLR_HOST"
     exit 2
   fi
 fi
