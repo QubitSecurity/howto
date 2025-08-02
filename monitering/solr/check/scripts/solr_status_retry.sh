@@ -43,6 +43,8 @@ if [ $? -ne 0 ] || [ -z "$response" ]; then
   fi
 fi
 
+### TEST 여기에 삽입
+
 # 상태 파싱
 declare -A STATE_COUNTS
 declare -A STATE_CORES
