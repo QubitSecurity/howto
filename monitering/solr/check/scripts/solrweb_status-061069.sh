@@ -1,27 +1,24 @@
 #!/bin/bash
 
 # 공통 설정 불러오기
-source "$(dirname "$0")/solr_config-061069.conf"
+CONFIG_FILE="$(dirname "$0")/solr_config-061069.conf"
+source "$CONFIG_FILE"
 
 LOG_TAG="solr_check"
 CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-# 응답 확인
+# Solr 상태 확인
 response=$(curl -s --max-time 5 "$SOLR_URL")
 if [ $? -ne 0 ] || [ -z "$response" ]; then
   message="CRITICAL: Solr 접속 실패 ($SOLR_HOST:$SOLR_PORT)"
-  logger -t $LOG_TAG -p local0.err "$message"
+  logger -t "$LOG_TAG" -p local0.err "$message"
   echo "$CURRENT_TIME | $message"
   echo "[ALERT] Solr 접속 실패" | mail -s "[ALERT] Solr 접속 실패 ($SOLR_HOST)" joo@qubitsec.com
 
-  # 장애 재확인 스크립트 호출
-  /home/sysadmin/check/solr_status_retry.sh
+  # 장애 재확인 스크립트 호출 (공통)
+  /home/sysadmin/check/solr_status_retry.sh "$CONFIG_FILE"
   exit 2
 fi
-
-
-# 여기에 삽입
-
 
 # 상태 카운트 및 목록 초기화
 declare -A STATE_COUNTS
@@ -81,6 +78,6 @@ if $STATUS_OK; then
   exit 0
 else
   echo "$CURRENT_TIME | 장애 감지됨 → retry 스크립트 호출"
-  /home/sysadmin/check/solr_status_retry.sh
+  /home/sysadmin/check/solr_status_retry.sh "$CONFIG_FILE"
   exit 2
 fi
