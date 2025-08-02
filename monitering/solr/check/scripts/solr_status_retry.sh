@@ -12,7 +12,7 @@ source "$CONFIG_FILE"
 
 LOG_TAG="solr_check"
 CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-DOWN_LOG="/tmp/down_${SOLR_HOST}.log"
+DOWN_LOG="./down_${SOLR_HOST}.log"
 
 # 장애 카운트 파일 초기화
 [ ! -f "$DOWN_LOG" ] && echo 0 > "$DOWN_LOG"
