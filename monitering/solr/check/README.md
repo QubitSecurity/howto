@@ -94,6 +94,24 @@ howto/monitoring/solr/check/scripts/
 
 ---
 
+## ✅ 로그 파일 내용 비우기 (truncate 방식)
+
+```bash
+> /var/log/syslog       # Ubuntu 계열 시스템의 일반 로그
+> /var/log/messages     # CentOS, RHEL 계열 시스템의 일반 로그
+> /var/log/auth.log     # 인증 관련 로그
+> /var/log/secure       # 인증 로그 (CentOS 등)
+> /var/log/audit/audit.log  # auditd 로그
+```
+
+또는 `truncate` 명령어 사용:
+
+```bash
+truncate -s 0 /var/log/syslog
+```
+
+---
+
 ## 📬 문의
 
 * 장애 메일 수신자: `@qubitsec.com`
