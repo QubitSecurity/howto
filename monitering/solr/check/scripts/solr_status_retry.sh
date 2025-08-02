@@ -77,6 +77,8 @@ for core in $cores; do
   fi
 done
 
+### TEST 여기에 삽입
+
 # 경고 여부 판단
 STATUS_OK=true
 ERROR_MESSAGES=()
