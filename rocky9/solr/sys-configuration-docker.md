@@ -3,7 +3,7 @@
 
 ---
 
-# 🐳 Docker 기반 SolrCloud 최소 클러스터 구성 문서 (Persistent Volume 포함)
+# 🐳 Docker 기반 SolrCloud 최소 클러스터 구성 문서
 
 Apache SolrCloud를 Docker 기반으로 테스트하거나 개발용으로 구성할 경우, 다음과 같은 **최소 구성 클러스터**로 시작하는 것이 유용합니다.
 
