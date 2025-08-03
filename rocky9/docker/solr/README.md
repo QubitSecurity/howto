@@ -28,11 +28,11 @@
 
 | No.  | 파일명 | 설명 |
 |---|--------|------|
-|1| [`sys-configuration.md`](./docker/sys-configuration.md) | 컨테이너 내 Solr 설정, 디스크 마운트, restart 정책 등 |
-|2| [`precise-resource-control.md`](./docker/precise-resource-control.md) | Solr JVM 힙 설정 및 Docker 리소스 제한 방법 |
-|3| [`adaptive-monitoring.md`](./docker/adaptive-monitoring.md) | Prometheus, Grafana 기반 Solr 상태 모니터링 설정 |
-|4| [`orchestration-tools.md`](./docker/orchestration-tools.md) | Docker Compose vs Kubernetes 운영 비교 및 Helm/Operator 사용법 |
-|5| [`consider-large-scale.md`](./docker/consider-large-scale.md) | 대규모 노드 구성 시 고려해야 할 구조 설계 및 스토리지 전략 |
+|1| [`sys-configuration.md`](./sys-configuration.md) | 컨테이너 내 Solr 설정, 디스크 마운트, restart 정책 등 |
+|2| [`precise-resource-control.md`](./precise-resource-control.md) | Solr JVM 힙 설정 및 Docker 리소스 제한 방법 |
+|3| [`adaptive-monitoring.md`](./adaptive-monitoring.md) | Prometheus, Grafana 기반 Solr 상태 모니터링 설정 |
+|4| [`orchestration-tools.md`](./orchestration-tools.md) | Docker Compose vs Kubernetes 운영 비교 및 Helm/Operator 사용법 |
+|5| [`consider-large-scale.md`](./consider-large-scale.md) | 대규모 노드 구성 시 고려해야 할 구조 설계 및 스토리지 전략 |
 
 ---
 
