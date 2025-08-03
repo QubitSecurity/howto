@@ -155,10 +155,9 @@ Grafana에서 다음 메트릭을 시각화할 수 있습니다:
 
 ---
 
-원하신다면 다음도 지원 가능합니다:
+다음 검토도 도움이 됩니다:
 
 * `solr-exporter-config.xml` 커스터마이징 템플릿
 * Prometheus Alert Rule 예시
 * Grafana 템플릿 JSON 파일
 
-언제든지 요청해 주세요!
