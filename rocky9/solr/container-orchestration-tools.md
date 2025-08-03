@@ -143,7 +143,7 @@ spec:
 
 ## ✅ 결론
 
-> ✔️ **Docker Compose**는 빠른 테스트 및 소규모 배포에 유리
+> ✔️ **Docker Compose**는 빠른 테스트 및 소규모 배포에 유리  
 > ✔️ **Kubernetes** (Helm / Operator)는 **프로덕션 레벨의 안정성, 확장성, 자동화를 보장**
 
 ---
