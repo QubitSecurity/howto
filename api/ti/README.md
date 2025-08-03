@@ -18,8 +18,8 @@
   - 커뮤니티 기반 실시간 평판 제공
 
 📄 상세 문서:
-- [virustotal.md](./virustotal.md)
-- [abuseipdb.md](./abuseipdb.md)
+- [virustotal.md](./vendors/virustotal.md)
+- [abuseipdb.md](./vendors/abuseipdb.md)
 
 ---
 
@@ -35,8 +35,8 @@
   - 샘플 다운로드도 가능 (비밀번호: `infected`)
 
 📄 상세 문서:
-- [virustotal.md](./virustotal.md)
-- [malwarebazaar.md](./malwarebazaar.md)
+- [virustotal.md](./vendors/virustotal.md)
+- [malwarebazaar.md](./vendors/malwarebazaar.md)
 
 ---
 
