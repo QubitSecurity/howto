@@ -13,25 +13,32 @@
 
 ```mermaid
 flowchart TB
-  subgraph Monitoring
+
+  subgraph Prometheus_Stack["📈 Monitoring Stack"]
     Prometheus["🧠 Prometheus"]
     Grafana["📊 Grafana"]
   end
 
-  subgraph Solr Nodes (Docker)
-    Solr1["solr-a1<br>port 8983"]
-    Solr2["solr-a2<br>port 8984"]
-    Solr3["solr-b1<br>port 8983"]
-    Solr4["solr-b2<br>port 8984"]
-    Exporter1["📤 solr-exporter-a (Docker)"]
-    Exporter2["📤 solr-exporter-b (Docker)"]
+  subgraph Server_A
+    ExporterA["📤 solr-exporter-a"]
+    SolrA1["🧱 solr-a1 : shard1"]
+    SolrA2["🧱 solr-a2 : shard2"]
   end
 
-  Prometheus --> Exporter1
-  Prometheus --> Exporter2
+  subgraph Server_B
+    ExporterB["📤 solr-exporter-b"]
+    SolrB1["🧱 solr-b1 : shard1 replica"]
+    SolrB2["🧱 solr-b2 : shard2 replica"]
+  end
 
-  Exporter1 --> Solr1 & Solr2
-  Exporter2 --> Solr3 & Solr4
+  Prometheus --> ExporterA
+  Prometheus --> ExporterB
+
+  ExporterA --> SolrA1
+  ExporterA --> SolrA2
+
+  ExporterB --> SolrB1
+  ExporterB --> SolrB2
 ```
 
 ---
