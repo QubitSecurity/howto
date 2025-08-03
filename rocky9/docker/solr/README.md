@@ -11,16 +11,16 @@
 &nbsp;&nbsp;&nbsp;&nbsp;→ 컨테이너 재시작 시에도 Solr 인덱스와 설정 유지
 
 ✔️ **2. 리소스 제한 및 할당 정확하게 설정**  
-    → `--cpus`, `--memory`, `-Xmx` 등 JVM과 Docker 리소스 일치
+&nbsp;&nbsp;&nbsp;&nbsp;→ `--cpus`, `--memory`, `-Xmx` 등 JVM과 Docker 리소스 일치
 
 ✔️ **3. 적절한 모니터링 & 자동화 도입**  
-    → Prometheus + Solr Exporter로 검색/색인 상태 실시간 추적
+&nbsp;&nbsp;&nbsp;&nbsp;→ Prometheus + Solr Exporter로 검색/색인 상태 실시간 추적
 
 ✔️ **4. 컨테이너 관리 툴(Docker Compose, Kubernetes 등) 활용**  
-    → DevOps 기반 자동화 배포 및 고가용성 클러스터 구성
+&nbsp;&nbsp;&nbsp;&nbsp;→ DevOps 기반 자동화 배포 및 고가용성 클러스터 구성
 
 ✔️ **5. 컨테이너 기반 대용량 Solr**  
-    → 구성의 적정성 여부 설명
+&nbsp;&nbsp;&nbsp;&nbsp;→ 구성의 적정성 여부 설명
 
 ---
 
