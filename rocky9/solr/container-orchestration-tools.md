@@ -148,12 +148,10 @@ spec:
 
 ---
 
-## 📘 다음 단계로 제공 가능
+다음 검토도 도움이 됩니다:
 
 * `docker-compose.yml` 템플릿 (멀티 노드)
 * Solr Helm chart 커스터마이징 예시
 * Solr Operator 기반 YAML 템플릿
 * Kubernetes용 PersistentVolume 설정법
 * GitOps 기반 자동 배포 구조
-
-필요하신 구성 환경에 맞춰 단계별로 이어서 도와드릴 수 있습니다. 원하시면 어떤 플랫폼(K8s or Compose)으로 진행할지 알려주세요!
