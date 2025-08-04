@@ -11,6 +11,48 @@
 
 ---
 
+## 📊 데이터 흐름 구성도
+
+```mermaid
+flowchart TD
+    subgraph Internet
+        A[🌐 외부 사용자]
+    end
+
+    subgraph ProxyLayer
+        B1[🔄 HAProxy (TCP 443)]
+        B2[🔄 HAProxy (UDP 4500)]
+        C[🌐 NGINX (Web Proxy)]
+    end
+
+    subgraph Internal
+        D[🔐 Ivanti SSL VPN]
+    end
+
+    %% Portal Path
+    A -->|HTTPS (TCP 443)| B1 --> C -->|HTTPS| D
+
+    %% VPN Tunnel Path
+    A -->|NAT-T (UDP 4500)| B2 -->|UDP| D
+```
+
+---
+
+### 🧾 구성 흐름 요약
+
+1. **포털 접속**
+
+   * 사용자는 HTTPS로 `vpn.example.com` 접속
+   * `HAProxy`는 TCP 443을 받아 **NGINX로 프록시**
+   * `NGINX`는 인증서 termination 후 **Ivanti 포털로 전달**
+
+2. **VPN 터널 연결**
+
+   * 클라이언트는 NAT-T(IPsec)용 UDP 4500으로 접속
+   * `HAProxy`가 UDP 트래픽을 **Ivanti에 L4 수준으로 직접 전달**
+
+---
+
 ## 📁 HAProxy 설정 파일 예시 (`/etc/haproxy/haproxy.cfg`)
 
 ```haproxy
