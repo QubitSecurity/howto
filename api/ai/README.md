@@ -41,8 +41,3 @@
 | HyperCLOVA X     | 🔲 API 키 발급 필요함     | NCP Console > CLOVA Studio 필요            |
 
 ---
-
-## ✍️ 작성자
-
-QubitSecurity, 2025  
-문서 개선 제안은 PR 또는 Issue로 자유롭게 남겨주세요.
