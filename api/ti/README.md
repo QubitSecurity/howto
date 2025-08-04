@@ -1,4 +1,4 @@
-# 🔍 Threat Intelligence API 사용 가이드
+# 🔍 PLURA-TI 연동을 위한 각 서비스별 API 생성 가이드
 
 본 디렉터리는 IP 및 Hash 기반의 Threat Intelligence(TI) 평판 조회를 위한 API 연동 가이드를 정리한 문서입니다.  
 주요 TI 소스별 API 호출 방법을 확인하고, 실무에 바로 적용할 수 있는 Bash/Python 예제를 함께 활용하세요.
