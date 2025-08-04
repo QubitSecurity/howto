@@ -51,8 +51,3 @@
 | MalwareBazaar    | ❎ API 키 입력칸 없음     | API 키 없이 사용 가능     |
 
 ---
-
-## ✍️ 작성자
-
-QubitSecurity, 2025  
-문서 개선 제안은 PR 또는 Issue로 자유롭게 남겨주세요.
