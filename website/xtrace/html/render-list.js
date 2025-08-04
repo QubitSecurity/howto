@@ -1,8 +1,5 @@
-<ul id="ticket-list"></ul>
-
-<script>
 const DATA_URL = '2025.data';  // .data 파일 경로
-const BASE_URL = 'https://your-github-page-url/tickets';  // GitHub Pages base URL
+const BASE_URL = 'https://your-github-page-url/tickets';  // 티켓 HTML 경로
 
 fetch(DATA_URL)
   .then(response => response.text())
@@ -25,7 +22,6 @@ fetch(DATA_URL)
         ids.forEach(id => {
           const li = document.createElement('li');
           const a = document.createElement('a');
-
           a.href = `${BASE_URL}/2025/${month}/${day}/${id}.html`;
           a.textContent = `2025년 ${parseInt(month)}월 ${parseInt(day)}일 (#${id})`;
           li.appendChild(a);
@@ -35,6 +31,5 @@ fetch(DATA_URL)
     });
   })
   .catch(error => {
-    console.error('파일 로딩 실패:', error);
+    console.error('데이터 파일을 불러오는 중 오류 발생:', error);
   });
-</script>
