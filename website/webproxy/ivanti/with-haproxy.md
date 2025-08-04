@@ -14,26 +14,19 @@
 ## 📊 데이터 흐름 구성도
 
 ```mermaid
-flowchart TD
-    subgraph Internet
-        A[🌐 외부 사용자]
-    end
+flowchart LR
+    A[🌐 External User]
+    B1[🔄 HAProxy - TCP 443]
+    B2[🔄 HAProxy - UDP 4500]
+    C[🧭 NGINX Web Proxy]
+    D[🔐 Ivanti SSL VPN]
 
-    subgraph ProxyLayer
-        B1[🔄 HAProxy (TCP 443)]
-        B2[🔄 HAProxy (UDP 4500)]
-        C[🌐 NGINX (Web Proxy)]
-    end
+    A -->|TCP 443| B1
+    B1 --> C
+    C -->|TCP 443| D
 
-    subgraph Internal
-        D[🔐 Ivanti SSL VPN]
-    end
-
-    %% Portal Path
-    A -->|HTTPS (TCP 443)| B1 --> C -->|HTTPS| D
-
-    %% VPN Tunnel Path
-    A -->|NAT-T (UDP 4500)| B2 -->|UDP| D
+    A -->|UDP 4500| B2
+    B2 -->|UDP 4500| D
 ```
 
 ---
