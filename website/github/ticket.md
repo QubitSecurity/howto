@@ -43,6 +43,22 @@ xTrace/
 
 ## 🖥️ 1. 리눅스에서 티켓 생성 스크립트 (`ticket-create.sh`)
 
+### 📌 개요
+
+`ticket-create.sh`는 **리눅스에서 실행하는 티켓 자동 생성 스크립트**입니다.
+이 스크립트는 다음 작업을 수행합니다:
+
+* 사용자가 **이슈 제목을 입력하면**
+* **현재 날짜에 맞는 디렉토리를 자동으로 생성**하고
+* **Markdown 형식의 티켓 파일을 생성**합니다.
+
+이 파일은 이후 GitHub에 push되어 웹사이트로 자동 배포되며,
+메일과 웹훅으로도 알림이 전송됩니다.
+
+---
+
+### 📄 스크립트 내용
+
 ```bash
 #!/bin/bash
 
@@ -80,11 +96,38 @@ EOF
 echo "[✅] Created ticket at: $FILE"
 ```
 
-> 실행 예시:
+---
+
+### ✅ 사용 예시
 
 ```bash
 chmod +x ticket-create.sh
 ./ticket-create.sh "서버 과부하 문제 발생"
+```
+
+위 명령을 실행하면 다음과 같은 Markdown 파일이 생성됩니다:
+
+```
+docs/tickets/abcdEFgh/2025/08/04/issue-12345.md
+```
+
+---
+
+### ✨ 결과 예시
+
+```markdown
+# 🐞 Ticket: 서버 과부하 문제 발생
+
+**생성일:** 2025-08-04 10:11:00  
+**작성자 ID:** abcdEFgh  
+
+---
+
+## 📌 내용
+
+- 설명: 서버 과부하 문제 발생
+- 상태: 신규
+- 우선순위: 보통
 ```
 
 ---
@@ -106,7 +149,7 @@ name: 🚀 Build & Deploy xTrace
 
 on:
   push:
-    branches: [main]   # main 브랜치에 push 시 작동
+    branches: [main]
 
 jobs:
   build-and-deploy:
@@ -158,9 +201,9 @@ jobs:
 ## 🧪 4. 테스트 결과 (예시)
 
 * GitHub `main` 브랜치에 티켓 push → `gh-pages` 브랜치로 자동 배포됨
-* 티켓이 웹사이트에 즉시 반영됨 (예: `https://your-org.github.io/xTrace`)
-* 메일 수신 확인 (제목: `New Ticket Submitted`)
-* 웹훅 서버에 JSON 발송 성공 확인
+* MkDocs를 통해 웹사이트에서 티켓 즉시 반영됨
+* 메일 수신 확인 (`New Ticket Submitted`)
+* 웹훅 서버에 JSON 형태로 데이터 전송 완료
 
 ---
 
@@ -184,3 +227,4 @@ jobs:
 * [x] 외부 시스템 웹훅 호출 설정
 
 ---
+
