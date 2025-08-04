@@ -64,9 +64,9 @@ sequenceDiagram
 
 ## 🧪 MkDocs 빌드의 결과물은 어디에?
 
-GitHub Actions는 빌드된 HTML 파일들을
-👉 `site/` 폴더에 저장하고
-👉 이를 `gh-pages` 브랜치로 자동 배포합니다.
+GitHub Actions는 빌드된 HTML 파일들을  
+👉 `site/` 폴더에 저장하고  
+👉 이를 `gh-pages` 브랜치로 자동 배포합니다.  
 
 결과적으로 여러분은 이런 URL로 티켓을 열람하게 됩니다:
 
