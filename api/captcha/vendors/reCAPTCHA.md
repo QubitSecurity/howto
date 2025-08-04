@@ -1,4 +1,4 @@
-아래는 **Google reCAPTCHA API 키 생성 사용자 가이드)입니다.
+아래는 **Google reCAPTCHA API** 키 생성 사용자 가이드)입니다.
 
 ---
 
