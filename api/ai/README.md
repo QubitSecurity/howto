@@ -36,7 +36,7 @@
 
 | 파일명           | 설명                                                   |
 |------------------|--------------------------------------------------------|
-| `chatgpt.md`     | ChatGPT (OpenAI) API Key 발급 및 사용 방법             |
+| [`chatgpt.md`](./vendors/chatgpt.md)  | ChatGPT (OpenAI) API Key 발급 및 사용 방법             |
 | `gemini.md`      | Google Gemini API 설정, 키 발급, 호출 예시 포함        |
 | `chatclovax.md`  | HyperCLOVA X (네이버 클라우드) 연동 설정 및 호출 가이드 |
 | `anthropic.md`   | Claude (Anthropic) API Key 발급 및 모델 사용 안내       |
