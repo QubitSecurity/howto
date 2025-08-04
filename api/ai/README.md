@@ -1,4 +1,4 @@
-# 🤖 AI 서비스 연동 API 가이드
+# 🤖 PLURA-AI 연동을 위한 각 서비스별 API 생성 가이드
 
 본 디렉터리는 주요 생성형 AI 서비스(ChatGPT, Gemini, Claude, HyperCLOVA X)의 API Key 발급 및 사용 방법을 정리한 문서입니다.  
 서비스별 인증 절차와 호출 구조를 확인하고, 각 환경에 맞는 연동을 빠르게 구성해 보세요.
