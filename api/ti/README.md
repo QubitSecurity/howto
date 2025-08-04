@@ -17,10 +17,6 @@
   - 공격 유형별 리포트 (brute-force, scan 등)  
   - 커뮤니티 기반 실시간 평판 제공
 
-📄 상세 문서:
-- [virustotal.md](./vendors/virustotal.md)
-- [abuseipdb.md](./vendors/abuseipdb.md)
-
 ---
 
 ### 2) 🧬 Hash 평판 조회  
@@ -34,9 +30,15 @@
   - 캠페인 태그, 분석 벤더별 정보 포함  
   - 샘플 다운로드도 가능 (비밀번호: `infected`)
 
-📄 상세 문서:
-- [virustotal.md](./vendors/virustotal.md)
-- [malwarebazaar.md](./vendors/malwarebazaar.md)
+---
+
+## 📁 문서 목록
+
+| 파일명 | 설명 | 
+|--------|------|
+| [`virustotal.md`](./vendors/virustotal.md)      | VirusTotal API Key 발급 및 조회 방법 |
+| [`abuseipdb.md`](./vendors/abuseipdb.md)      | AbuseIPDB 가입, API 호출 예시 및 주의사항 |
+| [`malwarebazaar.md`](./vendors/malwarebazaar.md)  | 해시 기반 악성코드 정보 조회 및 샘플 다운로드 방법 |
 
 ---
 
@@ -47,16 +49,6 @@
 | VirusTotal       | 🔲 API 키 발급 필요함     | 사용자 입력 필요         |
 | AbuseIPDB        | 🔲 API 키 발급 필요함     | 사용자 입력 필요         |
 | MalwareBazaar    | ❎ API 키 입력칸 없음     | API 키 없이 사용 가능     |
-
----
-
-## 📁 문서 목록
-
-| 파일명 | 설명 | 
-|--------|------|
-| [`virustotal.md`](./vendors/virustotal.md)      | VirusTotal API Key 발급 및 조회 방법 |
-| [`abuseipdb.md`](./vendors/abuseipdb.md)      | AbuseIPDB 가입, API 호출 예시 및 주의사항 |
-| [`malwarebazaar.md`](./vendors/malwarebazaar.md)  | 해시 기반 악성코드 정보 조회 및 샘플 다운로드 방법 |
 
 ---
 
