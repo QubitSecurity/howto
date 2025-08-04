@@ -52,11 +52,11 @@
 
 ## 📁 문서 목록
 
-| 파일명 | 설명 |
-|--------|------|
-| `virustotal.md`     | VirusTotal API Key 발급 및 조회 방법 |
-| `abuseipdb.md`      | AbuseIPDB 가입, API 호출 예시 및 주의사항 |
-| `malwarebazaar.md`  | 해시 기반 악성코드 정보 조회 및 샘플 다운로드 방법 |
+| 파일명 | 설명 | 링크 |
+|--------|------|------|
+| `virustotal.md`     | VirusTotal API Key 발급 및 조회 방법 | [👉](./vendors/virustotal.md)  |
+| `abuseipdb.md`      | AbuseIPDB 가입, API 호출 예시 및 주의사항 | [👉](./vendors/abuseipdb.md)  |
+| `malwarebazaar.md`  | 해시 기반 악성코드 정보 조회 및 샘플 다운로드 방법 | [👉](./vendors/malwarebazaar.md)  |
 
 ---
 
