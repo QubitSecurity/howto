@@ -27,22 +27,26 @@
 
 ---
 
-## 📦 출력 예시 흐름
+## 📦 설치 순서
+
+다운로드 및 설치
 
 ```bash
 curl -O https://repo.plura.io/v6/agent/install.sh
 bash install.sh
-
-bash plura_register_enc.sh
 ````
+
 설치가 완료되면 아래 명령을 통해 정상 설치 여부를 확인할 수 있습니다.
 
 ```bash
 /usr/local/sbin/plurad -version
 ```
 
----
+라이선스 등록 및 실행
 
+```bash
+bash plura_register_enc.sh
+````
 
 ```text
 Enter encryption password:
@@ -53,4 +57,3 @@ Enter decryption password:
 ```
 
 ---
-
