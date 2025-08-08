@@ -35,6 +35,14 @@ bash install.sh
 
 bash plura_register_enc.sh
 ````
+설치가 완료되면 아래 명령을 통해 정상 설치 여부를 확인할 수 있습니다.
+
+```bash
+/usr/local/sbin/plurad -version
+```
+
+---
+
 
 ```text
 Enter encryption password:
