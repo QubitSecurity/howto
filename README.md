@@ -10,7 +10,7 @@
     
     SELINUX=enforcing
 
-## 3. Chek list
+## 3. Check list
 
 ### 3.1 OS
 
