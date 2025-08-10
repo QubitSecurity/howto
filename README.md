@@ -1,22 +1,22 @@
 # Installing PLURA on Rocky Linux 8/9/10
 
-## 1. SOFTWARE SELECTION > Server with GUI for KVM & Xrdp
+## 🪟 SOFTWARE SELECTION > Server with GUI for KVM & Xrdp
 
 <img src="rocky8/os/images/Rocky8_Software_Selection.png" height="500">
 
-## 2. Selinux mode is always on
+## 🐧 Selinux mode is always on
 
     vi /etc/selinux/config
     
     SELINUX=enforcing
 
-## 3. Check list
+## 📝 Check list
 
-### 3.1 OS
+### 🖥️ 3.1 OS
 
 - 3.1.1 NAT gateway
 
-### 3.2 Install App
+### 📱 3.2 Install App
 
 - 3.2.1 kvm
 - 3.2.2 xrdp
@@ -54,14 +54,14 @@
 
 ---
 
-## x. Download
+## 💾 Download
 
 - http://mirror.navercorp.com/rocky/
 - https://mirror.navercorp.com/rocky/8/isos/x86_64/
 - https://mirror.navercorp.com/rocky/9/isos/x86_64/
 - https://mirror.navercorp.com/rocky/10/isos/x86_64/
 
-## x. Epel Download
+## 💾 Epel Download
 
 - https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
