@@ -3,7 +3,7 @@
 ## 개요
 이 스크립트는 **PLURA EDR 에이전트**가 **시스템 권한**으로 실행되어,  
 Sysmon을 자동으로 설치하거나 구성 업데이트를 수행합니다.  
-실행 결과와 오류 원인은 **Windows 이벤트 로그**(Application)에 기록됩니다.
+실행 결과와 오류 원인은 **Windows 이벤트 로그(Application)**에 기록됩니다.
 
 ---
 
@@ -36,8 +36,7 @@ Sysmon을 자동으로 설치하거나 구성 업데이트를 수행합니다.
 
 ## 이벤트 로그
 
-- **이벤트 소스**: `PLURA-Sysmon-Installer`  
-  (만약 이벤트 소스 생성이 실패하면 Windows 기본 `Application` 소스를 사용합니다)
+- **이벤트 소스**: Windows 기본 `Application`
 - **로그 위치**: Windows 이벤트 뷰어 → **Windows 로그** → **Application**
 
 ---
