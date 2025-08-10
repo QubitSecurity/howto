@@ -12,16 +12,16 @@
 
 ## 📝 Check list
 
-### 🖥️ 3.1 OS
+### 🖥️ OS
 
-- 3.1.1 NAT gateway
+- NAT gateway
 
-### 📱 3.2 Install App
+### 📱 Install App
 
-- 3.2.1 kvm
-- 3.2.2 xrdp
-- 3.2.3 tigervnc
-- 3.2.4 remmina
+- kvm
+- xrdp
+- tigervnc
+- remmina
 
 ---
 
