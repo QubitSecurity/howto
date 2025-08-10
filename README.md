@@ -1,4 +1,4 @@
-# Installing PLURA on Rocky Linux 8/9
+# Installing PLURA on Rocky Linux 8/9/10
 
 ## 1. SOFTWARE SELECTION > Server with GUI for KVM & Xrdp
 
@@ -24,18 +24,20 @@
 
 #### 3.2.3 tigervnc
 
-#### 3.2.4 remmina
+- 3.2.4 remmina
 
 ## X. Download
 
 - http://mirror.navercorp.com/rocky/
 - https://mirror.navercorp.com/rocky/8/isos/x86_64/
 - https://mirror.navercorp.com/rocky/9/isos/x86_64/
+- https://mirror.navercorp.com/rocky/10/isos/x86_64/
 
 ## X. Epel Download
 
 - https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
+- https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/
 
 
 ## X. Useful Links
