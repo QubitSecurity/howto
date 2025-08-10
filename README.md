@@ -14,16 +14,13 @@
 
 ### 3.1 OS
 
-#### 3.1.1 NAT gateway
+- 3.1.1 NAT gateway
 
 ### 3.2 Install App
 
-#### 3.2.1 kvm
-
-#### 3.2.2 xrdp
-
-#### 3.2.3 tigervnc
-
+- 3.2.1 kvm
+- 3.2.2 xrdp
+- 3.2.3 tigervnc
 - 3.2.4 remmina
 
 ## X. Download
