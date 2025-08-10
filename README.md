@@ -23,20 +23,20 @@
 - 3.2.3 tigervnc
 - 3.2.4 remmina
 
-## X. Download
+## x. Download
 
 - http://mirror.navercorp.com/rocky/
 - https://mirror.navercorp.com/rocky/8/isos/x86_64/
 - https://mirror.navercorp.com/rocky/9/isos/x86_64/
 - https://mirror.navercorp.com/rocky/10/isos/x86_64/
 
-## X. Epel Download
+## x. Epel Download
 
 - https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/
 
 
-## X. Useful Links
+## x. Useful Links
 
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
