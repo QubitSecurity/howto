@@ -1,0 +1,14 @@
+
+### ZK
+./zkCli.sh -server 10.100.60.40:2181 get /collections/weblog/state.json | sed -n '/^{/,$p' > state-1.json
+
+### Ansible with jq
+jq '.weblog.shards | to_entries[] | select(.value.replicas != null) | .key as $shard | .value.replicas | to_entries[] | select(.value.state == "down") | {shard: $shard, replica: .key}' state-1.json > down-1.json
+
+### Run Debug mode 
+/home/sysadmin/solr/bin/solr start -cloud  -V -Dlog4j2.debug=true
+
+# http://10.100.61.149:8983/solr/admin/collections?action=CREATESHARD&shard=shard90&collection=weblog&createNodeSet=10.100.61.76:8983_solr
+
+
+# http://10.100.61.149:8983/solr/admin/collections?action=CREATESHARD&shard=shard1&collection=weblog&createNodeSet=10.100.61.148:8983_solr
