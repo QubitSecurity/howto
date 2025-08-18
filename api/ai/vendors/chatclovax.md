@@ -6,7 +6,7 @@
 
 ### 🔗 콘솔 접속 및 로그인
 
-1. 웹 브라우저에서 **네이버 클라우드 플랫폼 콘솔**([https://console.cloud.naver.com/](https://console.cloud.naver.com/))에 접속하신 후 로그인합니다.
+1. 웹 브라우저에서 **네이버 클라우드 플랫폼 콘솔**([https://clovastudio.ncloud.com/](https://clovastudio.ncloud.com/))에 접속하신 후 로그인합니다.
 2. CLOVA Studio 사용을 위한 약관 동의 및 신청이 필요한 경우 절차를 진행합니다 ([python.langchain.com][1], [api.ncloud-docs.com][2]).
 
 ---
