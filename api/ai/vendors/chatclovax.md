@@ -13,7 +13,7 @@
 
 ### 🏗️ Test App 또는 Service App 생성
 
-3. CLOVA Studio 대시보드에서 **Test App** 또는 **Service App**을 생성합니다
+3. CLOVA Studio 대시보드에서 "API키" > **Test App** 또는 **Service App**을 생성합니다
 
    * Test App은 개발 및 평가용이며, 이후 Service App으로 전환 가능 ([python.langchain.com][1]).
    * App 생성 시 모델(HyperCLOVA X), 옵션, 사용 목적 등을 선택하고 설정합니다.
