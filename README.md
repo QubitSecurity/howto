@@ -69,7 +69,7 @@
 
 ---
 
-## CentOS Stream EOL
+## ⏳ CentOS Stream EOL
 
 - https://endoflife.date/centos-stream
 
