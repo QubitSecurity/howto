@@ -67,6 +67,11 @@
 - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/
 
+---
+
+## CentOS Stream EOL
+
+- https://endoflife.date/centos-stream
 
 ## x. Useful Links
 
