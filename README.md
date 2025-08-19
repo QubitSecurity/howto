@@ -77,9 +77,9 @@
 
 | Release | Released              | Active Support                               | Security Support                              |
 |---------|-----------------------|----------------------------------------------|-----------------------------------------------|
-| **10**  | 8 months ago <br>(12 Dec 2024) | ✅ Ends in 4 years <br>(01 Jan 2030)              | ✅ Ends in 4 years <br>(01 Jan 2030)              |
-| **9**   | 3 years and 11 months ago <br>(15 Sep 2021) | ✅ Ends in 1 year and 9 months <br>(31 May 2027) | ✅ Ends in 1 year and 9 months <br>(31 May 2027) |
-| **8**   | 5 years and 11 months ago <br>(24 Sep 2019) | ❌ Ended 1 year and 2 months ago <br>(31 May 2024) | ❌ Ended 1 year and 2 months ago <br>(31 May 2024) |
+| **10**  | 12 Dec 2024 | ✅ 01 Jan 2030              | ✅ 01 Jan 2030              |
+| **9**   | 15 Sep 2021 | ✅ 31 May 2027 | ✅ 31 May 2027 |
+| **8**   | 24 Sep 2019 | ❌ Ended 31 May 2024 | ❌ Ended 31 May 2024 |
 
 ---
 
