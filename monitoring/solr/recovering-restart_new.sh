@@ -33,12 +33,12 @@ fi
 # 1. Solr Core 목록 감지
 ##############################
 CORE_LIST=$(
-  curl -s --max-time 3 "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" \
+  curl -s --max-time 5 "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" \
     | grep -o '"name":"[^"]*"' | cut -d':' -f2 | tr -d '"' | sort || true
 )
 
 if [ -z "$CORE_LIST" ]; then
-  CORE_LIST=$(find "$SOLR_DATA_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+  CORE_LIST=$(find "$SOLR_DATA_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; || true)
   echo "[$DATE] 🔁 Solr API 실패 → 파일 시스템에서 Core 목록 감지: $CORE_LIST" | tee -a "$LOG_FILE"
 else
   echo "[$DATE] ✅ Solr API를 통해 Core 목록 감지: $CORE_LIST" | tee -a "$LOG_FILE"
@@ -52,17 +52,17 @@ fi
 ##############################
 # 2. Solr 종료 시도
 ##############################
-SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}')
-if [ -z "$SOLR_PID" ]; then
+SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}' || true)
+if [ -z "${SOLR_PID:-}" ]; then
   echo "[$DATE] ℹ️ 현재 Solr 프로세스가 없습니다." | tee -a "$LOG_FILE"
 else
   echo "[$DATE] 🔻 Solr stop 시도 중..." | tee -a "$LOG_FILE"
-  $SOLR_BIN stop
+  $SOLR_BIN stop || true
   sleep 10
-  SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}')
-  if [ -n "$SOLR_PID" ]; then
+  SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}' || true)
+  if [ -n "${SOLR_PID:-}" ]; then
     echo "[$DATE] ⚠️ stop 실패. 강제 종료: PID=$SOLR_PID" | tee -a "$LOG_FILE"
-    kill -9 "$SOLR_PID"
+    kill -9 "$SOLR_PID" || true
     sleep 5
   else
     echo "[$DATE] ✅ 정상적으로 종료됨." | tee -a "$LOG_FILE"
@@ -82,13 +82,14 @@ while IFS= read -r -d '' core; do
   [ -d "$data_dir" ] || continue
   cd "$data_dir" || continue
 
+  # 현재 index 실경로
   cur=$(readlink -f index 2>/dev/null || realpath index 2>/dev/null || echo "$data_dir/index")
   for d in index.*; do
     [ -e "$d" ] || continue
     target=$(readlink -f "$d" 2>/dev/null || realpath "$d" 2>/dev/null || echo "$data_dir/$d")
     if [ -n "$cur" ] && [ "$target" != "$cur" ]; then
       echo "삭제: $data_dir/$d" | tee -a "$LOG_FILE"
-      rm -rf --one-file-system "$d"
+      rm -rf --one-file-system "$d" || true
     fi
   done
 done < <(find "$SOLR_DATA_DIR" -mindepth 1 -maxdepth 1 -type d -print0)
@@ -105,16 +106,16 @@ for CORE in $CORE_LIST; do
     TARGET_DIR="$SOLR_DATA_DIR/$CORE/data/$DIRTYPE"
     if [ -d "$TARGET_DIR" ]; then
       echo "삭제: $TARGET_DIR" | tee -a "$LOG_FILE"
-      rm -rf "$TARGET_DIR"/*
+      rm -rf "$TARGET_DIR"/* || true
     fi
   done
 
   LOCK_FILE="$SOLR_DATA_DIR/$CORE/data/index/write.lock"
   if [ -f "$LOCK_FILE" ]; then
-    SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}')
-    if [ -z "$SOLR_PID" ]; then
+    SOLR_PID=$(ps -ef | grep '[j]ava.*solr' | awk '{print $2}' || true)
+    if [ -z "${SOLR_PID:-}" ]; then
       echo "[$DATE] 🔓 write.lock 제거: $LOCK_FILE" | tee -a "$LOG_FILE"
-      rm -f "$LOCK_FILE"
+      rm -f "$LOCK_FILE" || true
     else
       echo "[$DATE] ⛔ write.lock 존재하지만 Solr 실행 중 → 삭제 생략" | tee -a "$LOG_FILE"
     fi
@@ -125,7 +126,7 @@ done
 # 4. Solr 재시작
 ##############################
 echo "[$DATE] 🔼 Solr start -cloud 수행 중..." | tee -a "$LOG_FILE"
-$SOLR_BIN start -cloud
+$SOLR_BIN start -cloud || true
 sleep 10
 
 ##############################
@@ -137,16 +138,26 @@ MAX_WAIT_SEC=$((20*60))
 INTERVAL=10
 elapsed=0
 while :; do
-  json=$(curl -s --max-time 3 "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS&wt=json")
-  [ -n "$json" ] || { echo "CLUSTERSTATUS 응답 없음, 재시도..." | tee -a "$LOG_FILE"; sleep "$INTERVAL"; elapsed=$((elapsed+INTERVAL)); [ "$elapsed" -ge "$MAX_WAIT_SEC" ] && break; continue; }
+  json=$(curl -s --max-time 5 "http://localhost:8983/solr/admin/collections?action=CLUSTERSTATUS&wt=json" || true)
+  if [ -z "$json" ]; then
+    echo "CLUSTERSTATUS 응답 없음, 재시도..." | tee -a "$LOG_FILE"
+    sleep "$INTERVAL"
+    elapsed=$((elapsed+INTERVAL))
+    [ "$elapsed" -ge "$MAX_WAIT_SEC" ] && break
+    continue
+  fi
 
-  not_active=$(echo "$json" | grep -oE '"state":"(recovering|down|recovery_failed|inactive)"' | wc -l | tr -d ' ')
-  if [ "$not_active" -eq 0 ]; then
+  # grep 매칭 0건일 때 pipefail로 죽지 않도록 보호
+  not_active=$(echo "$json" | grep -oE '"state":"(recovering|down|recovery_failed|inactive)"' || true)
+  # 줄 수를 세어 비-Active replica 개수 계산
+  count_not_active=$(printf "%s\n" "$not_active" | wc -l | tr -d ' ')
+
+  if [ "$count_not_active" -eq 0 ]; then
     echo "[$(date "+%F %T")] ✅ 모든 replica ACTIVE" | tee -a "$LOG_FILE"
     break
   fi
 
-  echo "[$(date "+%F %T")] … 아직 ACTIVE 아님 (비-Active replicas: $not_active), 대기 중" | tee -a "$LOG_FILE"
+  echo "[$(date "+%F %T")] … 아직 ACTIVE 아님 (비-Active replicas: $count_not_active), 대기 중" | tee -a "$LOG_FILE"
   sleep "$INTERVAL"
   elapsed=$((elapsed+INTERVAL))
   [ "$elapsed" -ge "$MAX_WAIT_SEC" ] && echo "⏱️ 최대 대기 초과" | tee -a "$LOG_FILE" && break
@@ -157,7 +168,7 @@ done
 ##############################
 echo "[$(date "+%F %T")] 📡 코어별 ping 확인..." | tee -a "$LOG_FILE"
 for CORE in $CORE_LIST; do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8983/solr/$CORE/admin/ping")
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8983/solr/$CORE/admin/ping" || echo 000)
   if [ "$code" = "200" ]; then
     echo "✅ $CORE ping OK" | tee -a "$LOG_FILE"
   else
