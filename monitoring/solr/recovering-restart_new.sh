@@ -32,8 +32,10 @@ fi
 ##############################
 # 1. Solr Core 목록 감지
 ##############################
-CORE_LIST=$(curl -s --max-time 3 "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" \
-  | grep -o '"name":"[^"]*"' | cut -d':' -f2 | tr -d '"' | sort)
+CORE_LIST=$(
+  curl -s --max-time 3 "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" \
+    | grep -o '"name":"[^"]*"' | cut -d':' -f2 | tr -d '"' | sort || true
+)
 
 if [ -z "$CORE_LIST" ]; then
   CORE_LIST=$(find "$SOLR_DATA_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
