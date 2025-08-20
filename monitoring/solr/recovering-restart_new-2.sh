@@ -130,31 +130,40 @@ $SOLR_BIN start -cloud || true
 sleep 10
 
 ##############################
-# C. 리커버리 완료 대기 (개선: ping OK 연속 시 탈출)
+# C. 리커버리 완료 대기 (개선: /select 기반 헬스체크)
 ##############################
 echo "[$(date "+%F %T")] ⏳ 리커버리 완료 대기..." | tee -a "$LOG_FILE"
 
 MAX_WAIT_SEC=$((20*60))
 INTERVAL=10
 elapsed=0
-consecutive_ping_ok=0
-PING_OK_TARGET=3   # 연속 3회 ping OK면 운영 가능으로 간주
+consecutive_ok=0
+OK_TARGET=3         # 연속 3회 정상 응답이면 운영 가능으로 간주
+STABLE_PLATEAU=12   # 비-Active 개수가 일정하게 유지될 때(12회≈2분)도 탈출
+
+last_count_not_active=""
+plateau_hits=0
 
 while :; do
-  # 1) 코어 ping 먼저 확인
+  # 1) 코어 헬스체크: 우선 /select, 실패 시 /admin/ping 보조 점검
   all_ok=1
   for CORE in $CORE_LIST; do
-    code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8983/solr/$CORE/admin/ping" || echo 000)
-    if [ "$code" != "200" ]; then
-      all_ok=0
-      break
+    code_sel=$(curl -s -o /dev/null -w "%{http_code}" \
+      "http://localhost:8983/solr/$CORE/select?q=*:*&rows=0" || echo 000)
+    if [ "$code_sel" != "200" ]; then
+      code_ping=$(curl -s -o /dev/null -w "%{http_code}" \
+        "http://localhost:8983/solr/$CORE/admin/ping" || echo 000)
+      if [ "$code_ping" != "200" ]; then
+        all_ok=0
+        break
+      fi
     fi
   done
 
-  if [ "$all_ok" -eq 1 ]; then
-    consecutive_ping_ok=$((consecutive_ping_ok+1))
+  if [ "$all_ok" -eq 1 ] ; then
+    consecutive_ok=$((consecutive_ok+1))
   else
-    consecutive_ping_ok=0
+    consecutive_ok=0
   fi
 
   # 2) CLUSTERSTATUS에서 비-Active 개수 계산
@@ -162,18 +171,30 @@ while :; do
   not_active_lines=$(echo "$json" | grep -oE '"state":"(recovering|down|recovery_failed|inactive)"' || true)
   count_not_active=$(printf "%s\n" "$not_active_lines" | wc -l | tr -d ' ')
 
+  # 3) 종료 조건
   if [ "$count_not_active" -eq 0 ]; then
     echo "[$(date "+%F %T")] ✅ 모든 replica ACTIVE" | tee -a "$LOG_FILE"
     break
   fi
 
-  # 3) 비-Active가 남았지만 운영 ping이 연속 OK면 경고 로그 후 탈출
-  if [ "$consecutive_ping_ok" -ge "$PING_OK_TARGET" ]; then
-    echo "[$(date "+%F %T")] ⚠️ replica 비-Active가 ${count_not_active}개 남았지만, 코어 ping 연속 OK → 운영 가능으로 간주하고 진행" | tee -a "$LOG_FILE"
-    # 문제 레플리카 후보 간단 덤프(상세 식별은 별도 수동 진단 권장)
+  # 코어 쿼리/핑이 연속 OK면 경고 로그 남기고 탈출(운영 가능)
+  if [ "$consecutive_ok" -ge "$OK_TARGET" ]; then
+    echo "[$(date "+%F %T")] ⚠️ replica 비-Active가 ${count_not_active}개 남았지만, /select 또는 ping 연속 OK → 운영 가능으로 간주하고 진행" | tee -a "$LOG_FILE"
     echo "$json" | tr -d '\n' | sed 's/{"replicas"/\n&/g' \
       | grep -E '"state":"(recovering|down|recovery_failed|inactive)"' -n \
       | head -n 20 | sed 's/^/  suspect: /' | tee -a "$LOG_FILE" || true
+    break
+  fi
+
+  # 비-Active 개수가 일정하게 유지되면(유령 replica 의심) 경고 후 탈출
+  if [ "$last_count_not_active" = "$count_not_active" ] && [ -n "$count_not_active" ]; then
+    plateau_hits=$((plateau_hits+1))
+  else
+    plateau_hits=0
+    last_count_not_active="$count_not_active"
+  fi
+  if [ "$plateau_hits" -ge "$STABLE_PLATEAU" ]; then
+    echo "[$(date "+%F %T")] ⚠️ 비-Active 개수가 ${count_not_active}로 ${plateau_hits}회 연속 동일(≈$((plateau_hits*INTERVAL))초) → 유령 replica 의심, 진행" | tee -a "$LOG_FILE"
     break
   fi
 
