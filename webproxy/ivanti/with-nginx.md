@@ -54,7 +54,7 @@ flowchart LR
 stream {
     server {
         listen 4500 udp;
-        proxy_pass 210.100.218.15:4500;
+        proxy_pass 1.2.3.4:4500;
         proxy_timeout 2m;
     }
 }
@@ -87,7 +87,7 @@ server {
     ssl_certificate_key /etc/nginx/certs/privkey.pem;
 
     location / {
-        proxy_pass https://210.100.218.15;  # Ivanti 포털 주소
+        proxy_pass https://1.2.3.4;  # Ivanti 포털 주소
         proxy_ssl_verify       off;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
