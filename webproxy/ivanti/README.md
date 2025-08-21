@@ -58,5 +58,3 @@ curl -vk https://vpn.example.com
 * UDP 4500은 L7 프록시 불가 → 반드시 L4 프록시(NGINX stream 등)로 구성해야 합니다
 
 ---
-
-```
