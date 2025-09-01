@@ -4,23 +4,21 @@
 
 ## 📂 파일 설명
 
-* **event_json.png**
-  event_json 탐지 이미지입니다.
+* **event_json.png**  
+  event_json 탐지 예시 이미지입니다.
 
-* **event_json.md**
-  - [] even_json 탐지 이미지를 기반으로 event_json.yaml 생성하기 위한 규칙입니다.
-  - [] 탐지 정보를 규칙에 맞도록 규격화 합니다.
-  - [] 전체 로그를 별도 정보 없이, raw_log 만 입력합니다.
+* **event_json.md**  
+  - [ ] event_json 탐지 이미지를 기반으로 `event_json.yaml`을 생성하기 위한 규칙을 정의합니다.  
+  - [ ] 탐지 정보를 규칙에 맞도록 규격화합니다.  
+  - [ ] 전체 로그는 별도 분석 없이 raw_log만 입력합니다.  
+  - [ ] event_json 탐지 로그는 `{{$}}`, raw_log는 `{{$$$}}` 형식으로 구분합니다.  
 
-* **ex-hybrid.yaml**
+* **ex-hybrid.yaml**  
   윈도우 / 리눅스 로그를 동시에 분석할 수 있도록 설계한 하이브리드 프롬프트 예시입니다.
 
-* **formatting_rules.yaml**
-  출력에 대한 양식을 확장하기 위한 예시입니다.
+* **formatting_rules.yaml**  
+  출력 양식을 확장하기 위한 예시 규칙입니다.
 
 ## 📝 목적
 
-* EDR 탐지 필터에 기반에 AI 분석 프롬프트 예시입니다.
-
----
-
+* EDR 탐지 필터를 기반으로 AI 분석 프롬프트를 제작하기 위한 예시 자료입니다.
