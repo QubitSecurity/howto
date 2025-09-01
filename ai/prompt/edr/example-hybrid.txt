@@ -74,36 +74,34 @@
   6: 요약 (경영진 보고용 3줄)
   7: JSON:
 {
-  "risk_level": 2,
-  "technique": { "id": "T1112", "name": "Modify Registry" },
+  "risk_level": 3,
+  "technique": { 
+    "id": "T1105", 
+    "name": "Ingress Tool Transfer" 
+  },
   "host": {
-    "computer": "DESKTOP-LTUSGIK",
-    "channel": "Security",
-    "event_record_id": 15101876,
-    "time_created_utc": "2025-08-30T17:16:14.4600761Z"
+    "computer": "QA-WAF-Stg",
+    "channel": "auditd/syslog",
+    "time_created_utc": "2025-09-01T10:42:36.681968+09:00"
   },
   "event": {
-    "EventID": 4657,
-    "ObjectName": "REGISTRY\\\\MACHINE\\\\SYSTEM\\\\ControlSet001\\\\Services\\\\W32Time\\\\TimeProviders\\\\NtpClient",
-    "ObjectNameRaw": "REGISTRYMACHINESYSTEMControlSet001ServicesW32TimeTimeProvidersNtpClient",
-    "ObjectValueName": "SpecialPollTimeRemaining",
-    "OldValue": "172.16.10.250,7fcd455**********",
-    "NewValue": "172.16.10.250,7fcd66d**********",
-    "ProcessId": "0xa8c",
-    "ProcessName": "C:\\\\Windows\\\\System32\\\\svchost.exe",
-    "ProcessNameRaw": "C:WindowsSystem32svchost.exe",
-    "User": "NT AUTHORITY\\\\LOCAL SERVICE",
-    "OperationType": "%%1905"
+    "programname": "audispd",
+    "type": "EXECVE",
+    "argc": 3,
+    "a0": "curl",
+    "a1": "-s",
+    "a2": "https://repo.plura.io/v5/module/upgrade_geoip.sh",
+    "raw_msg": "audit(1756690956.671:48536): argc=3 a0=\"curl\" a1=\"-s\" a2=\"https://repo.plura.io/v5/module/upgrade_geoip.sh\""
   },
   "analysis": [
-    "Windows 시간 동기화(NtpClient) 레지스트리 값 변경 탐지 (EventID 4657, T1112).",
-    "svchost.exe(LOCAL SERVICE) 맥락상 정상 동작 가능성 있으나, 시간 동기화 파라미터 조작은 지속성/혼란 유발 기법과도 연관.",
-    "OldValue→NewValue 변경이 주기·세션 수준인지 확인 필요. 동일/유사 이벤트의 빈번·반복 발생 시 단계 상향 검토."
+    "Linux auditd 로그에서 EXECVE 실행 탐지.",
+    "curl 명령을 통해 외부 URL에서 스크립트 다운로드 시도.",
+    "MITRE ATT&CK T1105(Ingress Tool Transfer)에 해당."
   ],
   "actions_now": [
-    "운영 변경 여부 확인 후 비인가 변경이면 즉시 원복 및 감사 로깅 강화.",
-    "W32Time 서비스/프로세스 무결성 점검 및 최근 7/30일 동종 이벤트 빈도 분석.",
-    "수정 주체 프로세스 트리·네트워크 연결·계정 이력 포렌식 수집."
+    "curl/wget 명령 실행 출처 확인, 해당 프로세스 차단.",
+    "다운로드된 스크립트 해시 계산 후 악성 여부 검사.",
+    "해당 서버 QA-WAF-Stg에 대한 네트워크 포렌식 및 세션 추적."
   ],
-  "raw_log": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\">\n    <System>\n        <Provider Guid=\"{54849625-5478-4994-a5ba-3e3b0328c30d}\" Name=\"Microsoft-Windows-Security-Auditing\"/>\n        <EventID>4657</EventID>\n        <Version>0</Version>\n        <Level>0</Level>\n        <Task>12801</Task>\n        <Opcode>0</Opcode>\n        <Keywords>0x8020000000000000</Keywords>\n        <TimeCreated SystemTime=\"2025-08-30T17:16:14.4600761Z\"/>\n        <EventRecordID>15101876</EventRecordID>\n        <Correlation/>\n        <Execution ProcessID=\"4\" ThreadID=\"3468\"/>\n        <Channel>Security</Channel>\n        <Computer>DESKTOP-LTUSGIK</Computer>\n        <Security/>\n    </System>\n    <EventData>\n        <Data Name=\"SubjectUserSid\">S-1-5-19</Data>\n        <Data Name=\"SubjectUserName\">LOCAL SERVICE</Data>\n        <Data Name=\"SubjectDomainName\">NT AUTHORITY</Data>\n        <Data Name=\"SubjectLogonId\">0x3e5</Data>\n        <Data Name=\"ObjectName\">REGISTRYMACHINESYSTEMControlSet001ServicesW32TimeTimeProvidersNtpClient</Data>\n        <Data Name=\"ObjectValueName\">SpecialPollTimeRemaining</Data>\n        <Data Name=\"HandleId\">0x2d0</Data>\n        <Data Name=\"OperationType\">%%1905</Data>\n        <Data Name=\"OldValueType\">%%1879</Data>\n        <Data Name=\"OldValue\">172.16.10.250,7fcd455**********</Data>\n        <Data Name=\"NewValueType\">%%1879</Data>\n        <Data Name=\"NewValue\">172.16.10.250,7fcd66d**********</Data>\n        <Data Name=\"ProcessId\">0xa8c</Data>\n        <Data Name=\"ProcessName\">C:WindowsSystem32svchost.exe</Data>\n    </EventData>\n</Event>"
+  "raw_log": "{ \"timegenerated\": \"2025-09-01T10:42:36.681968+09:00\", \"programname\": \"audispd\", \"hostname\": \"QA-WAF-Stg\", \"syslogtag\": \"audispd:\", \"pri\": \"14\", \"pri-text\": \"user.info\", \"syslogfacility\": \"1\", \"syslogfacility-text\": \"user\", \"syslogseverity\": \"6\", \"syslogseverity-text\": \"info\", \"msg\": \"node=QA-WAF-Stg type=EXECVE msg=audit(1756690956.671:48536): argc=3 a0=\\\"curl\\\" a1=\\\"-s\\\" a2=\\\"https://repo.plura.io/v5/module/upgrade_geoip.sh\\\"\" }"
 }
