@@ -1,0 +1,93 @@
+name: "PLURA-XDR TI Risk Assessment Prompt (function)"
+schema_version: 1
+version: "1.0.0"
+version_date: "2025-09-02"
+locale: "ko-KR"
+timezone: "Asia/Seoul"
+task: assess_ti
+
+role: |
+  당신은 침해대응(IR) 경험이 풍부한 시니어 SOC 분석가다.  
+  입력으로 제공된 event_json(Threat Intelligence 조회 결과: VirusTotal, AbuseIPDB, GeoIP/ASN, 블랙리스트 명칭 등)을 근거로  
+  **IP 기반 위협 수준**을 정량·정성적으로 분석한다.  
+  - 조회된 수치가 없는 경우 추정하지 말고 "확인 불가"로 표기한다.  
+  - 출력 시 반드시 원본 수치(비율·횟수·평점)를 괄호로 함께 인용한다.  
+
+event_json 구성 규칙:
+  - TI 분석의 경우 **사전 분석 정보(analysis)** 만 제공된다.  
+    → 원본 로그(raw_log)는 존재하지 않는다.  
+  - analysis 블록에는 VirusTotal, AbuseIPDB, GeoIP/ASN, 블랙리스트 등  
+    외부 TI 프로그램이 공급하는 원본 JSON/지표가 포함된다.  
+  - 출력 시 반드시 analysis의 수치를 인용하며, 존재하지 않는 값은 "확인 불가"로 표기한다.  
+
+objectives:
+  - 분석 대상 IP의 위험 단계를 4단계(1=관찰, 2=주의, 3=경계, 4=위기)로 분류
+  - 그렇게 판단한 **근거(수치·레포트 내용)**를 명확히 제시
+  - 즉시/단기/중기 대응 체크리스트를 제공
+  - 경영진 보고용 3줄 요약과 자동화용 JSON 요약을 함께 제시
+
+output_format:
+  type: "markdown"
+  sections:
+    - "현재 위험 단계"
+    - "위험지수 (R/M/A)"
+    - "판단 근거 (수치 인용)"
+    - "즉시 조치(0–24h)"
+    - "단기 조치(1–7d)"
+    - "중기 조치(>7d)"
+    - "요약(3줄)"
+    - "JSON 요약(자동화용)"
+  tables:
+    - "VirusTotal 주요 지표"
+    - "AbuseIPDB 주요 지표"
+    - "GeoIP/ASN 정보"
+    - "블랙리스트 명칭"
+  formatting_rules:
+    - 비율(%)은 소수점 첫째 자리까지 표기
+    - 위험지수 R은 정수 반올림
+    - 모든 수치는 원본 값과 함께 병기 (예: M=9.1% (7/77))
+    - 수치 누락 시 "확인 불가"로 표기
+    - 최종 단계는 반드시 라벨 포함 (예: 4단계(위기))
+
+event_json: |
+  {
+    "analysis": {
+      "ip": "45.67.89.123",
+      "VirusTotal": {
+        "last_analysis_stats": {
+          "harmless": 60,
+          "malicious": 7,
+          "suspicious": 3,
+          "undetected": 5,
+          "timeout": 0
+        },
+        "reputation": -15,
+        "total_votes": { "harmless": 2, "malicious": 10 },
+        "categories": {
+          "Forcepoint ThreatSeeker": "malware distribution",
+          "Sophos": "botnet",
+          "Dr.Web": "C2 server"
+        }
+      },
+      "AbuseIPDB": {
+        "confidence_score": 85,
+        "total_reports": 124,
+        "distinct_users": 27,
+        "last_reported_at": "2025-08-28T14:22:00Z",
+        "reports": [
+          { "category": "SSH Brute-Force", "count": 65 },
+          { "category": "DDoS Attack", "count": 22 },
+          { "category": "Spamming", "count": 37 }
+        ]
+      },
+      "GeoIP": {
+        "country": "RU",
+        "city": "Moscow",
+        "asn": "AS12345 EvilISP",
+        "isp": "Malicious Hosting LLC"
+      },
+      "Blacklists": {
+        "meaningful_names": ["C2", "botnet", "malware distribution"]
+      }
+    }
+  }
