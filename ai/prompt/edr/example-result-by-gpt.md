@@ -1,4 +1,4 @@
-# [보고서] PLURA-XDR Unified Log Analysis
+# PLURA-XDR Unified Log Analysis - 보고서
 
 ## 요약(한 문단)
 
