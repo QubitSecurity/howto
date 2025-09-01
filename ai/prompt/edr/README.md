@@ -26,7 +26,7 @@
 * `{{$}}` → 외부 프로그램이 삽입하는 사전 분석 결과(JSON 블록)
 * `{{$$$}}` → 외부 프로그램이 삽입하는 원본 로그(raw string or JSON)
 
-- **ex-hybrid.yaml**
+- **ex-hybrid.yaml**  
   윈도우 / 리눅스 로그를 동시에 분석할 수 있도록 설계한 하이브리드 프롬프트 예시입니다.
   - [ ] ex-hybrid.yaml 실제 데이터를 AI 에 보내 위한 양식입니다.  
   - [ ] ex-hybrid-function.yaml 은 사용자가 프롬프트에서 사용하는 양식입니다.
