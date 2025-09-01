@@ -36,6 +36,10 @@ output_format:
   tables:
     evidence_columns: [field, value, why_it_matters]
     ti_columns: [source, metric, value, interpretation]
+    context_columns: [host, os, channel, user, session, privileges, baseline_deviation]
+    ioc_columns: [type, indicator, context, confidence, ttl]
+    action_columns: [evidence_ref, next_action, tool/policy, scope, status]
+
   formatting_rules:
     - "수치는 반드시 원본 값 병기(e.g., VT 7/70=10%)."
     - "추정 금지. 미제공 시 '확인 불가' 표기."
