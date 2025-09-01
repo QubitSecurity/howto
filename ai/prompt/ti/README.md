@@ -78,7 +78,7 @@ LLM이 수치를 읽어 표로 정리하고, **4단계 위험도 산정 + 위치
 
 ### ✨사용 팁
 
-* **VirusTotal + AbuseIPDB JSON**을 함께 붙이면 R(Risk Level) 산정이 정확해집니다.
+* **VirusTotal + AbuseIPDB JSON**을 함께 붙이면 R(Risk Score) 산정이 정확해집니다.
 
 ---
 
