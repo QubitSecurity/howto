@@ -16,9 +16,21 @@
 - SubjectUserSid, SubjectUserName, SubjectDomainName, ProcessId, ProcessName, ObjectName, ObjectValueName, OldValue, NewValue, TimeCreated.  
 
 [3] 파생 분석
-- 변경된 레지스트리 키가 무엇을 의미하는지 (예: W32Time → NtpClient 설정 변경 → 시간 동기화 조작 가능성).  
-- OldValue ↔ NewValue 비교: 단순 설정 변경인지, 공격자가 지속성을 확보하기 위한 행위인지 평가.  
-- 프로세스 이름(svchost.exe)과 사용자(LOCAL SERVICE)의 정당성 여부 검증.  
+- 이 이벤트가 연관된 MITRE ATT&CK Technique ID와 Name을 우선 확인하라.
+- Technique에 따라 주요 분석 포인트를 선택하고, Event 필드와 비교하여 의미를 도출하라.
+- 공통적으로 반드시 검토할 항목:
+  * 변경/실행/통신/접근 대상(레지스트리, 프로세스, 네트워크, 메모리 등)
+  * Old ↔ New 값 차이, 실행 명령/인자, 프로토콜·포트, 접근 대상의 민감성
+  * 실행 주체(프로세스/사용자)의 정상·비정상 여부
+- Technique별 세부 규칙은 일반 원칙에 따라 자동 적용하라:
+  * Persistence/Defense Evasion 관련 → 지속성 확보/보안 우회 여부 평가
+  * Execution 관련 → 명령/스크립트 패턴, 인젝션·자동화 흔적 평가
+  * Credential Access 관련 → 민감 프로세스·파일 접근 여부 검증
+  * Command & Control 관련 → 프로토콜/목적지 정상성, IOC 연계 여부
+  * Exfiltration/Impact 관련 → 데이터 전송/삭제/암호화 패턴 평가
+- 만약 Technique가 인식되지 않거나 일반적이지 않다면,
+  Event 필드의 의미 있는 행위(변경·접근·실행)를 추출하고,
+  해당 행위가 어떤 MITRE 전술(Tactic)에 가장 근접한지 설명하라.
 
 [4] 위험 단계 기준
 - 1단계(관찰): 정상 서비스 동작 가능성이 높음, IOC 없음.  
