@@ -27,6 +27,8 @@ output_format:
     - "요약(한 문단)"
     - "위험도 평가 (1~4단계 + 근거 요약)"
     - "근거 상세 (표)"
+    - "환경 맥락 (호스트/세션/권한/베이스라인 편차)"
+    - "IOC/IOA 목록 (차단·모니터링용)"
     - "MITRE ATT&CK 매핑"
     - "TI 해석 (VT/AbuseIPDB/GeoIP) + 계산식 제시"
     - "오탐 가능성 및 판별 근거"
@@ -38,16 +40,15 @@ output_format:
     ti_columns: [source, metric, value, interpretation]
     context_columns: [host, os, channel, user, session, privileges, baseline_deviation]
     ioc_columns: [type, indicator, context, confidence, ttl]
-    action_columns: [evidence_ref, next_action, tool/policy, scope, status]
-
+    action_columns: [evidence_ref, next_action, tool_policy, scope, status]
   formatting_rules:
     - "수치는 반드시 원본 값 병기(e.g., VT 7/70=10%)."
     - "추정 금지. 미제공 시 '확인 불가' 표기."
     - "스크립트/경로/명령어/레지스트리/파일은 코드블록(또는 `inline code`)."
     - "시각: UTC 우선, 필요 시 로컬(+09:00) 병기."
     - "표시 수치는 소수점 1~2자리 반올림."
+    - "IOC 표시는 domain[.]com, hxxps://, 1.2.3[.]4 형태로 디팬그."
 
-# ---- Event payload (JSON 그대로) ----
 event_json: |
   {
     "risk_level": 3,
