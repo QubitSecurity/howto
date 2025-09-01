@@ -28,8 +28,10 @@
 
 - **ex-hybrid.yaml**
   윈도우 / 리눅스 로그를 동시에 분석할 수 있도록 설계한 하이브리드 프롬프트 예시입니다.
+  - [ ] ex-hybrid.yaml 실제 데이터를 AI 에 보내 위한 양식입니다.  
+  - [ ] ex-hybrid-function.yaml 은 사용자가 프롬프트에서 사용하는 양식입니다.
 
-- **formatting\_rules.yaml**
+- **formatting_rules.yaml**
   출력 양식을 확장하기 위한 예시 규칙입니다.
 
 ## 📝 목적
