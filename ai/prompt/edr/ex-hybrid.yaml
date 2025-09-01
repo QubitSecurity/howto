@@ -60,39 +60,41 @@ output_format:
 
 event_json: |
   {
-    "risk_level": 3,
-    "technique": { "id": "T1105", "name": "Ingress Tool Transfer" },
-    "host": {
-      "computer": "QA-WAF-Stg",
-      "channel": "auditd/syslog",
-      "os": "linux",
-      "time_created_utc": "2025-09-01T01:42:36.681968Z",
-      "time_created_local": "2025-09-01T10:42:36.681968+09:00"
+    "analysis": {
+      "risk_level": 3,
+      "technique": { "id": "T1105", "name": "Ingress Tool Transfer" },
+      "host": {
+        "computer": "QA-WAF-Stg",
+        "channel": "auditd/syslog",
+        "os": "linux",
+        "time_created_utc": "2025-09-01T01:42:36.681968Z",
+        "time_created_local": "2025-09-01T10:42:36.681968+09:00"
+      },
+      "event": {
+        "programname": "audispd",
+        "type": "EXECVE",
+        "argc": 3,
+        "a0": "curl",
+        "a1": "-s",
+        "a2": "https://repo.plura.io/v5/module/upgrade_geoip.sh",
+        "raw_msg": "audit(1756690956.671:48536): argc=3 a0=\"curl\" a1=\"-s\" a2=\"https://repo.plura.io/v5/module/upgrade_geoip.sh\""
+      },
+      "ti": {
+        "VirusTotal": { "malicious": 7, "suspicious": 3, "harmless": 60, "reputation": -15 },
+        "AbuseIPDB": { "confidence_score": 85, "total_reports": 124, "categories": ["SSH Brute-Force", "Spamming"] },
+        "GeoIP": { "country": "RU", "asn": "AS12345 EvilISP" }
+      },
+      "analysis_text": [
+        "Linux auditd 로그에서 EXECVE 실행 탐지.",
+        "curl 명령을 통해 외부 URL에서 스크립트 다운로드 시도.",
+        "TI 지표: AbuseIPDB confidence 85%, VT malicious 7/70 (10%).",
+        "MITRE ATT&CK T1105(Ingress Tool Transfer)에 해당."
+      ],
+      "actions_now": [
+        "curl/wget 명령 실행 출처 확인 및 해당 프로세스 차단.",
+        "다운로드된 스크립트 해시 계산 후 악성 여부 검사.",
+        "TI 고위험 IP(85%)와 연결된 세션 차단 및 로그 보존."
+      ]
     },
-    "event": {
-      "programname": "audispd",
-      "type": "EXECVE",
-      "argc": 3,
-      "a0": "curl",
-      "a1": "-s",
-      "a2": "https://repo.plura.io/v5/module/upgrade_geoip.sh",
-      "raw_msg": "audit(1756690956.671:48536): argc=3 a0=\"curl\" a1=\"-s\" a2=\"https://repo.plura.io/v5/module/upgrade_geoip.sh\""
-    },
-    "ti": {
-      "VirusTotal": { "malicious": 7, "suspicious": 3, "harmless": 60, "reputation": -15 },
-      "AbuseIPDB": { "confidence_score": 85, "total_reports": 124, "categories": ["SSH Brute-Force", "Spamming"] },
-      "GeoIP": { "country": "RU", "asn": "AS12345 EvilISP" }
-    },
-    "analysis": [
-      "Linux auditd 로그에서 EXECVE 실행 탐지.",
-      "curl 명령을 통해 외부 URL에서 스크립트 다운로드 시도.",
-      "TI 지표: AbuseIPDB confidence 85%, VT malicious 7/70 (10%).",
-      "MITRE ATT&CK T1105(Ingress Tool Transfer)에 해당."
-    ],
-    "actions_now": [
-      "curl/wget 명령 실행 출처 확인 및 해당 프로세스 차단.",
-      "다운로드된 스크립트 해시 계산 후 악성 여부 검사.",
-      "TI 고위험 IP(85%)와 연결된 세션 차단 및 로그 보존."
-    ],
     "raw_log": "{ \"timegenerated\": \"2025-09-01T10:42:36.681968+09:00\", \"programname\": \"audispd\", \"hostname\": \"QA-WAF-Stg\", \"syslogtag\": \"audispd:\", \"pri\": \"14\", \"pri-text\": \"user.info\", \"syslogfacility\": \"1\", \"syslogfacility-text\": \"user\", \"syslogseverity\": \"6\", \"syslogseverity-text\": \"info\", \"msg\": \"node=QA-WAF-Stg type=EXECVE msg=audit(1756690956.671:48536): argc=3 a0=\\\"curl\\\" a1=\\\"-s\\\" a2=\\\"https://repo.plura.io/v5/module/upgrade_geoip.sh\\\"\" }"
   }
