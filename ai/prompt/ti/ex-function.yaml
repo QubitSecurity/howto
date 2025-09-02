@@ -5,6 +5,7 @@ version_date: "2025-09-02"
 locale: "ko-KR"
 timezone: "Asia/Seoul"
 task: assess_ti
+response_format: markdown
 
 role: |
   당신은 침해대응(IR) 경험이 풍부한 시니어 SOC 분석가다.  
