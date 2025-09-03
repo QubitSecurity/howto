@@ -86,4 +86,5 @@
 
 ## x. Useful Links
 
-- https://gist.github.com/ihoneymon/652be052a0727ad59601
+- [Markdown](https://gist.github.com/ihoneymon/652be052a0727ad59601)
+- [Eicar Downlload](https://www.eicar.org/download-anti-malware-testfile/)
