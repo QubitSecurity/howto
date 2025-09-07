@@ -39,6 +39,10 @@ if [ $? -ne 0 ] || [ -z "$response" ]; then
       echo ""
       echo "- Solr 접속 실패 ($SOLR_HOST:$SOLR_PORT)"
     } | mail -s "[ALERT] Solr 3회 연속 접속 실패 ($SOLR_HOST)" joo@qubitsec.com
+
+    # 추가: 노드 헬스 단순 체크 실행/로그 (Quiet 기본)
+    /home/sysadmin/check/solr_query_health.sh --config="$CONFIG_FILE" >> /home/sysadmin/check/log_solrsys_status.log 2>&1
+
     exit 2
   fi
 fi
@@ -129,6 +133,9 @@ else
         echo "- $m"
       done
     } | mail -s "[ALERT] Solr 3회 연속 장애 감지 ($SOLR_HOST)" joo@qubitsec.com
+
+    # 추가: 노드 헬스 단순 체크 실행/로그 (Quiet 기본)
+    /home/sysadmin/check/solr_query_health.sh --config="$CONFIG_FILE" >> /home/sysadmin/check/log_solrsys_status.log 2>&1
 
     logger -t "$LOG_TAG" -p local0.err "3회 연속 장애 발생 on $SOLR_HOST"
     exit 2
