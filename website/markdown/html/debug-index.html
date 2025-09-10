@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Markdown Viewer (Debug Fixed)</title>
+
+  <!-- GitHub Markdown 스타일 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.8.1/github-markdown.min.css">
+  <!-- 코드 하이라이트 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+  <!-- KaTeX 수식 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+  <style>
+    :root { color-scheme: light dark; }
+    body{ margin:0; background:#0b0c0f; }
+    .page { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .frame { background:#fff; border-radius:12px; padding:24px; box-shadow:0 8px 24px rgba(0,0,0,.2); }
+    .markdown-body { box-sizing:border-box; min-width:200px; max-width:100%; }
+    .toolbar{ display:flex; gap:8px; align-items:center; margin-bottom:16px; }
+    .toolbar input{ width:320px; max-width:60vw; padding:8px 10px; border:1px solid #ccc; border-radius:8px; }
+    .toolbar button{ padding:8px 12px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer; }
+    .status { font-size:12px; color:#666; }
+    .code-wrap { position: relative; }
+    .copy-btn { position:absolute; top:8px; right:8px; font-size:12px; padding:6px 8px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    /* 디버그 콘솔 */
+    #debug { background:#0b0c0f; color:#90ee90; padding:10px; border-radius:8px; margin-top:16px; white-space:pre-wrap; max-height:220px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="frame">
+      <div class="toolbar">
+        <input id="docInput" type="text" placeholder="README.md 또는 docs/guide.md" />
+        <button id="loadBtn">불러오기</button>
+        <span id="status" class="status"></span>
+      </div>
+      <article id="app" class="markdown-body">불러오는 중…</article>
+      <pre id="debug"></pre>
+    </div>
+  </div>
+
+  <!-- ✅ 순서 중요: highlight.js 를 먼저 로드 -->
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+
+  <!-- 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@3.0.0/dist/markdown-it-emoji.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@4.0.0/dist/markdown-it-footnote.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+  <script>
+    // --- Mermaid 초기화 ---
+    mermaid.initialize({ startOnLoad: false, theme: "default" });
+
+    // --- Markdown-it (하이라이트 가드 포함) ---
+    const md = window.markdownit({
+      html: false,
+      linkify: true,
+      typographer: true,
+      highlight: function (str, lang) {
+        const hasHLJS = typeof window.hljs !== 'undefined' && hljs && typeof hljs.highlight === 'function';
+        if (hasHLJS && lang && typeof hljs.getLanguage === 'function' && hljs.getLanguage(lang)) {
+          try { return hljs.highlight(str, { language: lang }).value; } catch {}
+        }
+        if (hasHLJS && typeof hljs.highlightAuto === 'function') {
+          try { return hljs.highlightAuto(str).value; } catch {}
+        }
+        return ''; // 하이라이트 비활성 시 기본 렌더
+      }
+    }).use(window.markdownitEmoji).use(window.markdownitFootnote);
+
+    // --- DOM 참조 ---
+    const el = document.getElementById('app');
+    const statusEl = document.getElementById('status');
+    const inputEl = document.getElementById('docInput');
+    const btnEl = document.getElementById('loadBtn');
+    const debugEl = document.getElementById('debug');
+
+    // --- 유틸/로그 ---
+    function log(line){ debugEl.textContent += line + "\n"; debugEl.scrollTop = debugEl.scrollHeight; }
+    const CURRENT_DIR = window.location.pathname.replace(/[^/]*$/, ''); // /xdr/diagram/
+
+    function getDocFromQuery() {
+      const u = new URL(window.location.href);
+      return u.searchParams.get('doc') || 'README.md';
+    }
+
+    // 상대경로일 때 여러 후보를 만들어 순차 시도
+    function buildCandidates(p) {
+      if (/^https?:\/\//i.test(p) || p.startsWith('/')) return [p];
+
+      const clean = p.replace(/^\/+/, '');
+      const list = [
+        `${CURRENT_DIR}${clean}`,             // 1) 현재 디렉터리
+        `/w_plura${CURRENT_DIR}${clean}`,     // 2) /w_plura + 현재 디렉터리
+        `/w_plura/${clean}`,                  // 3) /w_plura 루트
+        `/${clean}`,                          // 4) 사이트 루트
+      ];
+      // 중복 슬래시 정리하여 절대 URL로
+      return list.map(s => new URL(s.replace(/\/{2,}/g,'/'), window.location.origin).href);
+    }
+
+    // Mermaid 렌더
+    async function renderMermaidIn(container) {
+      const blocks = container.querySelectorAll('pre code.language-mermaid');
+      for (const code of blocks) {
+        const raw = code.textContent;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mermaid';
+        wrapper.textContent = raw;
+        const pre = code.closest('pre');
+        pre.replaceWith(wrapper);
+      }
+      if (container.querySelector('.mermaid')) {
+        try { await mermaid.run({ nodes: container.querySelectorAll('.mermaid') }); } catch (e) { log('Mermaid error: ' + e); }
+      }
+    }
+
+    // 코드 Copy 버튼
+    function addCopyButtons(container) {
+      const pres = container.querySelectorAll('pre');
+      pres.forEach(pre => {
+        const wrap = document.createElement('div');
+        wrap.className = 'code-wrap';
+        pre.replaceWith(wrap);
+        wrap.appendChild(pre);
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        btn.addEventListener('click', async () => {
+          const code = pre.querySelector('code')?.innerText || '';
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 800);
+          } catch {}
+        });
+        wrap.appendChild(btn);
+      });
+    }
+
+    // 메인 렌더
+    async function renderDoc(rawPath) {
+      inputEl.value = rawPath;
+      statusEl.textContent = '불러오는 중…';
+      el.textContent = '불러오는 중…';
+      debugEl.textContent = '';
+
+      const candidates = buildCandidates(rawPath);
+      log('Current page: ' + window.location.href);
+      log('Try order:\n - ' + candidates.join('\n - '));
+
+      let lastErr = null;
+      for (const url of candidates) {
+        try {
+          log(`\n[FETCH] ${url}`);
+          const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+          log(`status=${res.status} ok=${res.ok} content-type=${res.headers.get('content-type')||'-'}`);
+
+          if (!res.ok) { lastErr = new Error(res.status + ' ' + res.statusText); continue; }
+
+          const text = await res.text();
+
+          // HTML 응답이면 그대로 표시
+          if (/^\s*<!doctype html>/i.test(text) || /^\s*<html\b/i.test(text)) {
+            log('→ HTML detected. Render as-is.');
+            el.innerHTML = text;
+          } else {
+            const unsafe = md.render(text);
+            const safe = DOMPurify.sanitize(unsafe, { USE_PROFILES: { html: true } });
+            el.innerHTML = safe;
+
+            try {
+              renderMathInElement(el, {
+                delimiters: [
+                  {left: "$$", right: "$$", display: true},
+                  {left: "$", right: "$", display: false},
+                  {left: "\\(", right: "\\)", display: false},
+                  {left: "\\[", right: "\\]", display: true}
+                ],
+                throwOnError: false
+              });
+            } catch {}
+
+            await renderMermaidIn(el);
+            addCopyButtons(el);
+          }
+
+          statusEl.textContent = '완료';
+          return; // 성공 시 종료
+        } catch (e) {
+          lastErr = e;
+          log('Error: ' + (e && e.message ? e.message : e));
+        }
+      }
+
+      // 전부 실패
+      statusEl.textContent = '오류';
+      el.innerHTML = '<p>문서를 불러오지 못했습니다. 경로를 확인하세요.</p>';
+      if (lastErr) log('\nFinal error: ' + lastErr.message);
+    }
+
+    // 초기 로드
+    renderDoc(getDocFromQuery());
+
+    // 버튼
+    btnEl.addEventListener('click', () => {
+      const raw = (inputEl.value || 'README.md').trim();
+      const u = new URL(window.location.href);
+      u.searchParams.set('doc', raw);
+      history.replaceState(null, '', u.toString());
+      renderDoc(raw);
+    });
+  </script>
+</body>
+</html>
