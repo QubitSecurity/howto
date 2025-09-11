@@ -10,11 +10,8 @@ Markdown 문서를 그대로 관리하면서, 사용자는 웹 브라우저에�
 아래처럼 `index.html` 하나만 두고, 쿼리 파라미터로 `doc` 값을 전달하면 됩니다.
 
 - 예시:  
-```
-
 [Example](https://w.plura.io/index.html?doc=/policy/ko/privacy.md)
 
-```
 
 - 동작 구조:  
 - `index.html` → JavaScript로 `doc` 경로를 읽음  
