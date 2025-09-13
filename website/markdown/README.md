@@ -21,7 +21,7 @@
 📌 예시  
 [PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
 
-[마크다운 뷰어](https://github.com/QubitSecurity/howto/tree/main/website/markdown/README.md)
+[마크다운 뷰어](https://w.plura.io/index.html?doc=https://github.com/QubitSecurity/howto/blob/main/website/markdown/README.md)
 
 📌 동작 구조  
 1. `index.html`이 `doc` 파라미터(파일 경로)를 읽습니다.  
