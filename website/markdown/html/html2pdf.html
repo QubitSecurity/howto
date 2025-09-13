@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PLURA-XDR Knowledge Hub</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://w.plura.io/favicon.ico" sizes="any">
+
+  <!-- 화면 다크 모드 기본 -->
+  <meta name="color-scheme" content="dark">
+
+  <!-- GitHub Markdown 스타일 & 코드 하이라이트 & KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.8.1/github-markdown.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+  <style>
+    :root { color-scheme: dark; }
+
+    /* ===== 화면 레이아웃(기본 다크) ===== */
+    body{ margin:0; background:#0b0c0f; color:#e5e7eb; }
+    .page { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .frame {
+      background: transparent;
+      border: 1px solid #000 !important;
+      border-radius:12px;
+      padding:24px;
+      box-shadow:none !important;
+    }
+
+    /* 툴바 */
+    .toolbar{
+      display:flex; gap:8px; align-items:center; justify-content:space-between;
+      margin-bottom:12px;
+    }
+    .toolbar-left{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    .btn{
+      appearance:none; border:1px solid #374151; background:#111827; color:#e5e7eb;
+      padding:8px 10px; border-radius:8px; cursor:pointer; font-size:13px;
+    }
+    .btn[disabled]{ opacity:.6; cursor:wait; }
+    #status{ font-size:12px; color:#9ca3af; }
+
+    /* Markdown 다크(화면) */
+    .markdown-body { box-sizing:border-box; min-width:200px; max-width:100%; background:transparent; color:inherit; }
+    .markdown-body h1,.markdown-body h2,.markdown-body h3,
+    .markdown-body h4,.markdown-body h5,.markdown-body h6 { color:#fff; }
+    .markdown-body hr { background-color:#374151; }
+    .markdown-body a { color:#93c5ff; }
+    .markdown-body blockquote { color:#d1d5db; border-left-color:#374151; }
+    .markdown-body code { background:#111827; color:#e5e7eb; }
+    .markdown-body pre { background:#0f172a; border:1px solid #374151; color:#e5e7eb; }
+    .markdown-body pre code { background:transparent; }
+
+    /* 배지 */
+    .badge{ display:inline-block; font-size:12px; color:#e5e7eb; background:#111827;
+            border:1px solid #1f2937; padding:4px 8px; border-radius:8px; margin-bottom:12px; }
+
+    /* 코드블록 Copy 버튼 */
+    .code-wrap{ position:relative; }
+    .copy-btn{
+      position:absolute; top:8px; right:8px; font-size:12px;
+      padding:6px 8px; border-radius:6px; border:1px solid #374151;
+      background:#111827; color:#e5e7eb; cursor:pointer;
+    }
+
+    /* ==== 표: 화면(다크) 기본 ==== */
+    .markdown-body table{
+      --color-border-default: #fff;
+      --color-border-muted:   #fff;
+      --color-border-subtle:  #fff;
+      border-collapse: collapse !important;
+      display: table !important;
+      width: auto !important;
+      max-width: 100%;
+      background: #000 !important;
+      color: #fff !important;
+      border: 1px solid #fff !important;
+    }
+    .markdown-body table > :not(caption) > * > *{
+      background: #000 !important;
+      color: #fff !important;
+      border: 1px solid #fff !important;
+    }
+    .markdown-body table tr{ border-top: 1px solid #fff !important; }
+    .markdown-body table thead th{ border-bottom: 2px solid #fff !important; }
+    .markdown-body table a{ color:#fff !important; }
+
+    /* ==== 인쇄 기본(라이트 추천) ==== */
+    @media print {
+      :root{ color-scheme: light; }
+      body{ background:#fff !important; color:#111827 !important; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* ==== 강제 페이지 나눔 ==== */
+    .pdf-pagebreak-before{ break-before: page; page-break-before: always; }
+    .pdf-pagebreak-after{  break-after:  page; page-break-after:  always; }
+    .no-split{ break-inside: avoid; page-break-inside: avoid; }
+
+    /* =========================================================
+       PDF 샌드박스(오프스크린 복제본): 화면과 완전히 분리
+       ========================================================= */
+    #pdf-sandbox-root{
+      position: fixed; left: -10000px; top: 0;
+      width: 1000px; /* 충분한 폭 확보(레이아웃 안정) */
+      opacity: 0; pointer-events: none; z-index: -1;
+    }
+    .pdf-sandbox{ padding:0; margin:0; }
+    .pdf-sandbox .markdown-body{ max-width: 100%; }
+
+    /* 샌드박스 - 라이트 테마 오버라이드 */
+    .pdf-sandbox-light{ background:#fff; color:#111827; }
+    .pdf-sandbox-light .markdown-body{ color:#111827 !important; }
+    .pdf-sandbox-light .markdown-body h1,
+    .pdf-sandbox-light .markdown-body h2,
+    .pdf-sandbox-light .markdown-body h3,
+    .pdf-sandbox-light .markdown-body h4,
+    .pdf-sandbox-light .markdown-body h5,
+    .pdf-sandbox-light .markdown-body h6{ color:#111827 !important; }
+    .pdf-sandbox-light .markdown-body a{ color:#1d4ed8 !important; }
+    .pdf-sandbox-light .markdown-body code{ background:#f3f4f6 !important; color:#111827 !important; }
+    .pdf-sandbox-light .markdown-body pre{ background:#f8fafc !important; border-color:#e5e7eb !important; color:#111827 !important; }
+    .pdf-sandbox-light .markdown-body blockquote{ color:#374151 !important; border-left-color:#d1d5db !important; }
+    .pdf-sandbox-light .markdown-body table{
+      background:#fff !important; color:#111 !important; border:1px solid #111 !important;
+    }
+    .pdf-sandbox-light .markdown-body table > :not(caption) > * > *{
+      background:#fff !important; color:#111 !important; border:1px solid #111 !important;
+    }
+
+    /* 샌드박스 - 다크 테마 */
+    .pdf-sandbox-dark{ background:#0b0c0f; color:#e5e7eb; }
+
+    /* =========================================================
+       ▶ 화면 라이트 미리보기 (pdftheme=light일 때 화면도 라이트로)
+       ========================================================= */
+    :root[data-view-theme="light"] body{ background:#fff !important; color:#111827 !important; }
+    :root[data-view-theme="light"] .frame{ border-color:#e5e7eb !important; }
+    :root[data-view-theme="light"] .markdown-body{ color:#111827 !important; }
+    :root[data-view-theme="light"] .markdown-body h1,
+    :root[data-view-theme="light"] .markdown-body h2,
+    :root[data-view-theme="light"] .markdown-body h3,
+    :root[data-view-theme="light"] .markdown-body h4,
+    :root[data-view-theme="light"] .markdown-body h5,
+    :root[data-view-theme="light"] .markdown-body h6{ color:#111827 !important; }
+    :root[data-view-theme="light"] .markdown-body a{ color:#1d4ed8 !important; }
+    :root[data-view-theme="light"] .markdown-body code{ background:#f3f4f6 !important; color:#111827 !important; }
+    :root[data-view-theme="light"] .markdown-body pre{ background:#f8fafc !important; border-color:#e5e7eb !important; color:#111827 !important; }
+    :root[data-view-theme="light"] .markdown-body blockquote{ color:#374151 !important; border-left-color:#d1d5db !important; }
+    :root[data-view-theme="light"] .markdown-body table{
+      background:#fff !important; color:#111 !important; border:1px solid #111 !important;
+    }
+    :root[data-view-theme="light"] .markdown-body table > :not(caption) > * > *{
+      background:#fff !important; color:#111 !important; border:1px solid #111 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="frame">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button id="btn-pdf" class="btn" title="PDF 내보내기">PDF 다운로드</button>
+          <button id="btn-print" class="btn" title="브라우저 인쇄 대화상자 열기(고품질)">인쇄(PDF 저장)</button>
+        </div>
+        <div id="status"></div>
+      </div>
+
+      <div id="badge" class="badge"></div>
+      <article id="app" class="markdown-body">불러오는 중…</article>
+    </div>
+  </div>
+
+  <!-- 오프스크린 PDF 샌드박스 컨테이너 -->
+  <div id="pdf-sandbox-root" aria-hidden="true"></div>
+
+  <!-- ✅ 순서 중요: highlight.js 먼저 -->
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+
+  <!-- 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@3.0.0/dist/markdown-it-emoji.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@4.0.0/dist/markdown-it-footnote.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+  <!-- PDF 번들(html2canvas + jsPDF + html2pdf) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+  <script>
+    /**
+     * - PDF는 오프스크린 '샌드박스 복제본'에서 생성 → 화면은 변하지 않음(메뉴 유지).
+     * - pdftheme=auto|light|dark (기본 auto=라이트 PDF).
+     * - 화면 미리보기: pdftheme=light면 화면도 라이트로 전환(메뉴/툴바 유지).
+     * - 머리말/꼬리말(제목/날짜/페이지번호), A4/Letter + 여백 프리셋, <!--pagebreak-->.
+     */
+
+    // Mermaid
+    mermaid.initialize({ startOnLoad: false, theme: "default" });
+
+    // Markdown-it (하이라이트 가드 포함)
+    const md = window.markdownit({
+      html: false,
+      linkify: true,
+      typographer: true,
+      highlight: function (str, lang) {
+        const hasHLJS = typeof window.hljs !== 'undefined' && hljs && typeof hljs.highlight === 'function';
+        if (hasHLJS && lang && typeof hljs.getLanguage === 'function' && hljs.getLanguage(lang)) {
+          try { return hljs.highlight(str, { language: lang }).value; } catch {}
+        }
+        if (hasHLJS && typeof hljs.highlightAuto === 'function') {
+          try { return hljs.highlightAuto(str).value; } catch {}
+        }
+        return '';
+      }
+    }).use(window.markdownitEmoji).use(window.markdownitFootnote);
+
+    const el = document.getElementById('app');
+    const badge = document.getElementById('badge');
+    const statusEl = document.getElementById('status');
+    const btnPdf = document.getElementById('btn-pdf');
+    const btnPrint = document.getElementById('btn-print');
+    const sandboxRoot = document.getElementById('pdf-sandbox-root');
+
+    let currentDocUrl = null;
+    let currentFileName = 'document.pdf';
+    let currentDocTitle = 'Document';
+    let currentDocDate  = null; // ISO 문자열
+
+    /* -----------------------
+       URL & 옵션 유틸(견고)
+    ------------------------*/
+    function getParam(name){
+      try{
+        const u = new URL(window.location.href);
+        const qv = u.searchParams.get(name);
+        if (qv !== null) return qv;
+        if (u.hash) {
+          const hp = new URLSearchParams(u.hash.replace(/^#/, ''));
+          const hv = hp.get(name);
+          if (hv !== null) return hv;
+        }
+      }catch(e){}
+      return null;
+    }
+    function getDocFromQuery() { return getParam('doc') || 'README.md'; }
+    function getPdfThemeFromQuery(){
+      const raw = (getParam('pdftheme') || 'auto').trim().toLowerCase();
+      if (raw === 'dark' || raw === 'light') return raw;
+      if (['d','black','night'].includes(raw)) return 'dark';
+      if (['l','white','day'].includes(raw)) return 'light';
+      return 'auto';
+    }
+    function getPageSizeFromQuery(){ const v = (getParam('pagesize') || 'a4').toLowerCase(); return (v === 'letter') ? 'letter' : 'a4'; }
+    function getMarginPresetFromQuery(){ const v = (getParam('margin') || 'normal').toLowerCase(); return (v==='narrow'||v==='wide')?v:'normal'; }
+    function getHeaderFooterEnabled(){ return (getParam('hf') || '1') !== '0'; }
+    function getPdfTitleOverride(){ return getParam('pdftitle') || null; }
+    function getPdfDateOverride(){ return getParam('pdfdate') || null; }
+
+    // index.html과 같은 디렉터리 기준 절대 URL
+    function toAbsoluteUrl(relPath) {
+      const baseDir = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+      return new URL(relPath, baseDir).href;
+    }
+    // 외부 URL은 그대로 사용, 상대경로만 절대경로로
+    function resolveDocUrl(pathLike) {
+      if (/^https?:\/\//i.test(pathLike) || pathLike.startsWith('/')) return pathLike;
+      return toAbsoluteUrl(pathLike);
+    }
+    // GitHub blob 링크 여부 (Raw만 지원)
+    function isGitHubBlobUrl(u) {
+      try { const x = new URL(u); return x.hostname === 'github.com' && /\/blob\//.test(x.pathname); }
+      catch { return false; }
+    }
+
+    /* -----------------------
+       프론트매터 & 사전처리
+    ------------------------*/
+    function extractFrontMatterAndBody(src){
+      const s = src.replace(/^\uFEFF/, '');
+      const m = s.match(/^---\s*[\s\S]*?\r?\n---\s*(?:\r?\n)?/);
+      if (!m) return { meta:{}, body:s };
+      const yaml = m[0].replace(/^---\s*/, '').replace(/---\s*$/, '');
+      const meta = parseSimpleYAML(yaml);
+      return { meta, body: s.slice(m[0].length) };
+    }
+    function parseSimpleYAML(yaml){
+      const obj = {};
+      yaml.split(/\r?\n/).forEach(line=>{
+        const m = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.*)\s*$/);
+        if(!m) return;
+        let key = m[1]; let val = m[2];
+        val = val.replace(/^['"]|['"]$/g,'');
+        obj[key] = val;
+      });
+      return obj;
+    }
+    function stripMoreMarkers(src) {
+      const re = /<\!\s*[-\u2013\u2014]{2}\s*more\s*[-\u2013\u2014]{2}\s*>/gi;
+      return src.replace(re, '');
+    }
+    function convertPageBreakMarkers(src) {
+      return src.replace(/<!--\s*pagebreak\s*-->/gi, '\n\n<div class="pdf-pagebreak-before"></div>\n\n');
+    }
+    function firstMarkdownHeading(mdText){
+      const m = mdText.match(/^\s*#\s+(.+?)\s*$/m);
+      return m ? m[1].trim() : null;
+    }
+
+    /* -----------------------
+       렌더 후 후처리(화면)
+    ------------------------*/
+    async function renderMermaidIn(container) {
+      const blocks = container.querySelectorAll('pre code.language-mermaid');
+      for (const code of blocks) {
+        const raw = code.textContent;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mermaid';
+        wrapper.textContent = raw;
+        const pre = code.closest('pre');
+        pre.replaceWith(wrapper);
+      }
+      if (container.querySelector('.mermaid')) {
+        try { await mermaid.run({ nodes: container.querySelectorAll('.mermaid') }); } catch {}
+      }
+    }
+    function addCopyButtons(container) {
+      const pres = container.querySelectorAll('pre');
+      pres.forEach(pre => {
+        const wrap = document.createElement('div');
+        wrap.className = 'code-wrap no-split';
+        pre.replaceWith(wrap);
+        wrap.appendChild(pre);
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        btn.addEventListener('click', async () => {
+          const code = pre.querySelector('code')?.innerText || '';
+          try { await navigator.clipboard.writeText(code);
+            btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 800);
+          } catch {}
+        });
+        wrap.appendChild(btn);
+      });
+    }
+    function absolutizeResources(container, baseUrl) {
+      if (!baseUrl) return;
+      const base = new URL(baseUrl);
+      const fix = (el, attr) => {
+        const val = el.getAttribute(attr);
+        if (!val || /^([a-z]+:)?\/\//i.test(val) || val.startsWith('#') || val.startsWith('data:')) return;
+        try { el.setAttribute(attr, new URL(val, base).href); } catch {}
+      };
+      container.querySelectorAll('img').forEach(img => fix(img, 'src'));
+      container.querySelectorAll('a').forEach(a => fix(a, 'href'));
+    }
+
+    /* -----------------------
+       PDF 샌드박스 유틸
+    ------------------------*/
+    function prepareImagesForCORS(container) {
+      container.querySelectorAll('img').forEach(img => {
+        const src = img.getAttribute('src') || '';
+        if (!src) return;
+        if (/^https?:\/\//i.test(src)) {
+          img.setAttribute('crossorigin', 'anonymous');
+          const s = img.src; img.src = ''; img.src = s; // CORS 재적용
+        }
+      });
+    }
+    function waitForImages(container, timeoutMs = 15000) {
+      const imgs = Array.from(container.querySelectorAll('img'));
+      const promises = imgs.map(img => new Promise(resolve => {
+        if (img.complete && img.naturalWidth) return resolve();
+        const onDone = () => { cleanup(); resolve(); };
+        const onErr  = () => { cleanup(); resolve(); };
+        const cleanup = () => { img.removeEventListener('load', onDone); img.removeEventListener('error', onErr); };
+        img.addEventListener('load', onDone); img.addEventListener('error', onErr);
+        setTimeout(onDone, timeoutMs);
+      }));
+      return Promise.all(promises);
+    }
+    function derivePdfFileName(docUrl) {
+      try {
+        const u = new URL(docUrl);
+        const name = u.pathname.split('/').pop() || 'document.md';
+        return name.replace(/\.(md|markdown)$/i, '') + '.pdf';
+      } catch {
+        const name = (docUrl || 'document.md').split('/').pop();
+        return (name || 'document').replace(/\.(md|markdown)$/i, '') + '.pdf';
+      }
+    }
+    function todayISO(){
+      const d = new Date(); const z = n => String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
+    }
+
+    // 샌드박스 생성(오프스크린 복제본)
+    function createPdfSandbox(theme /* 'light' | 'dark' */){
+      sandboxRoot.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.className = `pdf-sandbox pdf-sandbox-${theme}`;
+      sandboxRoot.appendChild(wrap);
+
+      // 실제 콘텐츠만 복제(툴바/배지 제외) - 화면은 그대로
+      const contentClone = el.cloneNode(true); // article#app
+      wrap.appendChild(contentClone);
+
+      // 경로 절대화 & 이미지 CORS 준비(샌드박스 전용)
+      absolutizeResources(contentClone, currentDocUrl);
+      prepareImagesForCORS(contentClone);
+
+      return { root: wrap, content: contentClone };
+    }
+
+    /* -----------------------
+       메인 렌더(화면)
+    ------------------------*/
+    async function renderDoc(pathLike) {
+      const url = resolveDocUrl(pathLike);
+      currentDocUrl = url;
+      currentFileName = derivePdfFileName(url);
+      badge.textContent = pathLike;
+      el.textContent = '불러오는 중…';
+      statusEl.textContent = '';
+
+      if (isGitHubBlobUrl(url)) {
+        el.innerHTML = `
+          <div style="padding:12px;border:1px solid #4b5563;border-radius:8px;background:#111827;">
+            <p style="margin:0 0 6px 0;">이 URL은 <b>GitHub blob</b> 주소입니다. 이 페이지는 <b>Raw 주소만</b> 지원합니다.</p>
+            <p style="margin:0;">GitHub 파일 페이지에서 <b>Raw</b> 버튼을 클릭해 나온
+            <code>https://raw.githubusercontent.com/...</code> 주소를 사용하세요.</p>
+          </div>`;
+        return;
+      }
+
+      try {
+        const res = await fetch(url, { cache: 'no-store', credentials: 'omit' });
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        const text = await res.text();
+
+        const ex = extractFrontMatterAndBody(text);
+        const body1 = stripMoreMarkers(convertPageBreakMarkers(ex.body));
+
+        // 제목/날짜 후보
+        const h1 = firstMarkdownHeading(body1);
+        currentDocTitle = getPdfTitleOverride() || ex.meta.title || h1 || currentFileName.replace(/\.pdf$/,'');
+        currentDocDate  = getPdfDateOverride() || ex.meta.date || todayISO();
+
+        if (/^\s*<!doctype html>/i.test(body1) || /^\s*<html\b/i.test(body1)) {
+          el.innerHTML = body1;
+        } else {
+          const unsafe = md.render(body1);
+          const safe = DOMPurify.sanitize(unsafe, { USE_PROFILES: { html: true } });
+          el.innerHTML = safe;
+
+          try {
+            renderMathInElement(el, {
+              delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+              ],
+              throwOnError: false
+            });
+          } catch {}
+          await renderMermaidIn(el);
+          addCopyButtons(el);
+        }
+
+        // 화면용: 링크/이미지 절대화(화면 이미지는 CORS 설정하지 않음)
+        absolutizeResources(el, url);
+
+        // 화면 미리보기 테마 적용: pdftheme=light면 화면도 라이트로 전환
+        applyViewerThemeFromQuery();
+
+        const t = getPdfThemeFromQuery();
+        const themeLabel = (t==='dark') ? 'dark' : 'light';
+        statusEl.textContent = `${currentFileName} 내보내기 준비됨 · Theme=${themeLabel} · Page=${getPageSizeFromQuery().toUpperCase()} · Margin=${getMarginPresetFromQuery()}`;
+      } catch (err) {
+        console.error(err);
+        el.innerHTML = '<p>문서를 불러오지 못했습니다. 경로를 확인하세요.</p>';
+      }
+    }
+
+    // 화면 미리보기 테마 적용 함수
+    function applyViewerThemeFromQuery(){
+      const t = getPdfThemeFromQuery();
+      document.documentElement.removeAttribute('data-view-theme');
+      if (t === 'light'){ // light만 라이트로 강제, 나머지는 기본 다크 유지
+        document.documentElement.setAttribute('data-view-theme', 'light');
+      }
+      // t === 'dark' 또는 'auto' → 화면은 기본 다크
+    }
+
+    /* -----------------------
+       PDF 생성(샌드박스 기반)
+    ------------------------*/
+    function mmMarginsPreset(name){ // mm 배열 [top,right,bottom,left]
+      switch(name){
+        case 'narrow': return [10, 12, 12, 12];
+        case 'wide':   return [20, 18, 24, 18];
+        default:       return [15, 14, 18, 14]; // normal
+      }
+    }
+
+    async function downloadPdf() {
+      if (!window.html2pdf) { alert('html2pdf 라이브러리를 불러오지 못했습니다.'); return; }
+
+      const hfEnabled = getHeaderFooterEnabled();
+      const pageSize  = getPageSizeFromQuery();        // 'a4'|'letter'
+      const preset    = getMarginPresetFromQuery();    // 'narrow'|'normal'|'wide'
+      const baseMargin = mmMarginsPreset(preset);
+
+      // 머리말/꼬리말 공간(mm)
+      const headerSpace = hfEnabled ? 12 : 0;
+      const footerSpace = hfEnabled ? 12 : 0;
+      const margin = [
+        baseMargin[0] + headerSpace,
+        baseMargin[1],
+        baseMargin[2] + footerSpace,
+        baseMargin[3]
+      ];
+
+      // 테마: auto=라이트(기본)
+      const t = getPdfThemeFromQuery();
+      const theme = (t === 'dark') ? 'dark' : 'light';
+      const bg = (theme === 'dark') ? '#0b0c0f' : '#ffffff';
+
+      const { root: sandbox, content: sandboxContent } = createPdfSandbox(theme);
+
+      btnPdf.disabled = true; const old = btnPdf.textContent;
+      btnPdf.textContent = `PDF 생성 중… (theme=${theme})`; statusEl.textContent = '이미지·글꼴 로딩 중…';
+
+      try {
+        await document.fonts?.ready;
+        await waitForImages(sandboxContent);
+
+        const opt = {
+          margin,
+          filename: currentFileName,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: bg
+          },
+          jsPDF: { unit: 'mm', format: pageSize, orientation: 'portrait' },
+          pagebreak: { mode:['css','legacy'], avoid:['pre','blockquote','.no-split','.markdown-body table'] }
+        };
+
+        statusEl.textContent = '페이지 렌더링 중…';
+        const worker = html2pdf().set(opt).from(sandbox).toPdf();
+        const pdf = await worker.get('pdf');
+
+        // 머리말/꼬리말(제목/날짜/페이지번호)
+        const total = pdf.internal.getNumberOfPages();
+        const pw = pdf.internal.pageSize.getWidth();
+        const ph = pdf.internal.pageSize.getHeight();
+
+        const textColor = (theme === 'dark') ? 240 : 20;   // 흰/검 텍스트
+        const lineColor = (theme === 'dark') ? 90  : 210;  // 구분선 색
+
+        pdf.setFontSize(9);
+        pdf.setTextColor(textColor);
+        pdf.setDrawColor(lineColor);
+        pdf.setLineWidth(0.1);
+
+        const headerY = headerSpace ? 7 : 0;
+        const footerY = ph - (footerSpace ? 5 : 0);
+
+        function textRight(str, x, y){ pdf.text(str, x, y, {align:'right'}); }
+        function textLeft (str, x, y){ pdf.text(str, x, y); }
+
+        const leftX  = margin[3];
+        const rightX = pw - margin[1];
+
+        function clipTitle(txt, maxWidth){
+          let t = String(txt || '');
+          while (pdf.getTextWidth(t) > maxWidth && t.length > 4) t = t.slice(0, -4) + '…';
+          return t;
+        }
+        const titleMaxWidth = Math.max(40, pw * 0.6);
+        const titlePrint = clipTitle(currentDocTitle, titleMaxWidth);
+
+        for (let i = 1; i <= total; i++) {
+          pdf.setPage(i);
+          if (hfEnabled && headerSpace){
+            textLeft(titlePrint, leftX, headerY);
+            textRight(currentDocDate, rightX, headerY);
+            pdf.line(leftX, headerY + 2, rightX, headerY + 2);
+          }
+          if (hfEnabled && footerSpace){
+            const pageStr = `${i} / ${total}`;
+            textRight(pageStr, rightX, footerY);
+            pdf.line(leftX, footerY - 4, rightX, footerY - 4);
+          }
+        }
+
+        statusEl.textContent = '저장 중…';
+        pdf.save(currentFileName);
+        statusEl.textContent = `완료 · Theme=${theme} · Page=${pageSize.toUpperCase()} · Margin=${preset}`;
+      } catch (e) {
+        console.error(e);
+        alert('PDF 생성 중 오류가 발생했습니다. 콘솔을 확인하세요.');
+        statusEl.textContent = '오류';
+      } finally {
+        sandboxRoot.innerHTML = '';
+        btnPdf.disabled = false; btnPdf.textContent = old;
+      }
+    }
+
+    /* -----------------------
+       이벤트 바인딩 & 초기화
+    ------------------------*/
+    btnPdf.addEventListener('click', downloadPdf);
+    btnPrint.addEventListener('click', () => window.print());
+
+    (async function(){
+      const initialDoc = getDocFromQuery();
+      await renderDoc(initialDoc);
+    })();
+  </script>
+</body>
+</html>
