@@ -38,6 +38,28 @@
 
 예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
 
+## 6) `html2pdf.html` — Markdown → PDF 내보내기
+
+브라우저만으로 마크다운 문서를 **라이트/다크 테마**와 **머리말·꼬리말**(제목·날짜·페이지번호) 포함 **PDF로 저장**합니다.  
+서버 실행 프로그램 없이 **정적 HTML 1개**만 두면 됩니다.
+
+### ✨ 특징
+- **수동 다운로드만**: 자동 실행(`pdf=1`)은 제거, **[PDF 다운로드] 버튼**으로만 생성
+- **테마 전환**: `pdftheme=light|dark|auto` (기본 `auto`=라이트 PDF)
+- **머리말/꼬리말**: 문서 **제목(title)**·**날짜(date)**·**페이지번호** 자동 삽입
+- **여백/용지 프리셋**: `pagesize=a4|letter`, `margin=narrow|normal|wide`
+- **페이지 분할 마커**: `<!--pagebreak-->` 위치에서 강제 쪽 나눔
+- **UI 안전**: 화면은 끝까지 그대로(다크 유지), PDF는 **오프스크린 샌드박스 복제본**에서 생성
+- **외부 Raw URL 지원**: GitHub **Raw** 주소를 그대로 `doc=`로 불러와 변환
+
+> 파일 배치: `/html/html2pdf.html` (예시)
+
+### 🔧 사용법
+1) 서버에 `html2pdf.html` 업로드  
+2) 브라우저에서 아래 형식으로 접속 → 화면에서 **[PDF 다운로드]** 클릭
+```text
+https://<your-host>/html2pdf.html?doc=<문서URL>[&옵션들...]
+
 ---
 
 ## 2) React + Tailwind 기반에서 지원하기
