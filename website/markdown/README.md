@@ -19,22 +19,22 @@
 
 📌 예시: [PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
 
-
 📌 동작 구조  
 1. `index.html`이 `doc` 파라미터(파일 경로)를 읽습니다.  
 2. JavaScript가 `fetch`로 마크다운 파일을 가져옵니다.  
 3. `markdown-it`, `highlight.js`, `KaTeX`, `Mermaid` 같은 라이브러리가  
    내용을 HTML로 바꿔 브라우저에 표시합니다.  
 
-4. 예제 코드는 [`index.html`](./html/filename-index.html) 문서를 참고하세요.
+4. 예제 코드는 [`index.html`](./html/index.html) 문서를 참고하세요.
 
-5. GitHub 등 **외부 URL**을 직접 `doc` 파라미터에 넣어도 불러올 수 있는 확장 버전도 있습니다.  
-   (예: `github.com/.../blob/...` 주소를 자동으로 `raw.githubusercontent.com/...` 으로 변환)
-   - `url-index.html`은 렌더 전에 다음을 **자동 처리**합니다.
-     - 문서 상단의 **YAML 프론트매터**(`--- ... ---`) 제거
+5. GitHub 등 **외부 URL**을 `doc` 파라미터로 직접 불러오는 확장 버전도 있습니다.  
+   - **Raw 주소만 지원**합니다. (`github.com/.../blob/...` → 자동 변환 없음)  
+   - GitHub 파일 페이지에서 **Raw** 버튼을 눌러 나온 주소(`https://raw.githubusercontent.com/...`)를 사용하세요.  
+   - `url-index.html`은 렌더 전에 다음을 **자동 처리**합니다.  
+     - 문서 상단의 **YAML 프론트매터**(`--- ... ---`) 제거  
      - `<!--more-->`, `<!-- more -->`, `<!–more–>`(엔대시/엠대시 변형) 마커 제거
 
-📌 예시: [PLURA Philosophy (GitHub에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://github.com/qubitsec/plura/blob/main/philosophy/ko/README.md)
+📌 예시: [PLURA Philosophy (GitHub Raw에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://raw.githubusercontent.com/qubitsec/plura/main/philosophy/ko/README.md)
 
 예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
 
