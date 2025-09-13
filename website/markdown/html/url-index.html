@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PLURA-XDR Knowledge Hub (url-index)</title>
-  
+  <title>PLURA-XDR Knowledge Hub</title>
+
   <!-- Favicon (레거시/광범위 호환) -->
   <link rel="icon" href="https://w.plura.io/favicon.ico" sizes="any">
-  
+
   <!-- 다크 모드 강제 -->
   <meta name="color-scheme" content="dark">
 
@@ -30,7 +30,7 @@
       box-shadow:none !important;         /* 흰 그림자 제거 */
     }
 
-    /* Markdown 다크 고정(라이트 기본색 오버라이드) */
+    /* Markdown 다크 고정 */
     .markdown-body { box-sizing:border-box; min-width:200px; max-width:100%; background:transparent; color:inherit; }
     .markdown-body h1,.markdown-body h2,.markdown-body h3,
     .markdown-body h4,.markdown-body h5,.markdown-body h6 { color:#fff; }
@@ -53,9 +53,8 @@
     }
 
     /* ===============================
-       === 표 시각 고정(검정/흰색) ===
+       === 표 시각 고정: 배경=검정, 글자=흰색, 라인=흰색 ===
        =============================== */
-    /* 표 컨테이너: 바깥 테두리와 기본 배경만 */
     .markdown-body table{
       /* GitHub Markdown CSS가 사용하는 경계선 변수도 흰색으로 통일 */
       --color-border-default: #fff;
@@ -69,21 +68,21 @@
       background: #000 !important;              /* 표 전체 배경 = 검정 */
       border: 1px solid #fff !important;        /* 바깥 테두리 = 흰색 */
     }
-    /* 셀(th/td) 배경·글자색·테두리 일괄 강제 (GitHub CSS 줄무늬/변수 무시) */
+    /* 모든 셀(th/td)의 배경/텍스트/테두리 */
     .markdown-body table > :not(caption) > * > *{
       background: #000 !important;              /* 셀 배경 = 검정 */
       color: #fff !important;                   /* 셀 글자 = 흰색 */
-      border: 1px solid #000 !important;        /* 셀 테두리 = 검정 */
+      border: 1px solid #fff !important;        /* 셀 테두리 = 흰색 */
     }
-    /* tr 상단 경계선(라이브러리 기본 규칙)도 검정 고정 */
+    /* 행 상단 경계선도 흰색으로 */
     .markdown-body table tr{
-      border-top: 1px solid #000 !important;
+      border-top: 1px solid #fff !important;
     }
     /* 헤더 하단 강조선(선택) */
     .markdown-body table thead th{
-      border-bottom: 2px solid #000 !important;
+      border-bottom: 2px solid #fff !important;
     }
-    /* 표 내부 링크도 흰색으로 통일 (가독성) */
+    /* 표 내부 링크도 흰색으로 통일 */
     .markdown-body table a{
       color:#fff !important;
     }
