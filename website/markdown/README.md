@@ -31,6 +31,9 @@
 
 5. GitHub 등 **외부 URL**을 직접 `doc` 파라미터에 넣어도 불러올 수 있는 확장 버전도 있습니다.  
    (예: `github.com/.../blob/...` 주소를 자동으로 `raw.githubusercontent.com/...` 으로 변환)
+   - `url-index.html`은 렌더 전에 다음을 **자동 처리**합니다.
+     - 문서 상단의 **YAML 프론트매터**(`--- ... ---`) 제거
+     - `<!--more-->`, `<!-- more -->`, `<!–more–>`(엔대시/엠대시 변형) 마커 제거
 
 📌 예시: [PLURA Philosophy (GitHub에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://github.com/qubitsec/plura/blob/main/philosophy/ko/README.md)
 
