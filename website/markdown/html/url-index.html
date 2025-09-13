@@ -131,6 +131,20 @@
       return toAbsoluteUrl(pathLike);
     }
 
+    // YAML 프론트매터 제거
+    function stripFrontMatter(src) {
+      // BOM 허용, 문서 맨 앞의 --- ~ --- 블록만 제거
+      const s = src.replace(/^\uFEFF/, '');
+      const m = s.match(/^---\s*[\s\S]*?\r?\n---\s*(?:\r?\n)?/);
+      return m ? s.slice(m[0].length) : s;
+    }
+
+    // WordPress/Hugo "more" 마커 제거: <!--more-->, <!-- more -->, <!–more–>, <!—more—> 등
+    function stripMoreMarkers(src) {
+      const re = /<\!\s*[-\u2013\u2014]{2}\s*more\s*[-\u2013\u2014]{2}\s*>/gi;
+      return src.replace(re, '');
+    }
+
     // Mermaid 렌더
     async function renderMermaidIn(container) {
       const blocks = container.querySelectorAll('pre code.language-mermaid');
@@ -179,11 +193,14 @@
         if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
         const text = await res.text();
 
-        if (/^\s*<!doctype html>/i.test(text) || /^\s*<html\b/i.test(text)) {
+        // 1) 프론트매터 제거  2) <!--more--> 류 마커 제거
+        const mdText = stripMoreMarkers(stripFrontMatter(text));
+
+        if (/^\s*<!doctype html>/i.test(mdText) || /^\s*<html\b/i.test(mdText)) {
           // 서버가 HTML을 준 경우 그대로
-          el.innerHTML = text;
+          el.innerHTML = mdText;
         } else {
-          const unsafe = md.render(text);
+          const unsafe = md.render(mdText);
           const safe = DOMPurify.sanitize(unsafe, { USE_PROFILES: { html: true } });
           el.innerHTML = safe;
 
