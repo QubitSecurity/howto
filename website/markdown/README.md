@@ -38,7 +38,7 @@
 
 예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
 
-## 6) `html2pdf.html` — Markdown → PDF 내보내기
+6. `html2pdf.html` — Markdown → PDF 내보내기
 
 브라우저만으로 마크다운 문서를 **라이트/다크 테마**와 **머리말·꼬리말**(제목·날짜·페이지번호) 포함 **PDF로 저장**합니다.  
 서버 실행 프로그램 없이 **정적 HTML 1개**만 두면 됩니다.
