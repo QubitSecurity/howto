@@ -59,6 +59,7 @@
 2) 브라우저에서 아래 형식으로 접속 → 화면에서 **[PDF 다운로드]** 클릭
 ```text
 https://<your-host>/html2pdf.html?doc=<문서URL>[&옵션들...]
+```
 
 ---
 
