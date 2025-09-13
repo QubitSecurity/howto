@@ -21,6 +21,8 @@
 📌 예시  
 [PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
 
+[마크다운 뷰어](https://github.com/QubitSecurity/howto/tree/main/website/markdown/README.md)
+
 📌 동작 구조  
 1. `index.html`이 `doc` 파라미터(파일 경로)를 읽습니다.  
 2. JavaScript가 `fetch`로 마크다운 파일을 가져옵니다.  
