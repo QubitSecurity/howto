@@ -38,45 +38,78 @@
 
 예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
 
-6. `html2pdf.html` — Markdown → PDF 내보내기
+---
+
+## 6) `html2pdf.html` — Markdown → PDF 내보내기
 
 브라우저만으로 마크다운 문서를 **라이트/다크 테마**와 **머리말·꼬리말**(제목·날짜·페이지번호) 포함 **PDF로 저장**합니다.  
 서버 실행 프로그램 없이 **정적 HTML 1개**만 두면 됩니다.
 
 ### ✨ 특징
-- **수동 다운로드만**: 자동 실행(`pdf=1`)은 제거, **[PDF 다운로드] 버튼**으로만 생성
-- **테마 전환**: `pdftheme=light|dark|auto` (기본 `auto`=라이트 PDF)
+- **수동 다운로드만**: 자동 실행(`pdf=1`) 제거, **[PDF 다운로드] 버튼**으로만 생성
+- **테마 전환**: `pdftheme=light | dark | auto` (기본 `auto`=라이트 PDF)
 - **머리말/꼬리말**: 문서 **제목(title)**·**날짜(date)**·**페이지번호** 자동 삽입
-- **여백/용지 프리셋**: `pagesize=a4|letter`, `margin=narrow|normal|wide`
+- **여백/용지 프리셋**: `pagesize=a4 | letter`, `margin=narrow | normal | wide`
 - **페이지 분할 마커**: `<!--pagebreak-->` 위치에서 강제 쪽 나눔
 - **UI 안전**: 화면은 끝까지 그대로(다크 유지), PDF는 **오프스크린 샌드박스 복제본**에서 생성
 - **외부 Raw URL 지원**: GitHub **Raw** 주소를 그대로 `doc=`로 불러와 변환
 
-> 파일 배치: `/html/html2pdf.html` (예시)
+> 파일 배치 예시: `/html/html2pdf.html`
 
 ### 🔧 사용법
 1) 서버에 `html2pdf.html` 업로드  
 2) 브라우저에서 아래 형식으로 접속 → 화면에서 **[PDF 다운로드]** 클릭
 ```text
 https://<your-host>/html2pdf.html?doc=<문서URL>[&옵션들...]
+````
+
+**예시**
+
+```text
+# 라이트 PDF, A4, 기본 여백
+.../html2pdf.html?doc=https://raw.githubusercontent.com/qubitsec/blog/refs/heads/main/content/ko/column/policy-proposal-doc-standards.md
+
+# 다크 PDF
+.../html2pdf.html?doc=...&pdftheme=dark
+
+# Letter + 넓은 여백
+.../html2pdf.html?doc=...&pagesize=letter&margin=wide
+
+# 제목/날짜 수동 지정(머리말에 반영)
+.../html2pdf.html?doc=...&pdftitle=Policy%20Proposal&pdfdate=2025-09-13
 ```
+
+### ⚙️ 옵션 요약
+
+| 파라미터       | 값                            | 기본값      | 설명                                                                                    |
+| ---------- | ---------------------------- | -------- | ------------------------------------------------------------------------------------- |
+| `doc`      | 파일 경로 또는 **Raw URL**         | (필수)     | 마크다운 문서 경로. `github.com/.../blob/...` **미지원**, `raw.githubusercontent.com/...` **지원** |
+| `pdftheme` | `light` · `dark` · `auto`    | `auto`   | PDF 테마. `auto`는 라이트와 동일 동작                                                            |
+| `pagesize` | `a4` · `letter`              | `a4`     | PDF 용지 크기                                                                             |
+| `margin`   | `narrow` · `normal` · `wide` | `normal` | 여백 프리셋(mm)                                                                            |
+| `hf`       | `1` · `0`                    | `1`      | 머리말/꼬리말 사용 여부                                                                         |
+| `pdftitle` | 문자열                          | 자동       | 머리말 제목(미지정 시: 프론트매터 `title` → 1차 헤딩 → 파일명)                                            |
+| `pdfdate`  | `YYYY-MM-DD`                 | 오늘       | 머리말 날짜(프론트매터 `date`가 있으면 우선)                                                          |
+
+> **페이지 분할**: 마크다운에 `<!--pagebreak-->` 를 넣으면 해당 지점에서 쪽이 갈립니다.
 
 ---
 
 ## 2) React + Tailwind 기반에서 지원하기
 
-리액트 기반 프로젝트에서는  
-**`react-markdown`** 같은 라이브러리를 사용하면 쉽게 마크다운을 HTML처럼 보여줄 수 있습니다.  
+리액트 기반 프로젝트에서는
+**`react-markdown`** 같은 라이브러리를 사용하면 쉽게 마크다운을 HTML처럼 보여줄 수 있습니다.
 
-- Tailwind CSS의 **`prose` 클래스**를 적용하면 GitHub 스타일과 비슷하게 꾸밀 수 있습니다.  
-- 추가 플러그인(`remark-gfm`, `rehype-katex`, `rehype-sanitize`)을 사용하면  
-  표, 체크박스, 수식, 보안 처리까지 지원할 수 있습니다.  
-- 코드 블록은 `prism-react-renderer`로 하이라이트하여 보기 좋게 표시합니다.  
+* Tailwind CSS의 **`prose` 클래스**를 적용하면 GitHub 스타일과 비슷하게 꾸밀 수 있습니다.
+* 추가 플러그인(`remark-gfm`, `rehype-katex`, `rehype-sanitize`)을 사용하면
+  표, 체크박스, 수식, 보안 처리까지 지원할 수 있습니다.
+* 코드 블록은 `prism-react-renderer`로 하이라이트하여 보기 좋게 표시합니다.
 
 📌 더 자세한 설정 방법과 예제 코드는 [`react.md`](./react.md) 문서를 참고하세요.
 
 ---
 
-👉 요약  
-- **정적 HTML 방식**: 서버 설정이 단순하고, HTML+Markdown만 있으면 동작합니다.  
-- **React+Tailwind 방식**: 웹 애플리케이션 안에서 마크다운을 자연스럽게 보여주기에 좋습니다.  
+👉 **요약**
+
+* **정적 HTML 방식**: 서버 설정이 단순하고, HTML+Markdown만 있으면 동작합니다.
+* **React+Tailwind 방식**: 웹 애플리케이션 안에서 마크다운을 자연스럽게 보여주기에 좋습니다.
