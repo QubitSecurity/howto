@@ -28,6 +28,8 @@
 3. `markdown-it`, `highlight.js`, `KaTeX`, `Mermaid` 같은 라이브러리가  
    내용을 HTML로 바꿔 브라우저에 표시합니다.  
 
+4. 예제 코드는 [`index.html`](./html/filename-index.html) 문서를 참고하세요.
+
 ---
 
 ## 2) React + Tailwind 기반에서 지원하기
