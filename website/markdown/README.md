@@ -19,9 +19,8 @@
 - 즉, **HTML과 마크다운 파일만 있으면 바로 동작**합니다.  
 
 📌 예시  
-[PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
+   [PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
 
-[마크다운 뷰어](https://w.plura.io/index.html?doc=https%3A%2F%2Fgithub.com%2FQubitSecurity%2Fhowto%2Fblob%2Fmain%2Fwebsite%2Fmarkdown%2FREADME.md)
 
 📌 동작 구조  
 1. `index.html`이 `doc` 파라미터(파일 경로)를 읽습니다.  
