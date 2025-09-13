@@ -35,7 +35,7 @@
      - `<!--more-->`, `<!-- more -->`, `<!–more–>`(엔대시/엠대시 변형) 마커 제거
 
    📌 예시: [PLURA Philosophy (GitHub Raw에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://raw.githubusercontent.com/qubitsec/plura/main/philosophy/ko/README.md)  
-   예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
+   📌 예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
 
 6. **md 파일 문서를 pdf로 저장하는 확장 버전**
 
