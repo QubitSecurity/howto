@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PLURA-XDR Knowledge Hub</title>
-
-  <!-- Favicon -->
+  <title>PLURA-XDR Knowledge Hub (url-index)</title>
+  
+  <!-- Favicon (레거시/광범위 호환) -->
   <link rel="icon" href="https://w.plura.io/favicon.ico" sizes="any">
-
+  
   <!-- 다크 모드 강제 -->
   <meta name="color-scheme" content="dark">
 
@@ -30,15 +30,13 @@
       box-shadow:none !important;         /* 흰 그림자 제거 */
     }
 
-    /* Markdown 다크 고정 */
+    /* Markdown 다크 고정(라이트 기본색 오버라이드) */
     .markdown-body { box-sizing:border-box; min-width:200px; max-width:100%; background:transparent; color:inherit; }
     .markdown-body h1,.markdown-body h2,.markdown-body h3,
     .markdown-body h4,.markdown-body h5,.markdown-body h6 { color:#fff; }
     .markdown-body hr { background-color:#374151; }
     .markdown-body a { color:#93c5ff; }
     .markdown-body blockquote { color:#d1d5db; border-left-color:#374151; }
-    .markdown-body table { border-color:#374151; }
-    .markdown-body th,.markdown-body td { border-color:#374151; }
     .markdown-body code { background:#111827; color:#e5e7eb; }
     .markdown-body pre { background:#0f172a; border:1px solid #374151; color:#e5e7eb; }
     .markdown-body pre code { background:transparent; }
@@ -52,6 +50,35 @@
       position:absolute; top:8px; right:8px; font-size:12px;
       padding:6px 8px; border-radius:6px; border:1px solid #374151;
       background:#111827; color:#e5e7eb; cursor:pointer;
+    }
+
+    /* ===============================
+       === 표 시각 고정(검정/흰색) ===
+       =============================== */
+    /* 표 컨테이너: 바깥 테두리와 기본 배경만 */
+    .markdown-body table{
+      border-collapse: collapse !important;
+      width: 100%;
+      background: #000 !important;              /* 표 전체 배경 = 검정 */
+      border: 1px solid #000 !important;        /* 바깥 테두리 = 검정 */
+    }
+    /* 셀(th/td) 배경·글자색·테두리 일괄 강제 (GitHub CSS 줄무늬/변수 무시) */
+    .markdown-body table > :not(caption) > * > *{
+      background: #000 !important;              /* 셀 배경 = 검정 */
+      color: #fff !important;                   /* 셀 글자 = 흰색 */
+      border: 1px solid #000 !important;        /* 셀 테두리 = 검정 */
+    }
+    /* tr 상단 경계선(라이브러리 기본 규칙)도 검정 고정 */
+    .markdown-body table tr{
+      border-top: 1px solid #000 !important;
+    }
+    /* 헤더 하단 강조선(선택) */
+    .markdown-body table thead th{
+      border-bottom: 2px solid #000 !important;
+    }
+    /* 표 내부 링크도 흰색으로 통일 (가독성) */
+    .markdown-body table a{
+      color:#fff !important;
     }
   </style>
 </head>
@@ -76,6 +103,17 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
 
   <script>
+    /**
+     * url-index 확장:
+     * - 외부 URL을 ?doc= 로 직접 불러옵니다.
+     * - 단, Raw 주소만 지원합니다. (github.com/.../blob/... → 자동 변환 없음)
+     *   GitHub 파일 페이지에서 Raw 버튼 클릭 후 나오는
+     *   https://raw.githubusercontent.com/... 주소를 사용하세요.
+     * - 렌더 전 자동 처리:
+     *   1) 문서 상단 YAML 프론트매터(--- ... ---) 제거
+     *   2) <!--more-->, <!-- more -->, <!–more–>, <!—more—> 마커 제거
+     */
+
     // Mermaid
     mermaid.initialize({ startOnLoad: false, theme: "default" });
 
@@ -111,35 +149,28 @@
       return new URL(relPath, baseDir).href;
     }
 
-    // github blob URL → raw URL로 변환, 상대경로는 절대경로로 변환
-    function normalizeDocUrl(pathLike) {
-      // 절대 URL?
-      if (/^https?:\/\//i.test(pathLike)) {
-        try {
-          const u = new URL(pathLike);
-          if (u.hostname === 'github.com') {
-            // /{owner}/{repo}/blob/{branch}/{path...}
-            const m = u.pathname.match(/^\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/);
-            if (m) {
-              return `https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}/${m[4]}`;
-            }
-          }
-          return u.href; // 그 외 외부 URL은 그대로
-        } catch { return pathLike; }
-      }
-      // 상대경로는 index.html 기준
+    // 외부 URL은 그대로 사용, 상대경로만 절대경로로
+    function resolveDocUrl(pathLike) {
+      if (/^https?:\/\//i.test(pathLike) || pathLike.startsWith('/')) return pathLike;
       return toAbsoluteUrl(pathLike);
+    }
+
+    // GitHub blob 링크 여부 (Raw만 지원)
+    function isGitHubBlobUrl(u) {
+      try {
+        const x = new URL(u);
+        return x.hostname === 'github.com' && /\/blob\//.test(x.pathname);
+      } catch { return false; }
     }
 
     // YAML 프론트매터 제거
     function stripFrontMatter(src) {
-      // BOM 허용, 문서 맨 앞의 --- ~ --- 블록만 제거
-      const s = src.replace(/^\uFEFF/, '');
+      const s = src.replace(/^\uFEFF/, ''); // BOM 허용
       const m = s.match(/^---\s*[\s\S]*?\r?\n---\s*(?:\r?\n)?/);
       return m ? s.slice(m[0].length) : s;
     }
 
-    // WordPress/Hugo "more" 마커 제거: <!--more-->, <!-- more -->, <!–more–>, <!—more—> 등
+    // WordPress/Hugo "more" 마커 제거: <!--more-->, <!-- more -->, <!–more–>, <!—more—>
     function stripMoreMarkers(src) {
       const re = /<\!\s*[-\u2013\u2014]{2}\s*more\s*[-\u2013\u2014]{2}\s*>/gi;
       return src.replace(re, '');
@@ -184,12 +215,23 @@
 
     // 메인 렌더
     async function renderDoc(pathLike) {
-      const url = normalizeDocUrl(pathLike);   // ★ 통합 URL 정규화
+      const url = resolveDocUrl(pathLike);
       badge.textContent = pathLike;
       el.textContent = '불러오는 중…';
 
+      // Raw 전용 안내 (자동 변환 없음)
+      if (isGitHubBlobUrl(url)) {
+        el.innerHTML = `
+          <div style="padding:12px;border:1px solid #4b5563;border-radius:8px;background:#111827;">
+            <p style="margin:0 0 6px 0;">이 URL은 <b>GitHub blob</b> 주소입니다. 이 페이지는 <b>Raw 주소만</b> 지원합니다.</p>
+            <p style="margin:0;">GitHub 파일 페이지에서 <b>Raw</b> 버튼을 클릭해 나온
+            <code>https://raw.githubusercontent.com/...</code> 주소를 사용하세요.</p>
+          </div>`;
+        return;
+      }
+
       try {
-        const res = await fetch(url, { cache: 'no-store', credentials: 'omit' }); // 원격 리소스는 쿠키 불필요
+        const res = await fetch(url, { cache: 'no-store', credentials: 'omit' }); // 원격 리소스: 쿠키 불요
         if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
         const text = await res.text();
 
