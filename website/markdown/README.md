@@ -34,64 +34,52 @@
      - 문서 상단의 **YAML 프론트매터**(`--- ... ---`) 제거  
      - `<!--more-->`, `<!-- more -->`, `<!–more–>`(엔대시/엠대시 변형) 마커 제거
 
-📌 예시: [PLURA Philosophy (GitHub Raw에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://raw.githubusercontent.com/qubitsec/plura/main/philosophy/ko/README.md)
+   📌 예시: [PLURA Philosophy (GitHub Raw에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://raw.githubusercontent.com/qubitsec/plura/main/philosophy/ko/README.md)  
+   예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
 
-예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
+6. **md 파일 문서를 pdf로 저장하는 확장 버전**
 
----
+   마크다운을 화면에서 렌더한 뒤, **라이트/다크 테마**와 **머리말·꼬리말(제목·날짜·페이지번호)**을 포함하여 **PDF로 저장**합니다.  
+   서버 측 프로그램 없이 **정적 HTML 한 파일(`html2pdf.html`)**만 배포하면 됩니다.
 
-## 6) `html2pdf.html` — Markdown → PDF 내보내기
+   - **수동 다운로드만** 지원: 자동 실행(`pdf=1`)은 제거, **[PDF 다운로드] 버튼**으로만 생성  
+   - **테마**: `pdftheme=light | dark | auto` (기본 `auto`=라이트 PDF)  
+   - **용지/여백**: `pagesize=a4 | letter`, `margin=narrow | normal | wide`  
+   - **페이지 분할**: 마크다운 본문에 `<!--pagebreak-->` 마커를 넣으면 해당 지점에서 강제 쪽 나눔  
+   - **UI 안전**: 화면은 끝까지 그대로(다크 유지), PDF는 **오프스크린 샌드박스 복제본**에서 생성  
+   - **외부 Raw URL 지원**: GitHub **Raw** 주소를 `doc=`로 지정하면 바로 변환
 
-브라우저만으로 마크다운 문서를 **라이트/다크 테마**와 **머리말·꼬리말**(제목·날짜·페이지번호) 포함 **PDF로 저장**합니다.  
-서버 실행 프로그램 없이 **정적 HTML 1개**만 두면 됩니다.
+   > 파일 배치 예시: `/html/html2pdf.html`
 
-### ✨ 특징
-- **수동 다운로드만**: 자동 실행(`pdf=1`) 제거, **[PDF 다운로드] 버튼**으로만 생성
-- **테마 전환**: `pdftheme=light | dark | auto` (기본 `auto`=라이트 PDF)
-- **머리말/꼬리말**: 문서 **제목(title)**·**날짜(date)**·**페이지번호** 자동 삽입
-- **여백/용지 프리셋**: `pagesize=a4 | letter`, `margin=narrow | normal | wide`
-- **페이지 분할 마커**: `<!--pagebreak-->` 위치에서 강제 쪽 나눔
-- **UI 안전**: 화면은 끝까지 그대로(다크 유지), PDF는 **오프스크린 샌드박스 복제본**에서 생성
-- **외부 Raw URL 지원**: GitHub **Raw** 주소를 그대로 `doc=`로 불러와 변환
+   **사용법**
+   1) 서버에 `html2pdf.html` 업로드  
+   2) 브라우저에서 아래 형식으로 접속 → 화면 상단 **[PDF 다운로드]** 클릭
+   ```text
+   https://<your-host>/html2pdf.html?doc=<문서URL>[&옵션들...]
+   ```
 
-> 파일 배치 예시: `/html/html2pdf.html`
+**옵션 요약**
 
-### 🔧 사용법
-1) 서버에 `html2pdf.html` 업로드  
-2) 브라우저에서 아래 형식으로 접속 → 화면에서 **[PDF 다운로드]** 클릭
-```text
-https://<your-host>/html2pdf.html?doc=<문서URL>[&옵션들...]
-````
+| 파라미터       | 값                            | 기본값      | 설명                                                                                 |
+| ---------- | ---------------------------- | -------- | ---------------------------------------------------------------------------------- |
+| `doc`      | 파일 경로 또는 **Raw URL**         | (필수)     | 마크다운 문서. `github.com/.../blob/...` **미지원**, `raw.githubusercontent.com/...` **지원** |
+| `pdftheme` | `light` · `dark` · `auto`    | `auto`   | PDF 테마(화면은 기본 다크, `light`일 때 화면도 라이트 미리보기)                                         |
+| `pagesize` | `a4` · `letter`              | `a4`     | 용지 크기                                                                              |
+| `margin`   | `narrow` · `normal` · `wide` | `normal` | 여백 프리셋(mm)                                                                         |
+| `hf`       | `1` · `0`                    | `1`      | 머리말/꼬리말 사용 여부                                                                      |
+| `pdftitle` | 문자열                          | 자동       | 머리말 제목(프론트매터 `title` → H1 → 파일명 순)                                                 |
+| `pdfdate`  | `YYYY-MM-DD`                 | 오늘       | 머리말 날짜(프론트매터 `date` 우선)                                                            |
 
-**예시**
+📌 예시:
 
-```text
-# 라이트 PDF, A4, 기본 여백
-.../html2pdf.html?doc=https://raw.githubusercontent.com/qubitsec/blog/refs/heads/main/content/ko/column/policy-proposal-doc-standards.md
-
-# 다크 PDF
-.../html2pdf.html?doc=...&pdftheme=dark
-
-# Letter + 넓은 여백
-.../html2pdf.html?doc=...&pagesize=letter&margin=wide
-
-# 제목/날짜 수동 지정(머리말에 반영)
-.../html2pdf.html?doc=...&pdftitle=Policy%20Proposal&pdfdate=2025-09-13
-```
-
-### ⚙️ 옵션 요약
-
-| 파라미터       | 값                            | 기본값      | 설명                                                                                    |
-| ---------- | ---------------------------- | -------- | ------------------------------------------------------------------------------------- |
-| `doc`      | 파일 경로 또는 **Raw URL**         | (필수)     | 마크다운 문서 경로. `github.com/.../blob/...` **미지원**, `raw.githubusercontent.com/...` **지원** |
-| `pdftheme` | `light` · `dark` · `auto`    | `auto`   | PDF 테마. `auto`는 라이트와 동일 동작                                                            |
-| `pagesize` | `a4` · `letter`              | `a4`     | PDF 용지 크기                                                                             |
-| `margin`   | `narrow` · `normal` · `wide` | `normal` | 여백 프리셋(mm)                                                                            |
-| `hf`       | `1` · `0`                    | `1`      | 머리말/꼬리말 사용 여부                                                                         |
-| `pdftitle` | 문자열                          | 자동       | 머리말 제목(미지정 시: 프론트매터 `title` → 1차 헤딩 → 파일명)                                            |
-| `pdfdate`  | `YYYY-MM-DD`                 | 오늘       | 머리말 날짜(프론트매터 `date`가 있으면 우선)                                                          |
-
-> **페이지 분할**: 마크다운에 `<!--pagebreak-->` 를 넣으면 해당 지점에서 쪽이 갈립니다.
+* 라이트 PDF:
+  `.../html2pdf.html?doc=https://raw.githubusercontent.com/qubitsec/blog/refs/heads/main/content/ko/column/policy-proposal-doc-standards.md`
+* 다크 PDF:
+  `.../html2pdf.html?doc=...&pdftheme=dark`
+* Letter + 넓은 여백:
+  `.../html2pdf.html?doc=...&pagesize=letter&margin=wide`
+* 제목/날짜 수동 지정:
+  `.../html2pdf.html?doc=...&pdftitle=Policy%20Proposal&pdfdate=2025-09-13`
 
 ---
 
