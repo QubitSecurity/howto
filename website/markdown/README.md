@@ -18,8 +18,7 @@
 - 서버에는 별도의 프로그램을 설치할 필요가 없습니다.  
 - 즉, **HTML과 마크다운 파일만 있으면 바로 동작**합니다.  
 
-📌 예시  
-   [PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
+📌 예시: [PLURA Philosophy](https://w.plura.io/index.html?doc=/philosophy/ko/README.md)
 
 
 📌 동작 구조  
