@@ -57,10 +57,17 @@
        =============================== */
     /* 표 컨테이너: 바깥 테두리와 기본 배경만 */
     .markdown-body table{
+      /* GitHub Markdown CSS가 사용하는 경계선 변수도 흰색으로 통일 */
+      --color-border-default: #fff;
+      --color-border-muted:   #fff;
+      --color-border-subtle:  #fff;
+
       border-collapse: collapse !important;
-      width: 100%;
+      display: table !important;
+      width: auto !important;
+      max-width: 100%;
       background: #000 !important;              /* 표 전체 배경 = 검정 */
-      border: 1px solid #000 !important;        /* 바깥 테두리 = 검정 */
+      border: 1px solid #fff !important;        /* 바깥 테두리 = 흰색 */
     }
     /* 셀(th/td) 배경·글자색·테두리 일괄 강제 (GitHub CSS 줄무늬/변수 무시) */
     .markdown-body table > :not(caption) > * > *{
