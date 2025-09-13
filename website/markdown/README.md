@@ -29,6 +29,13 @@
 
 4. 예제 코드는 [`index.html`](./html/filename-index.html) 문서를 참고하세요.
 
+5. GitHub 등 **외부 URL**을 직접 `doc` 파라미터에 넣어도 불러올 수 있는 확장 버전도 있습니다.  
+   (예: `github.com/.../blob/...` 주소를 자동으로 `raw.githubusercontent.com/...` 으로 변환)
+
+📌 예시: [PLURA Philosophy (GitHub에서 직접 불러오기)](https://w.plura.io/url-index.html?doc=https://github.com/qubitsec/plura/blob/main/philosophy/ko/README.md)
+
+예제 코드는 [`url-index.html`](./html/url-index.html) 문서를 참고하세요.
+
 ---
 
 ## 2) React + Tailwind 기반에서 지원하기
