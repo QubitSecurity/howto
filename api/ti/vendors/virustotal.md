@@ -21,7 +21,7 @@
 
 ### 🛡️ API Key 확인 위치
 
-3. 로그인 후, 우측 상단의 프로필 아이콘 클릭 → **"My API key"** 메뉴 선택
+3. 로그인 후, 우측 상단의 프로필 아이콘 클릭 → My > "API key" 메뉴 선택
    또는 직접 접속:
    [https://www.virustotal.com/gui/user/<username>/apikey](https://www.virustotal.com/gui/user/your-username/apikey)
    (*URL 중 `<username>` 부분은 본인 계정명으로 자동 설정됩니다.*)
