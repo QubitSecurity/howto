@@ -22,7 +22,8 @@
 ### 🛡️ API Key 발급 메뉴 진입
 
 3. 로그인 후, 우측 상단 사용자 이름 클릭 → **"API keys"** 메뉴 선택
-   또는 직접 접속:
+   Your profile 하단 → **"API keys"**  
+   또는 직접 접속:  
    [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
 ---
