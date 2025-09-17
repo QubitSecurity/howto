@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guided Hover Hint UI Demo</title>
+  <style>
+    :root { color-scheme: dark light; }
+    html, body { height: 100%; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, sans-serif; background:#0b0c0f; color:#e5e7eb; }
+    .wrap { max-width: 900px; margin: 48px auto; padding: 0 20px; }
+
+    /* Card */
+    .card { background: #111318; border: 1px solid #1f2330; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .card header { padding: 18px 20px; border-bottom: 1px solid #1f2330; display:flex; align-items:center; gap:10px; }
+    .badge { font-size:12px; background:#0ea5e9; color:white; padding:3px 8px; border-radius:999px; }
+    .card .content { padding: 20px; }
+
+    /* Toolbar */
+    .toolbar { display:flex; flex-wrap:wrap; gap:12px; padding: 8px; background:#0f131a; border:1px solid #1b2030; border-radius: 12px; }
+    .toolbar button { position:relative; appearance:none; border:1px solid #263043; background:#151a23; color:#e6edf3; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; letter-spacing:.1px; }
+    .toolbar button:hover { background:#1a212d; border-color:#2f3c53; }
+    .toolbar button:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+
+    /* Tooltip */
+    .tooltip { position:absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); background:#111827; color:#e5e7eb; padding:10px 12px; border:1px solid #374151; border-radius:10px; font-size: 13px; white-space: nowrap; pointer-events:none; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+    .tooltip::after { content:""; position:absolute; top:-6px; left:50%; transform:translateX(-50%); border:6px solid transparent; border-bottom-color:#374151; }
+
+    /* Hint pulse */
+    .pulse { box-shadow: 0 0 0 0 rgba(56,189,248,.6); animation: pulse 1.5s infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(56,189,248,.55); }
+      70% { box-shadow: 0 0 0 14px rgba(56,189,248,0); }
+      100% { box-shadow: 0 0 0 0 rgba(56,189,248,0); }
+    }
+
+    /* Toast */
+    .toast { position: fixed; inset-inline: 0; bottom: 20px; display:flex; justify-content:center; pointer-events:none; }
+    .toast .inner { pointer-events:auto; background:#111827; border:1px solid #374151; color:#e5e7eb; padding:12px 14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.4); font-size:14px; }
+
+    /* Helper text */
+    .helper { font-size:14px; color:#9ca3af; margin-top: 10px; }
+    .helper kbd { background:#0f172a; border:1px solid #1f2937; padding:2px 6px; border-radius:6px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; color:#cbd5e1; }
+
+    .row { display:flex; gap:16px; align-items:center; flex-wrap: wrap; }
+    .spacer { flex:1; }
+    .ghost { opacity:.6; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" role="region" aria-labelledby="title">
+    <header>
+      <span class="badge" aria-hidden="true">GUIDE</span>
+      <h1 id="title" style="font-size:18px; margin:0;">초보자 친화형 UI: 잘못 선택 시 "마우스 오버"로 올바른 버튼 안내</h1>
+    </header>
+    <div class="content">
+      <div class="row" style="margin-bottom:14px;">
+        <p id="task" style="margin:0; font-size:16px;">🧭 작업: <strong>보고서를 내보내기</strong> 기능을 찾아 실행하세요.</p>
+        <div class="spacer"></div>
+        <button id="reset" type="button" aria-describedby="resetHelp">시나리오 초기화</button>
+      </div>
+      <p class="helper" id="resetHelp">잘못 클릭하면 올바른 버튼에 <em>마우스를 올리면</em> 안내가 나타납니다. 키보드 사용자는 <kbd>Tab</kbd>으로 이동하세요.</p>
+
+      <!-- Toolbar with multiple choices -->
+      <div class="toolbar" role="toolbar" aria-label="문서 작업 툴바">
+        <button id="btn-share"   data-action="share"   type="button">공유</button>
+        <button id="btn-print"   data-action="print"   type="button">인쇄</button>
+        <button id="btn-export"  data-action="export"  type="button" aria-label="보고서 내보내기 (정답)">내보내기</button>
+        <button id="btn-delete"  data-action="delete"  type="button">삭제</button>
+        <button id="btn-settings"data-action="settings"type="button">설정</button>
+      </div>
+
+      <p class="helper" id="live" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast" aria-hidden="true" id="toast" hidden>
+  <div class="inner" role="status">이 기능이 아니에요. 올바른 버튼에 마우스를 올려보세요.</div>
+</div>
+
+<script>
+  (function(){
+    const CORRECT_ID = 'btn-export';
+    const toolbar = document.querySelector('.toolbar');
+    const correctBtn = document.getElementById(CORRECT_ID);
+    const live = document.getElementById('live');
+    const toastEl = document.getElementById('toast');
+    const resetBtn = document.getElementById('reset');
+
+    let hintMode = false;
+    let tooltipEl = null;
+    let toastTimer = null;
+
+    function showToast(msg){
+      clearTimeout(toastTimer);
+      toastEl.querySelector('.inner').textContent = msg;
+      toastEl.hidden = false;
+      toastTimer = setTimeout(()=>{ toastEl.hidden = true; }, 2600);
+    }
+
+    function createTooltip(target){
+      if(tooltipEl) tooltipEl.remove();
+      tooltipEl = document.createElement('div');
+      tooltipEl.className = 'tooltip';
+      tooltipEl.setAttribute('role','tooltip');
+      tooltipEl.textContent = '여기를 클릭하세요: 보고서 내보내기';
+      target.appendChild(tooltipEl);
+    }
+
+    function removeTooltip(){
+      if(tooltipEl){ tooltipEl.remove(); tooltipEl = null; }
+    }
+
+    function enterHintMode(){
+      if(hintMode) return;
+      hintMode = true;
+      correctBtn.classList.add('pulse');
+      correctBtn.setAttribute('data-hint', 'true');
+      live.textContent = '잘못 선택했습니다. 올바른 버튼에 마우스를 올리면 안내가 나타납니다.';
+      showToast('이 기능이 아니에요. 올바른 버튼에 마우스를 올려보세요.');
+      // Keyboard: move focus toward the right place without stealing focus
+      setTimeout(()=>{
+        // Announce where to go next time the user tabs
+        correctBtn.setAttribute('aria-describedby','hintText');
+      }, 0);
+    }
+
+    function exitHintMode(success=false){
+      hintMode = false;
+      correctBtn.classList.remove('pulse');
+      correctBtn.removeAttribute('data-hint');
+      correctBtn.removeAttribute('aria-describedby');
+      removeTooltip();
+      if(success){
+        live.textContent = '완료! 보고서가 내보내졌습니다.';
+        showToast('✅ 완료! 보고서가 준비되었습니다.');
+      } else {
+        live.textContent = '';
+      }
+    }
+
+    function resetScenario(){
+      exitHintMode(false);
+      live.textContent = '시나리오가 초기화되었습니다. 보고서를 내보내 보세요.';
+      showToast('시나리오 초기화 완료');
+    }
+
+    // Click handling
+    toolbar.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', (e)=>{
+        const id = e.currentTarget.id;
+        if(id === CORRECT_ID){
+          exitHintMode(true);
+        } else {
+          enterHintMode();
+          // Optional: give subtle ghost style to the clicked wrong button
+          e.currentTarget.classList.add('ghost');
+          setTimeout(()=> e.currentTarget.classList.remove('ghost'), 900);
+        }
+      });
+
+      btn.addEventListener('mouseenter', (e)=>{
+        if(hintMode && e.currentTarget.id === CORRECT_ID){
+          createTooltip(e.currentTarget);
+        }
+      });
+      btn.addEventListener('mouseleave', removeTooltip);
+      btn.addEventListener('focus', (e)=>{
+        if(hintMode && e.currentTarget.id === CORRECT_ID){
+          createTooltip(e.currentTarget);
+        }
+      });
+      btn.addEventListener('blur', removeTooltip);
+    });
+
+    resetBtn.addEventListener('click', resetScenario);
+
+    // On load, announce task
+    live.textContent = '작업: 보고서를 내보내기 버튼을 찾아 실행하세요.';
+  })();
+</script>
+</body>
+</html>
