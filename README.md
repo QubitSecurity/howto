@@ -18,11 +18,11 @@
 
 ### 📱 Install App
 
--chrome
 - kvm
 - xrdp
 - tigervnc
 - remmina
+- chrome
 
 ---
 
