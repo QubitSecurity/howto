@@ -18,6 +18,7 @@
 
 ### 📱 Install App
 
+-chrome
 - kvm
 - xrdp
 - tigervnc
