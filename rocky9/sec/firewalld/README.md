@@ -1,4 +1,4 @@
-# README — Rocky Linux 9 / 2 NIC (public + trusted) 방화벽/라우팅 설정 가이드
+# Rocky Linux 9 / 2 NIC (public + trusted) 방화벽/라우팅 설정 가이드
 
 > 목적: **퍼블릭(public) NIC은 엄격 제어**, **프라이빗(trusted) NIC에서만 관리/운영 접속 허용**하도록 네트워크/파이어월드(firewalld)와 라우팅 우선순위를 구성합니다. HAProxy 프런트엔드 케이스(443만 오픈 + 내부 접속 IP 허용) 예시 포함.
 
