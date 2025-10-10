@@ -1,0 +1,21 @@
+nmcli connection modify enp7s0 connection.zone public
+nmcli connection modify enp1s0 connection.zone trusted
+nmcli connection modify enp7s0 ipv4.never-default no
+nmcli connection modify enp1s0 ipv4.never-default yes
+nmcli connection modify enp7s0 ipv4.route-metric 100
+nmcli connection modify enp1s0 ipv4.route-metric 200
+nmcli connection up enp7s0
+nmcli connection up enp1s0
+
+systemctl restart firewalld
+
+
+firewall-cmd --zone=public  --list-all
+firewall-cmd --zone=trusted  --list-all
+
+===
+
+firewall-cmd --get-active-zones
+
+firewall-cmd --permanent --zone=trusted --set-target=ACCEPT
+firewall-cmd --permanent --zone=public
