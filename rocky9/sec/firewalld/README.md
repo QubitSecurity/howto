@@ -260,5 +260,3 @@ firewall-cmd --runtime-to-permanent
 ---
 
 ### 끝.
-
-필요하면 `public.xml`에 **CIDR 추가/삭제**, `trusted`를 **서비스 단위 허용**으로 세분화하는 템플릿도 만들어 드릴게요.
