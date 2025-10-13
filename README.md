@@ -55,7 +55,7 @@
 
 ---
 
-## 💾 Download
+## 💾 Rocky Linux Download
 
 - http://mirror.navercorp.com/rocky/
 - https://mirror.navercorp.com/rocky/8/isos/x86_64/
@@ -67,6 +67,10 @@
 - https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/
+
+## 💾 Apache Solr Download
+
+- https://solr.apache.org/downloads.html
 
 ---
 
