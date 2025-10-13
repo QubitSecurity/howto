@@ -84,6 +84,18 @@
 
 ---
 
+## ⏳ OpenJDK EOL
+
+- https://access.redhat.com/ko/articles/6973017
+- https://openjdk.org/projects/jdk/21/
+
+---
+
+| Release | Released              | Active Support                               | Security Support                              |
+|---------|-----------------------|----------------------------------------------|-----------------------------------------------|
+| **OpenJDK 21**  | 19 Sep 2023 | ✅ Dec 2029                | ✅ Dec 2029              |
+
+---
 
 ## x. Useful Links
 
