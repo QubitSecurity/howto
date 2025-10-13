@@ -55,26 +55,35 @@
 
 ---
 
-## 💾 Rocky Linux Download
+## 💾 Download
+
+### Rocky Linux
 
 - http://mirror.navercorp.com/rocky/
 - https://mirror.navercorp.com/rocky/8/isos/x86_64/
 - https://mirror.navercorp.com/rocky/9/isos/x86_64/
 - https://mirror.navercorp.com/rocky/10/isos/x86_64/
 
-## 💾 Epel Download
+### Epel
 
 - https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/
 - https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/
 
-## 💾 Apache Solr Download
+### Apache Solr
 
 - https://solr.apache.org/downloads.html
 
+
+### Apache ZooKeeper
+
+- https://zookeeper.apache.org/releases.html
+
 ---
 
-## ⏳ CentOS Stream EOL
+## ⏳ EOL
+
+### CentOS Stream
 
 - https://endoflife.date/centos-stream
 
@@ -88,7 +97,7 @@
 
 ---
 
-## ⏳ OpenJDK EOL
+### OpenJDK EOL
 
 - https://access.redhat.com/ko/articles/6973017
 - https://openjdk.org/projects/jdk/21/
