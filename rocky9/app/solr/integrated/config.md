@@ -204,7 +204,7 @@ curl -s "http://nodeA:8983/solr/admin/collections" --data '
   maxShardsPerNode=2'
 ```
 
-> Solr 9에서는 autoscaling policy가 제거됨. 필요 시 **createNodeSet** 또는 placement 플러그인/노드 태그 전략으로 물리 분산을 보장하세요.
+> ⚠️Solr 9에서는 autoscaling policy가 제거됨. 필요 시 **createNodeSet** 또는 placement 플러그인/노드 태그 전략으로 물리 분산을 보장하세요.
 
 ---
 
