@@ -6,7 +6,7 @@
 
 ## 1) 설계
 
-* **포트별 멀티 인스턴스**: 한 서버당 16개 인스턴스 권장 (예: `8983–8998`).
+* **포트별 멀티 인스턴스**: 한 서버당 16개 인스턴스 (포트 8983~8998)
 * **자원 배분**
   * JVM HEAP: 인스턴스당 24GB
   * OS Page Cache: 총 메모리의 절반 이상(>300GB) 남겨 Lucene MMap 성능 활용. 16개 인스터스 구성 시, 총 384GB 사용
@@ -35,14 +35,13 @@
 ```
 /opt
 /opt/solr -> /opt/solr-9.9.0 # solr 실행 기본 바이너리 (내부 구조 유지 /opt/solr9.9.0 심볼릭 링크)
-/opt/solr-8983/              # 인스턴스 홈(소유자: sysadmin)
+/opt/solr-89XX/              # 인스턴스 홈(소유자: sysadmin)
   data/                      # cores, tlog, index
   logs/                      # 로그
   run/                       # PID/임시
   env                        # 인스턴스 환경설정 (포트/heap 등)
   start.sh                   # 실행 스크립트
   stop.sh                    # 종료 스크립트
-
 ```
 
 ### 3.2 개별 디렉토리 생성
@@ -50,13 +49,13 @@
 # sysadmin 계정으로
 install -d -m 0755 /opt/solr-{8983..8998}/{data,logs,run}
 ln -s /opt/solr/current/bin /opt/solr-8983/bin
-# 포트별로 반복 (8984~8990)
+# 포트별로 반복 (8984~8998)
 ```
 
 ### 3.3 개별 실행 env 파일 생성(/opt/solr-89XX/env)
 ```
 # ===== [필수 기본 설정] =====
-SOLR_PORT=8992
+SOLR_PORT=89XX
 
 # Solr 기본 경로 Prefix
 SOLR_BASE="/opt/solr-${SOLR_PORT}"
@@ -87,16 +86,17 @@ SOLR_OPTS="$SOLR_OPTS -Dsolr.autoSoftCommit.maxTime=2000"
 
 # ===== [품질/운영 설정] =====
 UMASK=0022
-
+```
 ※ 요구된 solr 실행 옵션
+```
 SOLR_OPTS="$SOLR_OPTS -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled"
 SOLR_OPTS="$SOLR_OPTS -XX:+AlwaysPreTouch -XX:+PerfDisableSharedMem"
-윕 실행 옵션 중, 나머지는 기본 실행 시 기동 MaxGCPauseMillis 옵션은 /opt/solr/bin/solr 내에서 수동 변경
+위 실행 옵션 중, 나머지는 기본 실행 시 기동됨. MaxGCPauseMillis 기본 값은 250으로 수정한다면, /opt/solr/bin/solr 내에서 수동 변경
 ```
 
 ### 3.3 실행 / 종료 스크립트 작성
-```
 실행(/opt/solr-89XX/start.sh)
+```
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -124,8 +124,8 @@ exec /opt/solr/bin/solr start -c \
               -Dsolr.allow.unsafe.resourceloading=true" \
   2>&1 | tee "${SOLR_LOGS_DIR}/solr-startup.log"
 ```
-```
 종료(/opt/solr-89XX/stop.sh)
+```
 #!/usr/bin/env bash
 set -euo pipefail
 source ./env
@@ -135,23 +135,25 @@ source ./env
 
 ## 4) systemd **사용자 단위**로 관리 (자동 시작, root 불필요)
 
-
 ### 4.1 **linger 허용**(한 번만; 이미 되어 있으면 생략)
+확인 명령어
 ```
-확인
 loginctl list-users
 ```
+허용 명령어
 ```bash
 loginctl enable-linger sysadmin
 ```
 
 
 
-### 4.2 **유닛 템플릿** `~/.config/systemd/user/solr@.service
+### 4.2 **유닛 템플릿** `~/.config/systemd/user/solr@.service`
+디렉토리 생성
 ```
 mkdir -p ~/.config/systemd/user/
 ```
 
+service 파일 생성(~/.config/systemd/user/solr@.service)
 ```
 [Unit]
 Description=Solr (%i) user instance
@@ -172,7 +174,7 @@ LimitNOFILE=1048576
 WantedBy=default.target
 ```
 
-### 4.3 **실행**
+### 4.3 서비스 등록
 
 ```bash
 systemctl --user daemon-reload
@@ -180,6 +182,30 @@ systemctl --user enable --now solr@89XX
 # 필요 포트 반복: 8984..8990
 ```
 
+관련 명령어
+```
+서비스 확인 명령어
+systemctl --user list-units --type=service | grep solr
+
+개별 서비스 삭제(안전)
+systemctl --user stop solr@89XX
+systemctl --user disable solr@89XX
+systemctl --user stop solr@89XX
+systemctl --user reset-failed solr@898.service
+
+데몬 리로드 (메모리 상 유닛 테이블 새로고침)
+systemctl --user daemon-reload
+```
+
+### 4.4 실행 / 종료 
+실행
+```
+systemctl --user start solr@89XX
+```
+종료
+```
+systemctl --user stop solr@89XX
+```
 
 
 
