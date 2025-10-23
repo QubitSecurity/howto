@@ -15,7 +15,7 @@
 
 ---
 
-## 2) 인스턴스 포트 계획
+## 2) 인스턴스 포트 구성
 
 | Port | 홈 디렉터리           |  HEAP | 비고           |
 | ---: | ---------------- | ----: | ------------ |
@@ -31,6 +31,11 @@
 ---
 
 ## 3) 개별 Solr 인스턴스 구조 
+### 3.0 공통 실행 바이너리 심볼릭 링크
+```
+ln -s /opt/solr-9.9.0/ /opt/solr
+```
+
 ### 3.1 개별 실행 디렉토리 구조
 ```
 /opt
@@ -48,7 +53,6 @@
 ```bash
 # sysadmin 계정으로
 install -d -m 0755 /opt/solr-{8983..8998}/{data,logs,run}
-ln -s /opt/solr/current/bin /opt/solr-8983/bin
 # 포트별로 반복 (8984~8998)
 ```
 
@@ -75,7 +79,7 @@ SOLR_MODULES="scripting"
 SOLR_HEAP="24g"
 SOLR_JAVA_STACK="512k"
 
-# 반드시 초기화 필요!
+# SOLR_OPTS 초기화
 SOLR_OPTS=""
 
 #SOLR_OPTS="$SOLR_OPTS -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled"
@@ -131,7 +135,7 @@ set -euo pipefail
 source ./env
 /opt/solr/bin/solr stop -p "$SOLR_PORT" || true
 ```
-
+---
 
 ## 4) systemd **사용자 단위**로 관리 (자동 시작, root 불필요)
 
@@ -145,15 +149,13 @@ loginctl list-users
 loginctl enable-linger sysadmin
 ```
 
-
-
 ### 4.2 **유닛 템플릿** `~/.config/systemd/user/solr@.service`
 디렉토리 생성
 ```
 mkdir -p ~/.config/systemd/user/
 ```
 
-service 파일 생성(~/.config/systemd/user/solr@.service)
+service 파일 생성(`~/.config/systemd/user/solr@.service`)
 ```
 [Unit]
 Description=Solr (%i) user instance
@@ -173,7 +175,6 @@ LimitNOFILE=1048576
 [Install]
 WantedBy=default.target
 ```
-
 ### 4.3 서비스 등록
 
 ```bash
@@ -191,7 +192,7 @@ systemctl --user list-units --type=service | grep solr
 systemctl --user stop solr@89XX
 systemctl --user disable solr@89XX
 systemctl --user stop solr@89XX
-systemctl --user reset-failed solr@898.service
+systemctl --user reset-failed solr@89XX.service
 
 데몬 리로드 (메모리 상 유닛 테이블 새로고침)
 systemctl --user daemon-reload
