@@ -95,17 +95,18 @@
 * **cURL** 예시
 
   ```bash
-  curl --request POST \
-    --url https://api.friendli.ai/serverless/v1/chat/completions \
-    --header "Authorization: Bearer $FRIENDLI_TOKEN" \
-    --header "Content-Type: application/json" \
-    --data '{
-      "model": "exaone-4.0-32b-instruct",
-      "messages": [
-        {"role": "user", "content": "엑사원으로 인사해 줘"}
-      ]
-    }'
-  ```
+export FRIENDLI_TOKEN="flp_xxx"
+export FRIENDLI_TEAM_ID="xxx" 
+
+curl -sS https://api.friendli.ai/serverless/v1/chat/completions \
+  -H "Authorization: Bearer $FRIENDLI_TOKEN" \
+  -H "X-Friendli-Team: $FRIENDLI_TEAM_ID" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "LGAI-EXAONE/EXAONE-4.0.1-32B",
+    "messages": [{"role":"user","content":"엑사원으로 인사해 줘"}]
+  }'
+```
 
   ([FriendliAI][3])
 
