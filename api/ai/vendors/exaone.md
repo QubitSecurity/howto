@@ -23,7 +23,7 @@
 
 ### 🛡️ API Key(토큰) 발급 메뉴 진입
 
-3. 콘솔 좌측에서 **Serverless Endpoints** → 상단 **Model Info(i)** 또는 안내 링크를 통해 **Friendli Token** 생성 페이지로 이동
+3. 콘솔 좌측에서 ⚙️**Settings** → 메뉴 **Personal settings** 에서 **API Tokens** 생성 페이지로 이동
 
    * Friendli Token(예: `flp_xxx…`)은 **Bearer 토큰**으로 사용됩니다. ([FriendliAI][3])
 
