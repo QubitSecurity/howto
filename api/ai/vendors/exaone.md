@@ -94,7 +94,7 @@
 
 * **cURL** 예시
 
-  ```bash
+```bash
 export FRIENDLI_TOKEN="flp_xxx"
 export FRIENDLI_TEAM_ID="xxx" 
 
