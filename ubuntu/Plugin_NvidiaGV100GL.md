@@ -12,7 +12,7 @@ Ubuntu 22.04.5 LTS
 ```
 ### 1.2 GPU 드라어버 설치
 ```
-sudo apt install nvidia-driver-535-server nvidia-utils-535-server
+# sudo apt install nvidia-driver-535-server nvidia-utils-535-server
 ※ ChatGPT 권장 버전 확인
 ```
 
@@ -44,15 +44,14 @@ Wed Nov 12 14:27:11 2025
 ## 2. 테스트
 ### 2.1 테스트 환경 구축
 ```
-sudo apt install -y python3-venv python3-pip
-python3 -m venv ~/torch-env
+# sudo apt install -y python3-venv python3-pip
+# python3 -m venv ~/torch-env
 
+# python -m pip install --upgrade pip --no-cache-dir
+# pip --version
+# pip install --upgrade setuptools wheel
 
-python -m pip install --upgrade pip --no-cache-dir
-pip --version
-pip install --upgrade setuptools wheel
-
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 ### 2.2 테스트 실행
 ```
