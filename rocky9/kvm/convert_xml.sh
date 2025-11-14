@@ -1,5 +1,5 @@
 #!/bin/bash
-# Rocky8 KVM 가상머신을 Rocky9 KVM 환경에서 적용하기 위한 가상머신 xml 변환 쉘 스크립트
+# Rocky8 KVM에서 생성한 가상머신을 Rocky9 KVM 환경에서 사용하기 위한 가상머신 xml 변환 쉘 스크립트
 # 사용법: ./convert_xml.sh <xml 파일이 있는 디렉토리>
 TARGET_DIR="$1"
 
