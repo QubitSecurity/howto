@@ -85,7 +85,7 @@ GO
 
 1.  SQL Server에서 로그인을 시도하거나(성공/실패), 테이블을 생성하는 등의 테스트 액션을 수행합니다.
 2.  Windows에서 이벤트 뷰어(Event Viewer)를 실행합니다 (`eventvwr.msc`).
-3.  `Windows 로그 -\> 응용 프로그램(Application)`을 클릭합니다.
+3.  `Windows 로그 > 응용 프로그램(Application)`을 클릭합니다.
 4.  소스가 **MSSQLSERVER**인 로그 중 **Event ID 24000번대**가 기록되는지 확인합니다.
 
 ### 💡 주의사항 (필독)
