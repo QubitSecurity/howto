@@ -25,7 +25,7 @@ wevtutil el > wevtchlist.txt
 
 For details on configuring SQL Server Audit to write to the **Application** channel (Event IDs 24000+):
 
-  - [**SQL Server Audit Configuration**](https://www.google.com/search?q=sql-server.md)
+  - [**SQL Server Audit Configuration**](sql-server.md)
 
 ## X. Useful Links
 
