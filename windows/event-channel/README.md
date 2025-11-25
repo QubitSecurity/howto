@@ -9,4 +9,4 @@ First count
     
 ## X. Useful Links
 
-- [https://github.com/QubitSecurity/doc/tree/main/rocky8/app/xrdp](https://www.csoonline.com/article/3683210/how-to-enable-event-collection-in-windows-server.html)
+- [ultimatewindowssecurity](https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/default.aspx)  
