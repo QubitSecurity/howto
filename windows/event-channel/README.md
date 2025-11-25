@@ -1,4 +1,4 @@
-# How to enable event collection in Windows Server
+# 🪟 How to enable event collection in Windows Server
 
 This guide provides steps to identify Windows Event Channels and configure specific event collection settings, including SQL Server Audits.
 
