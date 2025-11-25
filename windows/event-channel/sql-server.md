@@ -1,11 +1,11 @@
-SQL Server에서 **Event ID 24000번대** 로그가 **Windows 응용 프로그램(Application) 로그**에 남도록 설정하려면, **SQL Server Audit(감사)** 기능을 사용할 때 대상을 \*\*'Application Log'\*\*로 지정해야 합니다.
+SQL Server에서 **Event ID 24000번대** 로그가 **Windows 응용 프로그램(Application) 로그**에 남도록 설정하려면, **SQL Server Audit**(감사) 기능을 사용할 때 대상을 '**Application Log**'로 지정해야 합니다.
 
 설정은 크게 두 단계로 나뉩니다.
 
 1.  **감사(Audit) 생성:** 로그를 *어디에* 저장할지 설정 (여기서 Application Log 선택)
 2.  **감사 사양(Audit Specification) 생성:** *무엇을* 감시할지 설정 (로그인 성공, 실패 등)
 
-가장 편한 \*\*SSMS(SQL Server Management Studio)\*\*를 이용한 방법과 **T-SQL(쿼리)** 방법 두 가지를 설명해 드리겠습니다.
+가장 편한 SSMS(SQL Server Management Studio)를 이용한 방법과 **T-SQL(쿼리)** 방법 두 가지를 설명해 드리겠습니다.
 
 -----
 
