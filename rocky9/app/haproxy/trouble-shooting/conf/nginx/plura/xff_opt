@@ -1,9 +1,0 @@
-# /etc/nginx/plura/xff_opt
-# -------------------------------------------------------------------
-# 목적:
-#  - WAF -> WEB 전달 시 X-Forwarded-For 처리 통일
-# 권장:
-#  - HAProxy에서 XFF 체인을 만들고, WAF에서는 그대로 전달
-# -------------------------------------------------------------------
-
-proxy_set_header X-Forwarded-For $http_x_forwarded_for;
