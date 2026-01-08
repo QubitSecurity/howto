@@ -68,7 +68,8 @@ kubectl get persistentvolume
 ### 4. values.yaml 파일 수정
 ```
 vi values.yaml
-불필요 부분 false 설정 (yaml 파일 내 'webhook' 검색하여 관련 이미지 실행 및 파드가 생성되지 않도록 false 설정)
+불필요 부분 false 설정 (yaml 파일 내 'webhook' 검색하여 관련 이미지 실행 및 파드가 생성되지 않도록 모두 false 설정)
+(예시)
     patch:
       affinity: {}
       annotations: {}
