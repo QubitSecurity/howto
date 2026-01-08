@@ -67,7 +67,8 @@ kubectl get persistentvolume
 
 ### 4. values.yaml 파일 수정
 ```
-불필요 부분 false 설정
+vi values.yaml
+불필요 부분 false 설정 (yaml 파일 내 'webhook' 검색하여 실행되지 않도록 false 설정)
     patch:
       affinity: {}
       annotations: {}
@@ -83,7 +84,7 @@ kubectl get persistentvolume
 prometheus:
   prometheusSpec:
     nodeSelector:
-      kubernetes.io/hostname: <실제-워커노드-이름>  #021099-k8s-worker
+      kubernetes.io/hostname: <실제-워커노드-이름>  # 위 prometheus-pv.yaml 작성 시, 동일 Worker 노드 지정
 
     storageSpec:
       volumeClaimTemplate:
