@@ -6,7 +6,7 @@
 ```
 
 ## Prometheus
-### 1. values.yaml 파일 추출
+### 1. yaml 파일 추출
 ```
 실행 중인 프로메테우스의 yaml 파일을 추출
 helm get values prometheus -n monitoring -a > values.yaml
@@ -68,7 +68,7 @@ kubectl get persistentvolume
 ### 4. values.yaml 파일 수정
 ```
 vi values.yaml
-불필요 부분 false 설정 (yaml 파일 내 'webhook' 검색하여 관련 이미지 실행 및 파드가 생성되지 않도록 모두 false 설정)
+불필요 부분 false 설정 (yaml 파일 내 'webhook' 검색하여 관련 파드가 생성되지 않도록 모두 false 설정)
 (예시)
     patch:
       affinity: {}
