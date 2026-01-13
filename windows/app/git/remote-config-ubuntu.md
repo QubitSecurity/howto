@@ -371,11 +371,3 @@ Update-9-plura-security.ps1
 
 ---
 
-## 다음 단계 (선택)
-
-* Rocky 서버 SSH 키 기반 접속 설정
-* WSL → Rocky rsync 배포 테스트
-* Rocky 서버에 GitLab Runner 설치 (staging)
-* GitLab CI/CD로 staging → live 승격 파이프라인 구성
-
-원하시면 **이 HOWTO를 기반으로 바로 다음 단계 문서**를 이어서 작성해 드리겠습니다.
