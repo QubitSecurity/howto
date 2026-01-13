@@ -371,3 +371,117 @@ Update-9-plura-security.ps1
 
 ---
 
+## 11단계: 이미 clone된 `system` 프로젝트 업데이트 방법
+
+GitLab에서 이미 `config/system` 프로젝트를 clone한 상태에서
+다시 `git clone`을 실행하면 아래 오류가 발생합니다.
+
+```
+fatal: destination path 'system' already exists and is not an empty directory.
+```
+
+이는 **정상적인 동작**이며, 이 경우에는 **clone이 아니라 update(pull)** 를 해야 합니다.
+
+---
+
+### 11-1. 현재 디렉터리가 Git 저장소인지 확인
+
+Ubuntu 터미널에서 `system` 디렉터리로 이동한 상태에서 실행합니다.
+
+```bash
+cd ~/system
+git rev-parse --is-inside-work-tree
+```
+
+* 출력이 `true` → ✅ 정상적인 Git 저장소 → **11-2단계로 이동**
+* 에러 발생 → ❌ Git 저장소 아님 → **11-5단계 참고**
+
+---
+
+### 11-2. 가장 기본적인 업데이트 방법 (권장)
+
+```bash
+git pull
+```
+
+또는 기본 브랜치가 `main`인 경우 명시적으로:
+
+```bash
+git pull origin main
+```
+
+→ GitLab dev 서버의 최신 내용이 로컬 `system` 디렉터리에 반영됩니다.
+
+---
+
+### 11-3. 로컬 수정 사항이 있어 pull이 실패하는 경우
+
+#### 방법 A️⃣ (로컬 수정 보존, 가장 안전함)
+
+```bash
+git stash -u
+git pull
+git stash pop
+```
+
+#### 방법 B️⃣ (⚠️ 로컬 수정 전부 삭제, 서버와 완전 동일하게 맞춤)
+
+```bash
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+```
+
+> ⚠️ 이 방법은 **로컬 변경 사항이 모두 삭제**되므로 주의
+
+---
+
+### 11-4. 현재 상태 확인 (문제 발생 시 필수 점검)
+
+```bash
+git status
+git branch --show-current
+git log --oneline -5
+```
+
+---
+
+### 11-5. `~/system`이 Git 저장소가 아닌 일반 폴더인 경우
+
+과거에 수동으로 파일을 복사했거나, Git으로 clone하지 않은 폴더일 수 있습니다.
+
+이 경우 아래 절차로 처리합니다.
+
+```bash
+cd ~
+mv system system.bak
+git clone git@gitlab.plura.internal:config/system.git
+```
+
+---
+
+### 11-6. 원격 저장소 URL 확인 (권장)
+
+```bash
+git remote -v
+```
+
+정상 출력 예:
+
+```
+origin  git@gitlab.plura.internal:config/system.git (fetch)
+origin  git@gitlab.plura.internal:config/system.git (push)
+```
+
+---
+
+## 이 단계까지 완료되면
+
+* ✔ 이미 clone된 Git 저장소를 **정상적으로 업데이트**할 수 있음
+* ✔ GitLab dev 서버와 로컬 Ubuntu 작업 디렉터리 동기화 완료
+* ✔ 이후 **staging / live 배포 자동화(CI/CD)** 단계로 바로 진행 가능
+
+---
+
+
+
