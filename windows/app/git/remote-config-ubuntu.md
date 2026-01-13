@@ -1,10 +1,4 @@
-아래는 **지금까지 진행한 모든 내용을 하나로 정리한 “실전 HOWTO 문서”**입니다.
-Windows 사용자 기준이며, **WSL2 → Ubuntu → GitLab dev 서버 접속 확인**까지를 목표로 합니다.
-(문서 그대로 사내 위키/README에 올려도 되는 형태로 작성했습니다)
-
----
-
-# HOWTO: Windows에서 WSL2 Ubuntu 설치 후 GitLab Dev 서버 접속 확인
+## HOWTO: Windows에서 WSL2 Ubuntu 설치 후 GitLab Dev 서버 접속 확인
 
 ## 목적
 
