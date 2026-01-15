@@ -43,6 +43,85 @@ Host l-gitops
 
 ---
 
+## 0️⃣ Git Repository 다운로드 (작업 시작 지점)
+
+> **dev → staging → live 동기화 작업은 항상
+> ‘dev 저장소를 로컬에 다운로드(clone)하는 것’에서 시작합니다.**
+
+모든 승격과 동기화는 **dev(d-gitlab)** 저장소의 코드를 기준으로 이루어집니다.
+따라서 먼저 **대상 Repository를 로컬에 clone**해야 합니다.
+
+### 0-1. dev(d-gitlab) 저장소 clone
+
+```bash
+git clone git@gitlab.plura.internal:config/system.git
+cd system
+```
+
+또는 SSH alias를 사용하는 경우:
+
+```bash
+git clone git@d-gitlab:config/system.git
+cd system
+```
+
+이 디렉토리에서의 기본 상태는 다음과 같습니다.
+
+* `origin` → **dev(d-gitlab)** 저장소
+* `origin/main` → dev 기준 main 브랜치
+
+```bash
+git remote -v
+git branch
+```
+
+---
+
+### 0-2. 왜 dev 저장소를 먼저 clone 하는가?
+
+* **dev가 모든 환경의 기준(Source of Truth)** 이기 때문입니다.
+* staging(s-gitops)과 live(gitops)는
+  dev에서 검증된 결과를 **받아들이는 대상**일 뿐,
+  직접 개발하거나 기준이 되는 저장소가 아닙니다.
+
+즉, 흐름은 항상 다음과 같습니다.
+
+```
+[로컬 작업 디렉토리]
+        ↑
+   git clone
+        ↑
+dev (d-gitlab)
+```
+
+이후에 이 dev 기준 코드를:
+
+* staging(s-gitops)로 동기화하거나
+* live(gitops)로 동기화하거나
+* promote 브랜치를 만들어 MR로 승격
+
+하게 됩니다.
+
+---
+
+### 0-3. 이후 작업 흐름 요약
+
+dev 저장소를 clone 한 이후부터는 다음 절차를 따릅니다.
+
+1. **dev → staging 동기화**
+
+   * 초기에는 reset(강제 동기화) 방식
+   * 이후에는 promote + MR 방식
+
+2. **staging → live 동기화**
+
+   * 운영 표준은 staging 검증 후 live 반영
+   * 초기 정리 단계에서는 dev → live 직접 동기화도 가능
+
+👉 이 모든 절차는 **이 문서의 1️⃣, 2️⃣, 3️⃣ 단계**에서 상세히 설명합니다.
+
+---
+
 ## 1️⃣ dev → staging 동기화 (초기 정리 / 리셋 방식)
 
 > staging에 과거 히스토리가 많아 충돌이 반복될 경우,
