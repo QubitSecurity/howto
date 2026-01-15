@@ -45,10 +45,10 @@ Host l-gitops
 
 ## 0️⃣ Git Repository 다운로드 (작업 시작 지점)
 
-> **dev → staging → live 동기화 작업은 항상
+> **dev → staging → live 동기화 작업은 항상  
 > ‘dev 저장소를 로컬에 다운로드(clone)하는 것’에서 시작합니다.**
 
-모든 승격과 동기화는 **dev(d-gitlab)** 저장소의 코드를 기준으로 이루어집니다.
+모든 승격과 동기화는 **dev(d-gitlab)** 저장소의 코드를 기준으로 이루어집니다.  
 따라서 먼저 **대상 Repository를 로컬에 clone**해야 합니다.
 
 ### 0-1. dev(d-gitlab) 저장소 clone
