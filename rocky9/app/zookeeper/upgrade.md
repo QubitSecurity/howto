@@ -5,7 +5,7 @@ wget https://dlcdn.apache.org/zookeeper/zookeeper-[NEW Version]/apache-zookeeper
 tar xvf /opt/apache-zookeeper-[NEW Version]-bin.tar.gz
 
 zookeeper 신규 버전 주소
-https://www.apache.org/dyn/closer.lua/zookeeper/zookeeper-[NEW Version]/apache-zookeeper-[NEW Version]-bin.tar.gz
+https://www.apache.org/dyn/closer.lua/zookeeper
 ```
 
 ### 2. 설정 파일 복사
