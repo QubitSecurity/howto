@@ -29,5 +29,7 @@ cp /opt/zk/config/zoo.cfg /opt/apache-zookeeper-[NEW Version]-bin/config/
 ```
 rm /opt/zk
 ln -s /opt/apache-zookeeper-[NEW Version]-bin /opt/zk
-※시작 종료 방법은 동일
+
+시작
+/opt/zk/bin/zkServer.sh start /opt/zk/conf/zoo.cfg
 ```
