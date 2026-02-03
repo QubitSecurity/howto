@@ -1,7 +1,7 @@
 ### zookeeper 업그레이드
 ```
 신규 버전의 zookeeper 업그레이드
-follower -> leader(마지막) 순으로 아래 1 ~ 4q번 과정으로 rolling 업그레이드
+follower 노드 -> leader 노드 (마지막) 순으로 아래 1 ~ 4번 과정으로 노드별 rolling 업그레이드
 ```
 
 ### 1. 신규 버전 zookeeper 다운로드
