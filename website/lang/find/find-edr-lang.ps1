@@ -1,51 +1,67 @@
-# 1. 환경 설정
+# 1. Configuration
 $targetPath = "D:\temp\edr\windows"
 $outputFile = "windows.lang.txt"
-# 기준 언어 (JSON 키와 정확히 일치해야 함)
+# Standard 7 Language Keys (Exact Match)
 $requiredKeys = @("zh-Hans", "de", "ko", "ja", "en", "fr", "es")
 
 if (Test-Path $targetPath) {
-    # 2. JSON 파일 목록 가져오기 (Zone.Identifier 제외)
+    # 2. Get JSON files (Exclude Zone.Identifier)
     $files = Get-ChildItem -Path $targetPath -Filter "*.json" | Where-Object { $_.Name -notlike "*.json_Zone.Identifier" }
 
     $resultList = New-Object System.Collections.Generic.List[string]
 
     foreach ($file in $files) {
         try {
-            # 인코딩 문제를 방지하기 위해 UTF8로 강제 로드
+            # Force Read as UTF8
             $rawText = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
             $jsonContent = $rawText | ConvertFrom-Json
             
-            # filterName 객체의 속성 이름(언어 키)들 가져오기
-            $presentKeys = $jsonContent.filterName.PSObject.Properties.Name
+            # Identify the target property (filterName, webFilterName, or name)
+            $targetProperty = $null
+            $allProps = $jsonContent.PSObject.Properties.Name
             
-            # 누락된 키 확인
-            $missingKeys = $requiredKeys | Where-Object { $_ -notin $presentKeys }
+            if ($allProps -contains "filterName") { $targetProperty = $jsonContent.filterName }
+            elseif ($allProps -contains "webFilterName") { $targetProperty = $jsonContent.webFilterName }
+            elseif ($allProps -contains "name") { $targetProperty = $jsonContent.name }
 
-            # 3. 7개 언어가 모두 있지 않은 경우만 리스트에 추가
-            if ($missingKeys.Count -gt 0) {
-                $resultList.Add("-----------------------------------------")
-                $resultList.Add("File Name : $($file.Name)")
-                $resultList.Add("Status    : MISSING ($(7 - $missingKeys.Count)/7)")
-                $resultList.Add("Missing   : $($missingKeys -join ', ')")
+            # If a translation object is found
+            if ($null -ne $targetProperty) {
+                # [FIX] Get keys as a clean string array for reliable comparison
+                $presentKeys = $targetProperty.PSObject.Properties.Name | ForEach-Object { $_.ToString().Trim() }
+                
+                # Check for missing keys
+                $missingKeys = New-Object System.Collections.Generic.List[string]
+                foreach ($key in $requiredKeys) {
+                    if ($presentKeys -notcontains $key) {
+                        $missingKeys.Add($key)
+                    }
+                }
+
+                # Add to result only if there are actually missing keys
+                if ($missingKeys.Count -gt 0) {
+                    $resultList.Add("-----------------------------------------")
+                    $resultList.Add("FILE      : $($file.Name)")
+                    $resultList.Add("STATUS    : MISSING ($($requiredKeys.Count - $missingKeys.Count)/7)")
+                    $resultList.Add("MISSING   : $($missingKeys -join ', ')")
+                    $resultList.Add("PRESENT   : $($presentKeys -join ', ')")
+                }
             }
         }
         catch {
-            # 파싱 에러 발생 시 로그 (인코딩 문제 해결용)
             $resultList.Add("-----------------------------------------")
-            $resultList.Add("File Name : $($file.Name)")
-            $resultList.Add("Error     : Parse Failed (Check file encoding or JSON format)")
+            $resultList.Add("FILE      : $($file.Name)")
+            $resultList.Add("ERROR     : JSON Parse Failed")
         }
     }
 
-    # 4. 결과 저장 (BOM이 있는 UTF8로 저장하여 한글 깨짐 방지)
+    # 3. Save result (UTF8 with BOM)
     if ($resultList.Count -gt 0) {
         $resultList | Out-File -FilePath $outputFile -Encoding utf8
-        Write-Host "Done! Check '$outputFile' for missing language sets." -ForegroundColor Yellow
+        Write-Host "Scan completed. Issues found. Check '$outputFile'." -ForegroundColor Yellow
     } else {
-        "All files contain 7 languages." | Out-File -FilePath $outputFile -Encoding utf8
-        Write-Host "Success! No issues found." -ForegroundColor Green
+        "All relevant files contain all 7 languages." | Out-File -FilePath $outputFile -Encoding utf8
+        Write-Host "Success! No missing translations found." -ForegroundColor Green
     }
 } else {
-    Write-Host "Path not found: $targetPath" -ForegroundColor Red
+    Write-Host "Error: Path not found - $targetPath" -ForegroundColor Red
 }
