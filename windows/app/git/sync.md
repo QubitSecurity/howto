@@ -55,7 +55,7 @@ sleep 1
 sh ./api/d-git-sync.sh filter-global
 sleep 1
 
-sh ./api/d-git-sync.sh filter-config
+sh ./api/d-git-sync.sh filter-category
 sleep 1
 
 ```
@@ -66,7 +66,7 @@ sleep 1
 sh ./api/s-git-sync.sh filter-global
 sleep 1
 
-sh ./api/s-git-sync.sh filter-config
+sh ./api/s-git-sync.sh filter-category
 sleep 1
 
 ```
@@ -76,7 +76,7 @@ sleep 1
 sh ./api/git-sync.sh filter-global
 sleep 1
 
-sh ./api/git-sync.sh filter-config
+sh ./api/git-sync.sh filter-category
 sleep 1
 
 ```
