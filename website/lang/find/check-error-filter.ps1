@@ -1,174 +1,522 @@
-# 1. 환경 설정 (사용자 환경에 맞게 수정)
-$baseDir = "D:\temp\filter" 
-$outputFile = "filter_check_report.txt"
-
-# 언어 설정
-$EDR_LANGS = @("ko", "en", "ja", "de", "fr", "es", "zh-Hans")
-$MITRE_LANGS = @("ko", "en", "ja")
-$WEB_LANGS = @("ko", "en", "ja")
-
-# 패턴 정의 (정규식)
-$OS_PAT = "(rhel|ubuntu|windows)"
-$FID_PAT = "(M[a-z0-9]{15})"
-$WFID_PAT = "(8\d{5})"
-$TID_PAT = "(T\d{4}(?:\.\d{3})?)"
-
-# 검사 제외 루트 파일
-$ROOT_SKIP_FILES = @(
-    "CredentialFilterType.json", "DefenseCmdTemplate.json", "FilterCategory.json",
-    "FilterElementReferenceGlobal.json", "IpDefenseOwaspCategory.json",
-    "WebExtendsFilterField.json", "WebFilter.json"
+param(
+    [string]$BaseDir = "\\wsl$\Ubuntu-24.04\home\joo\filter",
+    [string]$OutputFile = "filter_check_report.txt"
 )
 
-$report = New-Object System.Collections.Generic.List[string]
-$stats = @{ Total = 0; PatternErr = 0; JsonErr = 0; LinkErr = 0; Warn = 0 }
+$OS_PAT = '(rhel|ubuntu|windows)'
+$FID_PAT = '(M[a-z0-9]{15})'
+$WFID_PAT = '(8\d{5})'
+$TID_PAT = '(T\d{4}(?:\.\d{3})?)'
 
-function Write-Log { param($msg) $report.Add($msg); Write-Host $msg }
+$EDR_LANGS = @('ko', 'en', 'ja', 'de', 'fr', 'es', 'zh-Hans')
+$MITRE_LANGS = @('ko', 'en', 'ja')
+$WEB_LANGS = @('ko', 'en', 'ja')
 
-if (-not (Test-Path $baseDir)) { 
-    Write-Error "Path not found: $baseDir"
-    exit 
+$ROOT_SKIP_FILES = @(
+    'CredentialFilterType.json',
+    'DefenseCmdTemplate.json',
+    'FilterCategory.json',
+    'FilterElementReferenceGlobal.json',
+    'IpDefenseOwaspCategory.json',
+    'WebExtendsFilterField.json',
+    'WebFilter.json'
+)
+
+$PATTERNS = @(
+    [pscustomobject]@{ Prefix = 'rules/edr';   Regex = "^filter/rules/edr/$OS_PAT/$FID_PAT-$OS_PAT\.json$";              OsGroups = @(1, 3) },
+    [pscustomobject]@{ Prefix = 'rules/mitre'; Regex = "^filter/rules/mitre/$OS_PAT/$TID_PAT-$OS_PAT-$FID_PAT\.json$";  OsGroups = @(1, 3) },
+    [pscustomobject]@{ Prefix = 'rules/web';   Regex = "^filter/rules/web/$WFID_PAT\.json$";                             OsGroups = $null },
+    [pscustomobject]@{ Prefix = 'meta/edr';    Regex = "^filter/meta/edr/$OS_PAT/$FID_PAT-$OS_PAT-description\.json$";   OsGroups = @(1, 3) },
+    [pscustomobject]@{ Prefix = 'meta/mitre';  Regex = '^filter/meta/mitre/MITRE-version\.json$';                         OsGroups = $null },
+    [pscustomobject]@{ Prefix = 'meta/mitre';  Regex = '^filter/meta/mitre/Tactics\.json$';                               OsGroups = $null },
+    [pscustomobject]@{ Prefix = 'meta/mitre';  Regex = "^filter/meta/mitre/$TID_PAT\.json$";                             OsGroups = $null },
+    [pscustomobject]@{ Prefix = 'meta/mitre';  Regex = "^filter/meta/mitre/$TID_PAT-description\.json$";                 OsGroups = $null },
+    [pscustomobject]@{ Prefix = 'meta/web';    Regex = "^filter/meta/web/$WFID_PAT-description\.json$";                  OsGroups = $null }
+)
+
+$EDR_RULES_RE = "^filter/rules/edr/$OS_PAT/$FID_PAT-$OS_PAT\.json$"
+$MITRE_RULES_RE = "^filter/rules/mitre/$OS_PAT/$TID_PAT-$OS_PAT-$FID_PAT\.json$"
+$WEB_RULES_RE = "^filter/rules/web/$WFID_PAT\.json$"
+
+$script:JsonDocumentType = [type]::GetType('System.Text.Json.JsonDocument, System.Text.Json', $false)
+
+function Normalize-Path {
+    param([Parameter(Mandatory = $true)][object]$PathValue)
+    return ([string]$PathValue -replace '\\', '/')
 }
 
-# 2. 모든 JSON 파일 수집
-$files = Get-ChildItem -Path $baseDir -Filter "*.json" -Recurse | Where-Object { $_.FullName -notmatch "\\\.git\\" }
-$stats.Total = $files.Count
+function New-StringList {
+    return New-Object 'System.Collections.Generic.List[string]'
+}
 
-Write-Host "Checking $($stats.Total) files..." -ForegroundColor Cyan
+function Get-PropertyValue {
+    param(
+        [Parameter(Mandatory = $false)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
 
-foreach ($file in $files) {
-    # 상대 경로 정문화 (POSIX 스타일)
-    $relPath = $file.FullName.Replace($baseDir, "filter").Replace("\", "/")
-    
-    # --- [섹션 1] 파일명 패턴 검사 ---
-    $isPatternValid = $false
-    
-    # 루트 파일 체크
-    if ($relPath -match "^filter/($($ROOT_SKIP_FILES -join '|'))$") {
-        $isPatternValid = $true
-    } 
-    # EDR 규칙 패턴
-    elseif ($relPath -match "^filter/rules/edr/$OS_PAT/$FID_PAT-$OS_PAT\.json$") {
-        if ($Matches[1] -eq $Matches[3]) { $isPatternValid = $true }
-    } 
-    # MITRE 규칙 패턴
-    elseif ($relPath -match "^filter/rules/mitre/$OS_PAT/$TID_PAT-$OS_PAT-$FID_PAT\.json$") {
-        if ($Matches[1] -eq $Matches[3]) { $isPatternValid = $true }
-    } 
-    # WEB 규칙 패턴
-    elseif ($relPath -match "^filter/rules/web/$WFID_PAT\.json$") {
-        $isPatternValid = $true
-    } 
-    # EDR 메타 패턴
-    elseif ($relPath -match "^filter/meta/edr/$OS_PAT/$FID_PAT-$OS_PAT-description\.json$") {
-        if ($Matches[1] -eq $Matches[3]) { $isPatternValid = $true }
-    } 
-    # MITRE 메타 패턴
-    elseif ($relPath -match "^filter/meta/mitre/(MITRE-version|Tactics|$TID_PAT|$TID_PAT-description)\.json$") {
-        $isPatternValid = $true
-    } 
-    # WEB 메타 패턴
-    elseif ($relPath -match "^filter/meta/web/$WFID_PAT-description\.json$") {
-        $isPatternValid = $true
+    if ($null -eq $Object) {
+        return $null
     }
 
-    if (-not $isPatternValid) {
-        Write-Log "[PATTERN ERROR] $relPath"
-        $stats.PatternErr++
+    if ($Object -is [System.Collections.IDictionary]) {
+        if ($Object.Contains($Name)) {
+            return $Object[$Name]
+        }
+        return $null
     }
 
-    # --- [섹션 2] JSON 문법 및 연계 검사 ---
+    $prop = $Object.PSObject.Properties[$Name]
+    if ($null -ne $prop) {
+        return $prop.Value
+    }
+
+    return $null
+}
+
+function Test-PropertyExists {
+    param(
+        [Parameter(Mandatory = $false)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return $false
+    }
+
+    if ($Object -is [System.Collections.IDictionary]) {
+        return $Object.Contains($Name)
+    }
+
+    return ($null -ne $Object.PSObject.Properties[$Name])
+}
+
+function Test-IsFilterRoot {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    return (
+        (Test-Path -LiteralPath (Join-Path $Path 'rules') -PathType Container) -and
+        (Test-Path -LiteralPath (Join-Path $Path 'meta') -PathType Container)
+    )
+}
+
+function Resolve-FilterRoot {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "Directory not found: $Path"
+    }
+
+    $resolved = (Resolve-Path -LiteralPath $Path -ErrorAction Stop).ProviderPath
+
+    if (Test-IsFilterRoot -Path $resolved) {
+        return $resolved
+    }
+
+    $candidates = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($dir in (Get-ChildItem -LiteralPath $resolved -Directory -Recurse -ErrorAction Stop)) {
+        if (Test-IsFilterRoot -Path $dir.FullName) {
+            [void]$candidates.Add($dir.FullName)
+        }
+    }
+
+    $uniqueCandidates = @($candidates | Sort-Object -Unique)
+
+    if ($uniqueCandidates.Count -eq 1) {
+        return $uniqueCandidates[0]
+    }
+
+    if ($uniqueCandidates.Count -eq 0) {
+        throw "Could not find filter root under BaseDir. BaseDir must directly contain 'rules' and 'meta'."
+    }
+
+    $detail = ($uniqueCandidates | ForEach-Object { " - $_" }) -join "`n"
+    throw "Multiple filter roots found. Please pass the exact root with -BaseDir:`n$detail"
+}
+
+function Get-RelativeFilterPath {
+    param(
+        [Parameter(Mandatory = $true)][System.IO.FileInfo]$File,
+        [Parameter(Mandatory = $true)][string]$ResolvedBaseDir
+    )
+
+    $base = (Normalize-Path $ResolvedBaseDir).TrimEnd('/')
+    $full = (Normalize-Path $File.FullName)
+
+    if ($full -eq $base) {
+        return 'filter'
+    }
+
+    if ($full.StartsWith($base + '/', [System.StringComparison]::OrdinalIgnoreCase)) {
+        $tail = $full.Substring($base.Length).TrimStart('/')
+        return ('filter/' + $tail)
+    }
+
+    throw "Failed to convert to relative path. BaseDir='$base', File='$full'"
+}
+
+function Get-JsonData {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$ErrorLabel
+    )
+
     try {
-        # 인코딩 무관하게 읽기
-        $rawText = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
-        $json = $rawText | ConvertFrom-Json -ErrorAction Stop
-        
-        # 1) EDR 규칙 연계 체크
-        if ($relPath -match "rules/edr/($OS_PAT)/($FID_PAT)-$OS_PAT\.json$") {
-            $os = $Matches[1]
-            $fid = $Matches[2]
-            $metaPath = Join-Path $baseDir "meta\edr\$os\$fid-$os-description.json"
-            if (Test-Path $metaPath) {
-                $metaJson = Get-Content $metaPath -Raw | ConvertFrom-Json
-                foreach ($fld in @("filterName", "filterDescription")) {
-                    foreach ($lang in $EDR_LANGS) {
-                        if (-not $metaJson.$fld.$lang) { 
-                            Write-Log "[LANG EMPTY] $metaPath -> $fld.$lang"
-                            $stats.LinkErr++ 
-                        }
-                    }
-                }
-            } else { 
-                Write-Log "[META MISSING] $metaPath <- $relPath"
-                $stats.LinkErr++ 
-            }
-        }
-
-        # 2) MITRE 규칙 연계 체크
-        if ($relPath -match "rules/mitre/$OS_PAT/($TID_PAT)-$OS_PAT-$FID_PAT\.json$") {
-            $tid = $Matches[1]
-            # Description 파일 검사
-            $descPath = Join-Path $baseDir "meta\mitre\$tid-description.json"
-            if (Test-Path $descPath) {
-                $descJson = Get-Content $descPath -Raw | ConvertFrom-Json
-                foreach ($fld in @("name", "description")) {
-                    foreach ($lang in $MITRE_LANGS) {
-                        if (-not $descJson.$fld.$lang) { 
-                            Write-Log "[LANG EMPTY] $descPath -> $fld.$lang"
-                            $stats.LinkErr++ 
-                        }
-                    }
-                    if ($descJson.$fld."zh-cn") { 
-                        Write-Log "[ZH-CN WARN] $descPath -> $fld.zh-cn (Use zh-Hans)"
-                        $stats.Warn++ 
-                    }
-                }
-            }
-            # Technique 파일 검사
-            $techPath = Join-Path $baseDir "meta\mitre\$tid.json"
-            if (Test-Path $techPath) {
-                $techJson = Get-Content $techPath -Raw | ConvertFrom-Json
-                if ($techJson.techniqueId -ne $tid) { 
-                    Write-Log "[TID MISMATCH] $techPath (Expected: $tid, Got: $($techJson.techniqueId))"
-                    $stats.LinkErr++ 
-                }
-            }
-        }
-
-        # 3) Web 규칙 연계 체크
-        if ($relPath -match "rules/web/($WFID_PAT)\.json$") {
-            $wfid = $Matches[1]
-            $metaPath = Join-Path $baseDir "meta\web\$wfid-description.json"
-            if (Test-Path $metaPath) {
-                $metaJson = Get-Content $metaPath -Raw | ConvertFrom-Json
-                foreach ($lang in $WEB_LANGS) {
-                    if (-not $metaJson.webFilterName.$lang) { 
-                        Write-Log "[LANG EMPTY] $metaPath -> webFilterName.$lang"
-                        $stats.LinkErr++ 
-                    }
-                }
-            }
-        }
-    } 
+        $raw = [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
+    }
     catch {
-        Write-Log "[JSON ERROR] $relPath : $($_.Exception.Message)"
-        $stats.JsonErr++
+        return [pscustomobject]@{
+            Data  = $null
+            Error = "[$ErrorLabel] $(Normalize-Path $Path) - $($_.Exception.Message)"
+        }
+    }
+
+    if ($script:JsonDocumentType) {
+        try {
+            $null = [System.Text.Json.JsonDocument]::Parse($raw)
+        }
+        catch {
+            $lineNo = $null
+            if ($_.Exception.PSObject.Properties['LineNumber']) {
+                $lineNo = [int]$_.Exception.LineNumber + 1
+            }
+
+            $msg = $_.Exception.Message
+            if ($null -ne $lineNo) {
+                return [pscustomobject]@{
+                    Data  = $null
+                    Error = "[$ErrorLabel] $(Normalize-Path $Path):$lineNo - $msg"
+                }
+            }
+
+            return [pscustomobject]@{
+                Data  = $null
+                Error = "[$ErrorLabel] $(Normalize-Path $Path) - $msg"
+            }
+        }
+    }
+
+    try {
+        $data = $raw | ConvertFrom-Json -ErrorAction Stop
+        return [pscustomobject]@{
+            Data  = $data
+            Error = $null
+        }
+    }
+    catch {
+        return [pscustomobject]@{
+            Data  = $null
+            Error = "[$ErrorLabel] $(Normalize-Path $Path) - $($_.Exception.Message)"
+        }
     }
 }
 
-# 3. 결과 요약 출력
-$summary = @"
+function Load-JsonFile {
+    param([Parameter(Mandatory = $true)][string]$Path)
 
-============================================================
-검사 결과 요약
-============================================================
-검사 대상 파일  : $($stats.Total) 건
-패턴 오류       : $($stats.PatternErr) 건
-JSON 문법 오류  : $($stats.JsonErr) 건
-연계/언어 오류  : $($stats.LinkErr) 건
-경고 (zh-cn)    : $($stats.Warn) 건
-============================================================
-"@
-$report.Add($summary)
-$report | Out-File -FilePath $outputFile -Encoding utf8
-Write-Host $summary -ForegroundColor Green
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return [pscustomobject]@{
+            Data  = $null
+            Error = "[META MISSING] $(Normalize-Path $Path)"
+        }
+    }
+
+    return Get-JsonData -Path $Path -ErrorLabel 'META JSON ERROR'
+}
+
+function Check-LangFields {
+    param(
+        [Parameter(Mandatory = $true)][string]$MetaPath,
+        [Parameter(Mandatory = $false)]$Object,
+        [Parameter(Mandatory = $true)][string]$Field,
+        [Parameter(Mandatory = $true)][string[]]$Langs
+    )
+
+    $errors = New-StringList
+    $fieldObj = Get-PropertyValue -Object $Object -Name $Field
+
+    foreach ($lang in $Langs) {
+        $val = Get-PropertyValue -Object $fieldObj -Name $lang
+        if ($null -eq $val -or [string]::IsNullOrWhiteSpace([string]$val)) {
+            [void]$errors.Add("[LANG EMPTY] $(Normalize-Path $MetaPath) -> $Field.$lang")
+        }
+    }
+
+    return $errors
+}
+
+function Check-FilenamePattern {
+    param([Parameter(Mandatory = $true)][string]$RelPath)
+
+    $parts = $RelPath -split '/'
+
+    if ($parts.Count -eq 2 -and $ROOT_SKIP_FILES -contains $parts[1]) {
+        return $null
+    }
+
+    $prefix = ''
+    if ($parts.Count -ge 3) {
+        $prefix = "$($parts[1])/$($parts[2])"
+    }
+
+    $candidatePatterns = @(
+        $PATTERNS | Where-Object {
+            $_.Prefix -eq $prefix -or $prefix.StartsWith($_.Prefix)
+        }
+    )
+
+    if ($candidatePatterns.Count -eq 0) {
+        return "[PATTERN ERROR] Unknown path: $RelPath"
+    }
+
+    foreach ($entry in $candidatePatterns) {
+        $match = [regex]::Match($RelPath, $entry.Regex)
+        if ($match.Success) {
+            if ($null -ne $entry.OsGroups) {
+                $g1 = [int]$entry.OsGroups[0]
+                $g2 = [int]$entry.OsGroups[1]
+                if ($match.Groups[$g1].Value -ne $match.Groups[$g2].Value) {
+                    return "[PATTERN ERROR] OS mismatch (path: $($match.Groups[$g1].Value), filename: $($match.Groups[$g2].Value)): $RelPath"
+                }
+            }
+            return $null
+        }
+    }
+
+    return "[PATTERN ERROR] $RelPath"
+}
+
+function Check-MetaLinkEdr {
+    param(
+        [Parameter(Mandatory = $true)][string]$RelPath,
+        [Parameter(Mandatory = $true)][string]$ResolvedBaseDir
+    )
+
+    $match = [regex]::Match($RelPath, $EDR_RULES_RE)
+    if (-not $match.Success) {
+        return @()
+    }
+
+    $osVal = $match.Groups[1].Value
+    $fid = $match.Groups[2].Value
+    $metaPath = Join-Path $ResolvedBaseDir ("meta/edr/$osVal/$fid-$osVal-description.json")
+
+    $result = Load-JsonFile -Path $metaPath
+    if ($result.Error) {
+        return @("$($result.Error) <- $RelPath")
+    }
+
+    $errors = New-StringList
+    foreach ($field in @('filterName', 'filterDescription')) {
+        foreach ($err in (Check-LangFields -MetaPath $metaPath -Object $result.Data -Field $field -Langs $EDR_LANGS)) {
+            [void]$errors.Add($err)
+        }
+    }
+
+    return $errors
+}
+
+function Check-MetaLinkMitre {
+    param(
+        [Parameter(Mandatory = $true)][string]$RelPath,
+        [Parameter(Mandatory = $true)][string]$ResolvedBaseDir
+    )
+
+    $match = [regex]::Match($RelPath, $MITRE_RULES_RE)
+    if (-not $match.Success) {
+        return [pscustomobject]@{
+            Errors   = @()
+            Warnings = @()
+        }
+    }
+
+    $tid = $match.Groups[2].Value
+    $errors = New-StringList
+    $warnings = New-StringList
+
+    $descPath = Join-Path $ResolvedBaseDir ("meta/mitre/$tid-description.json")
+    $descResult = Load-JsonFile -Path $descPath
+    if ($descResult.Error) {
+        [void]$errors.Add("$($descResult.Error) <- $RelPath")
+    }
+    else {
+        foreach ($field in @('name', 'description')) {
+            foreach ($err in (Check-LangFields -MetaPath $descPath -Object $descResult.Data -Field $field -Langs $MITRE_LANGS)) {
+                [void]$errors.Add($err)
+            }
+
+            $fieldObj = Get-PropertyValue -Object $descResult.Data -Name $field
+            if (Test-PropertyExists -Object $fieldObj -Name 'zh-cn') {
+                [void]$warnings.Add("[ZH-CN WARN] $(Normalize-Path $descPath) -> $field.zh-cn (use zh-Hans)")
+            }
+        }
+    }
+
+    $techPath = Join-Path $ResolvedBaseDir ("meta/mitre/$tid.json")
+    $techResult = Load-JsonFile -Path $techPath
+    if ($techResult.Error) {
+        [void]$errors.Add("$($techResult.Error) <- $RelPath")
+    }
+    else {
+        $actualTid = Get-PropertyValue -Object $techResult.Data -Name 'techniqueId'
+        if ($actualTid -ne $tid) {
+            [void]$errors.Add("[TID MISMATCH] $(Normalize-Path $techPath) -> techniqueId: $actualTid (expected: $tid)")
+        }
+    }
+
+    return [pscustomobject]@{
+        Errors   = $errors
+        Warnings = $warnings
+    }
+}
+
+function Check-MetaLinkWeb {
+    param(
+        [Parameter(Mandatory = $true)][string]$RelPath,
+        [Parameter(Mandatory = $true)][string]$ResolvedBaseDir
+    )
+
+    $match = [regex]::Match($RelPath, $WEB_RULES_RE)
+    if (-not $match.Success) {
+        return @()
+    }
+
+    $wfid = $match.Groups[1].Value
+    $metaPath = Join-Path $ResolvedBaseDir ("meta/web/$wfid-description.json")
+
+    $result = Load-JsonFile -Path $metaPath
+    if ($result.Error) {
+        return @("$($result.Error) <- $RelPath")
+    }
+
+    return (Check-LangFields -MetaPath $metaPath -Object $result.Data -Field 'webFilterName' -Langs $WEB_LANGS)
+}
+
+function Get-ElapsedString {
+    param([Parameter(Mandatory = $true)][datetime]$StartTime)
+
+    $elapsed = [datetime]::Now - $StartTime
+    return '{0}:{1:00}:{2:00}' -f [int]$elapsed.TotalHours, $elapsed.Minutes, $elapsed.Seconds
+}
+
+try {
+    $resolvedBaseDir = Resolve-FilterRoot -Path $BaseDir
+}
+catch {
+    Write-Error $_.Exception.Message
+    exit 1
+}
+
+Write-Host "Using filter root: $resolvedBaseDir"
+
+$files = Get-ChildItem -LiteralPath $resolvedBaseDir -Filter '*.json' -Recurse -File | Where-Object {
+    $_.FullName -notmatch '(^|[\\/])\.git([\\/]|$)'
+} | Sort-Object FullName
+
+$total = @($files).Count
+$startTime = [datetime]::Now
+
+$patternErrors = New-StringList
+$jsonErrors = New-StringList
+$metaErrors = New-StringList
+$metaWarnings = New-StringList
+
+for ($i = 0; $i -lt $total; $i++) {
+    $file = $files[$i]
+
+    Write-Host -NoNewline ("Elapsed: {0} | Processed: {1}/{2}`r" -f (Get-ElapsedString -StartTime $startTime), ($i + 1), $total)
+
+    try {
+        $relPath = Get-RelativeFilterPath -File $file -ResolvedBaseDir $resolvedBaseDir
+    }
+    catch {
+        [void]$patternErrors.Add("[INTERNAL ERROR] $($_.Exception.Message)")
+        continue
+    }
+
+    $patternError = Check-FilenamePattern -RelPath $relPath
+    if ($null -ne $patternError) {
+        [void]$patternErrors.Add($patternError)
+    }
+
+    $jsonResult = Get-JsonData -Path $file.FullName -ErrorLabel 'JSON ERROR'
+    if ($jsonResult.Error) {
+        [void]$jsonErrors.Add($jsonResult.Error)
+    }
+
+    foreach ($err in (Check-MetaLinkEdr -RelPath $relPath -ResolvedBaseDir $resolvedBaseDir)) {
+        [void]$metaErrors.Add($err)
+    }
+
+    $mitreResult = Check-MetaLinkMitre -RelPath $relPath -ResolvedBaseDir $resolvedBaseDir
+    foreach ($err in $mitreResult.Errors) {
+        [void]$metaErrors.Add($err)
+    }
+    foreach ($warn in $mitreResult.Warnings) {
+        [void]$metaWarnings.Add($warn)
+    }
+
+    foreach ($err in (Check-MetaLinkWeb -RelPath $relPath -ResolvedBaseDir $resolvedBaseDir)) {
+        [void]$metaErrors.Add($err)
+    }
+}
+
+Write-Host ((' ' * 100) + "`r") -NoNewline
+
+$report = New-StringList
+
+[void]$report.Add(('=' * 60))
+[void]$report.Add('Using filter root: ' + (Normalize-Path $resolvedBaseDir))
+[void]$report.Add(('=' * 60))
+[void]$report.Add('')
+
+[void]$report.Add(('=' * 60))
+[void]$report.Add('1. Filename pattern check')
+[void]$report.Add(('=' * 60))
+if ($patternErrors.Count -gt 0) {
+    foreach ($item in $patternErrors) { [void]$report.Add($item) }
+}
+else {
+    [void]$report.Add('No errors')
+}
+
+[void]$report.Add('')
+[void]$report.Add(('=' * 60))
+[void]$report.Add('2. JSON syntax check')
+[void]$report.Add(('=' * 60))
+if ($jsonErrors.Count -gt 0) {
+    foreach ($item in $jsonErrors) { [void]$report.Add($item) }
+}
+else {
+    [void]$report.Add('No errors')
+}
+
+[void]$report.Add('')
+[void]$report.Add(('=' * 60))
+[void]$report.Add('3. rules-meta linkage check')
+[void]$report.Add(('=' * 60))
+if ($metaErrors.Count -gt 0) {
+    foreach ($item in $metaErrors) { [void]$report.Add($item) }
+}
+else {
+    [void]$report.Add('No errors')
+}
+
+[void]$report.Add('')
+[void]$report.Add(('=' * 60))
+[void]$report.Add('3-1. Warnings (zh-cn field)')
+[void]$report.Add(('=' * 60))
+if ($metaWarnings.Count -gt 0) {
+    foreach ($item in $metaWarnings) { [void]$report.Add($item) }
+}
+else {
+    [void]$report.Add('No warnings')
+}
+
+[void]$report.Add('')
+[void]$report.Add((
+    "Completed: total {0} files | pattern errors {1} | JSON errors {2} | linkage errors {3} | warnings {4}" -f $total, $patternErrors.Count, $jsonErrors.Count, $metaErrors.Count, $metaWarnings.Count
+))
+
+$report | Set-Content -LiteralPath $OutputFile -Encoding utf8
+$report | ForEach-Object { Write-Host $_ }
