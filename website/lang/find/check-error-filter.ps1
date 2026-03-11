@@ -1,5 +1,5 @@
 # 1. 환경 설정 (사용자 환경에 맞게 수정)
-$baseDir = "D:\filter" 
+$baseDir = "D:\temp\filter" 
 $outputFile = "filter_check_report.txt"
 
 # 언어 설정
