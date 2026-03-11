@@ -12,14 +12,13 @@ $EDR_LANGS = @('ko', 'en', 'ja', 'de', 'fr', 'es', 'zh-Hans')
 $MITRE_LANGS = @('ko', 'en', 'ja')
 $WEB_LANGS = @('ko', 'en', 'ja')
 
-$ROOT_SKIP_FILES = @(
-    'CredentialFilterType.json',
-    'DefenseCmdTemplate.json',
-    'FilterCategory.json',
-    'FilterElementReferenceGlobal.json',
-    'IpDefenseOwaspCategory.json',
-    'WebExtendsFilterField.json',
-    'WebFilter.json'
+$ALLOWED_PREFIXES = @(
+    'rules/edr',
+    'rules/mitre',
+    'rules/web',
+    'meta/edr',
+    'meta/mitre',
+    'meta/web'
 )
 
 $PATTERNS = @(
@@ -47,6 +46,19 @@ function Normalize-Path {
 
 function New-StringList {
     return New-Object 'System.Collections.Generic.List[string]'
+}
+
+function Join-RelativePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$Base,
+        [Parameter(Mandatory = $true)][string]$Relative
+    )
+
+    $path = $Base
+    foreach ($part in ($Relative -split '/')) {
+        $path = Join-Path $path $part
+    }
+    return $path
 }
 
 function Get-PropertyValue {
@@ -134,6 +146,27 @@ function Resolve-FilterRoot {
     throw "Multiple filter roots found. Please pass the exact root with -BaseDir:`n$detail"
 }
 
+function Get-AllowedJsonFiles {
+    param([Parameter(Mandatory = $true)][string]$ResolvedBaseDir)
+
+    $files = New-Object 'System.Collections.Generic.List[System.IO.FileInfo]'
+
+    foreach ($prefix in $ALLOWED_PREFIXES) {
+        $dir = Join-RelativePath -Base $ResolvedBaseDir -Relative $prefix
+        if (-not (Test-Path -LiteralPath $dir -PathType Container)) {
+            continue
+        }
+
+        foreach ($file in (Get-ChildItem -LiteralPath $dir -Filter '*.json' -Recurse -File -ErrorAction Stop | Where-Object {
+            $_.FullName -notmatch '(^|[\\/])\.git([\\/]|$)'
+        })) {
+            [void]$files.Add($file)
+        }
+    }
+
+    return @($files | Sort-Object FullName -Unique)
+}
+
 function Get-RelativeFilterPath {
     param(
         [Parameter(Mandatory = $true)][System.IO.FileInfo]$File,
@@ -142,10 +175,6 @@ function Get-RelativeFilterPath {
 
     $base = (Normalize-Path $ResolvedBaseDir).TrimEnd('/')
     $full = (Normalize-Path $File.FullName)
-
-    if ($full -eq $base) {
-        return 'filter'
-    }
 
     if ($full.StartsWith($base + '/', [System.StringComparison]::OrdinalIgnoreCase)) {
         $tail = $full.Substring($base.Length).TrimStart('/')
@@ -249,25 +278,16 @@ function Check-FilenamePattern {
     param([Parameter(Mandatory = $true)][string]$RelPath)
 
     $parts = $RelPath -split '/'
-
-    if ($parts.Count -eq 2 -and $ROOT_SKIP_FILES -contains $parts[1]) {
+    if ($parts.Count -lt 3) {
         return $null
     }
 
-    $prefix = ''
-    if ($parts.Count -ge 3) {
-        $prefix = "$($parts[1])/$($parts[2])"
+    $prefix = "$($parts[1])/$($parts[2])"
+    if ($ALLOWED_PREFIXES -notcontains $prefix) {
+        return $null
     }
 
-    $candidatePatterns = @(
-        $PATTERNS | Where-Object {
-            $_.Prefix -eq $prefix -or $prefix.StartsWith($_.Prefix)
-        }
-    )
-
-    if ($candidatePatterns.Count -eq 0) {
-        return "[PATTERN ERROR] Unknown path: $RelPath"
-    }
+    $candidatePatterns = @($PATTERNS | Where-Object { $_.Prefix -eq $prefix })
 
     foreach ($entry in $candidatePatterns) {
         $match = [regex]::Match($RelPath, $entry.Regex)
@@ -299,7 +319,7 @@ function Check-MetaLinkEdr {
 
     $osVal = $match.Groups[1].Value
     $fid = $match.Groups[2].Value
-    $metaPath = Join-Path $ResolvedBaseDir ("meta/edr/$osVal/$fid-$osVal-description.json")
+    $metaPath = Join-RelativePath -Base $ResolvedBaseDir -Relative ("meta/edr/$osVal/$fid-$osVal-description.json")
 
     $result = Load-JsonFile -Path $metaPath
     if ($result.Error) {
@@ -334,7 +354,7 @@ function Check-MetaLinkMitre {
     $errors = New-StringList
     $warnings = New-StringList
 
-    $descPath = Join-Path $ResolvedBaseDir ("meta/mitre/$tid-description.json")
+    $descPath = Join-RelativePath -Base $ResolvedBaseDir -Relative ("meta/mitre/$tid-description.json")
     $descResult = Load-JsonFile -Path $descPath
     if ($descResult.Error) {
         [void]$errors.Add("$($descResult.Error) <- $RelPath")
@@ -352,7 +372,7 @@ function Check-MetaLinkMitre {
         }
     }
 
-    $techPath = Join-Path $ResolvedBaseDir ("meta/mitre/$tid.json")
+    $techPath = Join-RelativePath -Base $ResolvedBaseDir -Relative ("meta/mitre/$tid.json")
     $techResult = Load-JsonFile -Path $techPath
     if ($techResult.Error) {
         [void]$errors.Add("$($techResult.Error) <- $RelPath")
@@ -382,7 +402,7 @@ function Check-MetaLinkWeb {
     }
 
     $wfid = $match.Groups[1].Value
-    $metaPath = Join-Path $ResolvedBaseDir ("meta/web/$wfid-description.json")
+    $metaPath = Join-RelativePath -Base $ResolvedBaseDir -Relative ("meta/web/$wfid-description.json")
 
     $result = Load-JsonFile -Path $metaPath
     if ($result.Error) {
@@ -408,11 +428,9 @@ catch {
 }
 
 Write-Host "Using filter root: $resolvedBaseDir"
+Write-Host "Scanning only: rules/edr, rules/mitre, rules/web, meta/edr, meta/mitre, meta/web"
 
-$files = Get-ChildItem -LiteralPath $resolvedBaseDir -Filter '*.json' -Recurse -File | Where-Object {
-    $_.FullName -notmatch '(^|[\\/])\.git([\\/]|$)'
-} | Sort-Object FullName
-
+$files = Get-AllowedJsonFiles -ResolvedBaseDir $resolvedBaseDir
 $total = @($files).Count
 $startTime = [datetime]::Now
 
@@ -461,12 +479,13 @@ for ($i = 0; $i -lt $total; $i++) {
     }
 }
 
-Write-Host ((' ' * 100) + "`r") -NoNewline
+Write-Host (((' ' * 100) + "`r")) -NoNewline
 
 $report = New-StringList
 
 [void]$report.Add(('=' * 60))
 [void]$report.Add('Using filter root: ' + (Normalize-Path $resolvedBaseDir))
+[void]$report.Add('Scanned paths only: rules/edr, rules/mitre, rules/web, meta/edr, meta/mitre, meta/web')
 [void]$report.Add(('=' * 60))
 [void]$report.Add('')
 
@@ -515,7 +534,7 @@ else {
 
 [void]$report.Add('')
 [void]$report.Add((
-    "Completed: total {0} files | pattern errors {1} | JSON errors {2} | linkage errors {3} | warnings {4}" -f $total, $patternErrors.Count, $jsonErrors.Count, $metaErrors.Count, $metaWarnings.Count
+    "Completed: scanned {0} files | pattern errors {1} | JSON errors {2} | linkage errors {3} | warnings {4}" -f $total, $patternErrors.Count, $jsonErrors.Count, $metaErrors.Count, $metaWarnings.Count
 ))
 
 $report | Set-Content -LiteralPath $OutputFile -Encoding utf8
