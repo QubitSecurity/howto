@@ -117,6 +117,29 @@ sleep 1
 
 ```
 
+---
+
+```bash
+
+scp -r ./edr/ sysadmin@10.100.21.40:/home/sysadmin/repo/
+sleep 1
+
+scp -r ./edr/ sysadmin@10.100.21.41:/home/sysadmin/repo/
+sleep 1
+
+scp -r ./edr/ sysadmin@10.100.21.42:/home/sysadmin/repo/
+sleep 1
+
+scp -r ./edr/ sysadmin@10.100.21.43:/home/sysadmin/repo/
+sleep 1
+
+scp -r ./edr/ sysadmin@10.100.21.44:/home/sysadmin/repo/
+sleep 1
+
+scp -r ./edr/ sysadmin@10.100.21.45:/home/sysadmin/repo/
+sleep 1
+
+```
 
 
 
