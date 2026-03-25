@@ -1,4 +1,6 @@
 
+## System
+
 ```bash
 
 sh ./api/d-git-sync.sh forensic-config
@@ -13,7 +15,7 @@ sleep 1
 sh ./api/d-git-sync.sh system-control
 sleep 1
 
-sh ./api/d-git-sync.sh system-control-wdac
+sh ./api/d-git-sync.sh wdac
 sleep 1
 
 ```
@@ -33,7 +35,7 @@ sleep 1
 sh ./api/s-git-sync.sh system-control
 sleep 1
 
-sh ./api/s-git-sync.sh system-control-wdac
+sh ./api/s-git-sync.sh wdac
 sleep 1
 
 ```
@@ -52,12 +54,15 @@ sleep 1
 sh ./api/git-sync.sh system-control
 sleep 1
 
-sh ./api/git-sync.sh system-control-wdac
+sh ./api/git-sync.sh wdac
 sleep 1
 
 ```
 
 ---
+
+## Filter
+
 
 ```bash
 
