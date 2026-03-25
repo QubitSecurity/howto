@@ -17,17 +17,10 @@ dev(d-gitlab)을 기준으로 동기화되는 대상이므로,
 
 ### 0-1. dev(d-gitlab) 저장소 다운로드 (처음 1회)
 
-아래 중 하나를 사용합니다.
+아래 진행니다.
 
 ```bash
 git clone git@gitlab.plura.internal:config/system.git
-cd system
-```
-
-또는 SSH alias(d-gitlab)를 사용하는 경우:
-
-```bash
-git clone git@d-gitlab:config/system.git
 cd system
 ```
 
