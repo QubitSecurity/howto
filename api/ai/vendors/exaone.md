@@ -78,7 +78,7 @@ curl -sS https://api.friendli.ai/serverless/v1/chat/completions \
 
 ### 🪟 PowerShell (Windows)
 > **🚨 매우 중요 (Windows PowerShell 5.1 기준)**
-> 스크립트(`.ps1`) 내에 한글 프롬프트를 작성할 경우, 파일을 저장할 때 인코딩을 반드시 **`UTF-8 (BOM 포함)`**으로 설정해야 파싱 에러(문법 오류)가 발생하지 않습니다. 또한, 서버의 JSON 역직렬화 에러(400 Bad Request)를 막기 위해 아래와 같이 `-Compress` 옵션과 바이트 강제 변환 방식을 사용해야 합니다.
+> 스크립트(`.ps1`) 내에 한글 프롬프트를 작성할 경우, 파일을 저장할 때 인코딩을 반드시 `UTF-8 (BOM 포함)`으로 설정해야 파싱 에러(문법 오류)가 발생하지 않습니다. 또한, 서버의 JSON 역직렬화 에러(400 Bad Request)를 막기 위해 아래와 같이 `-Compress` 옵션과 바이트 강제 변환 방식을 사용해야 합니다.
 
 ```powershell
 # 1. 환경 변수 설정 (본인의 키값으로 변경)
