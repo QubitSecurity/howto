@@ -1,4 +1,4 @@
-## ✅ EXAONE API Key 발급 및 연동 가이드 (2025년 최신 기준)
+## ✅ EXAONE API Key 발급 및 연동 가이드 (2026년 3월)
 
 ### 🔗 1. 사이트 접속 및 준비
 1. 웹 브라우저에서 **FriendliAI 콘솔** 접속: [https://friendli.ai](https://friendli.ai)
