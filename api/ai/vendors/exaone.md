@@ -80,12 +80,46 @@ curl -sS https://api.friendli.ai/serverless/v1/chat/completions \
 > **🚨 매우 중요 (Windows PowerShell 5.1 기준)**
 > 스크립트(`.ps1`) 내에 한글 프롬프트를 작성할 경우, 파일을 저장할 때 인코딩을 반드시 `UTF-8 (BOM 포함)`으로 설정해야 파싱 에러(문법 오류)가 발생하지 않습니다. 또한, 서버의 JSON 역직렬화 에러(400 Bad Request)를 막기 위해 아래와 같이 `-Compress` 옵션과 바이트 강제 변환 방식을 사용해야 합니다.
 
+#### 옵션 1: 단순화된 버전 (팀 ID 제거 - 개인 사용 권장)
+```powershell
+# 1. 환경 변수 설정 (본인의 키값으로 변경)
+$FRIENDLI_TOKEN = "flp_xxxxxxxxxxxxxxxx"
+
+# 2. 헤더 설정 (팀 ID 없음)
+$headers = @{
+    "Authorization"   = "Bearer $FRIENDLI_TOKEN"
+    "Content-Type"    = "application/json"
+}
+
+# 3. 요청 본문 (지원되는 모델명과 메시지 입력)
+$body = @{
+    model = "LGAI-EXAONE/EXAONE-4.0.1-32B"
+    messages = @(
+        @{role="user"; content="엑사원으로 인사해 줘"}
+    )
+}
+
+# 4. JSON 변환 및 UTF-8 강제 인코딩 (400 에러 완벽 방지)
+$json = $body | ConvertTo-Json -Depth 5 -Compress
+$bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+
+# 5. 콘솔 한글 설정 및 API 호출
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$response = Invoke-RestMethod -Uri "https://api.friendli.ai/serverless/v1/chat/completions" -Method Post -Headers $headers -Body $bytes
+
+# 6. 결과 출력
+Write-Host "========================================"
+Write-Host $response.choices[0].message.content
+Write-Host "========================================"
+```
+
+#### 옵션 2: 팀 워크스페이스용 버전 (팀 ID 포함)
 ```powershell
 # 1. 환경 변수 설정 (본인의 키값으로 변경)
 $FRIENDLI_TOKEN = "flp_xxxxxxxxxxxxxxxx"
 $FRIENDLI_TEAM_ID = "xxx"
 
-# 2. 헤더 설정
+# 2. 헤더 설정 (팀 ID 추가)
 $headers = @{
     "Authorization"   = "Bearer $FRIENDLI_TOKEN"
     "X-Friendli-Team" = $FRIENDLI_TEAM_ID
