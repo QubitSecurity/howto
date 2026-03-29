@@ -107,7 +107,34 @@
      }'
   ```
 
-  ([FriendliAI][3])
+* **Powershell** 예시
+
+  ```powershell
+  # 1. 환경 변수 설정 (본인의 키값으로 변경)
+  $FRIENDLI_TOKEN = "flp_xxxxxxxxxxxxxxxx"
+  $FRIENDLI_TEAM_ID = "xxx"
+
+  # 2. 헤더 및 JSON 본문 설정
+  $headers = @{
+      "Authorization"   = "Bearer $FRIENDLI_TOKEN"
+      "X-Friendli-Team" = $FRIENDLI_TEAM_ID
+      "Content-Type"    = "application/json; charset=utf-8"
+  }
+
+  $body = @'
+  {
+      "model": "LGAI-EXAONE/EXAONE-4.0.1-32B",
+      "messages": [{"role":"user","content":"엑사원으로 인사해 줘"}]
+  }
+  '@
+
+  # 3. 한글 깨짐 방지 및 API 호출
+  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+  $response = Invoke-RestMethod -Uri "[https://api.friendli.ai/serverless/v1/chat/completions](https://api.friendli.ai/serverless/v1/chat/completions)" -Method Post -Headers $headers -Body $body
+
+  # 4. 결과 출력
+  $response.choices[0].message.content
+  ```
 
 * 문서 바로가기: **QuickStart**, **Chat Completions API**, **OpenAI 호환 가이드**
   – QuickStart: 계정/엔드포인트/모델 선택/호출 흐름 정리 ([FriendliAI][1])
