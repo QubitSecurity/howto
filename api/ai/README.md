@@ -30,10 +30,6 @@
 | [`anthropic.md`](./vendors/anthropic.md)   | Claude (Anthropic) API Key 발급 및 모델 사용 안내         |
 | **[`exaone.md`](./vendors/exaone.md)**     | **LG EXAONE 연동 가이드 (파트너 경로/API Key 발급 & 호출 예시)** |
 
-> `exaone.md`에는 다음을 포함합니다:
-> ① 파트너 경로(API Key 발급 흐름) ② 기본 Chat/Completions 호출 예시(REST & Python/JS)
-> ③ 멀티모달 입력(텍스트+이미지) 샘플 ④ 토큰/요금·모델 선택 팁 ⑤ 에러/리트라이 가이드
-
 ---
 
 ## 💡 API 발급 필요 여부
