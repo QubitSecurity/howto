@@ -82,32 +82,29 @@ curl -sS https://api.friendli.ai/serverless/v1/chat/completions \
 
 #### 옵션 1: 단순화된 버전 (팀 ID 제거 - 개인 사용 권장)
 ```powershell
-# 1. 환경 변수 설정 (본인의 키값으로 변경)
+# 1. 팀 ID 없이 토큰만 설정
 $FRIENDLI_TOKEN = "flp_xxxxxxxxxxxxxxxx"
 
-# 2. 헤더 설정 (팀 ID 없음)
+# 2. 헤더에도 팀 ID 제거 완료
 $headers = @{
-    "Authorization"   = "Bearer $FRIENDLI_TOKEN"
-    "Content-Type"    = "application/json"
+    "Authorization" = "Bearer $FRIENDLI_TOKEN"
+    "Content-Type"  = "application/json"
 }
 
-# 3. 요청 본문 (지원되는 모델명과 메시지 입력)
+# 3. 에러 방지를 위해 영문 메시지 + 동작하는 Llama 모델 사용
 $body = @{
-    model = "LGAI-EXAONE/EXAONE-4.0.1-32B"
+    model = "meta-llama-3.1-8b-instruct"
     messages = @(
-        @{role="user"; content="엑사원으로 인사해 줘"}
+        @{role="user"; content="Hello! Are you working without the team ID?"}
     )
 }
 
-# 4. JSON 변환 및 UTF-8 강제 인코딩 (400 에러 완벽 방지)
+# 4. JSON 변환 및 호출
 $json = $body | ConvertTo-Json -Depth 5 -Compress
 $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
 
-# 5. 콘솔 한글 설정 및 API 호출
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $response = Invoke-RestMethod -Uri "https://api.friendli.ai/serverless/v1/chat/completions" -Method Post -Headers $headers -Body $bytes
 
-# 6. 결과 출력
 Write-Host "========================================"
 Write-Host $response.choices[0].message.content
 Write-Host "========================================"
@@ -119,18 +116,18 @@ Write-Host "========================================"
 $FRIENDLI_TOKEN = "flp_xxxxxxxxxxxxxxxx"
 $FRIENDLI_TEAM_ID = "xxx"
 
-# 2. 헤더 설정 (팀 ID 추가)
+# 2. 헤더 설정 (팀 ID 포함)
 $headers = @{
     "Authorization"   = "Bearer $FRIENDLI_TOKEN"
     "X-Friendli-Team" = $FRIENDLI_TEAM_ID
     "Content-Type"    = "application/json"
 }
 
-# 3. 요청 본문 (지원되는 모델명과 메시지 입력)
+# 3. 요청 본문 (파싱 에러 방지를 위해 영문 프롬프트 사용)
 $body = @{
     model = "LGAI-EXAONE/EXAONE-4.0.1-32B"
     messages = @(
-        @{role="user"; content="엑사원으로 인사해 줘"}
+        @{role="user"; content="Hello EXAONE!"}
     )
 }
 
@@ -138,7 +135,7 @@ $body = @{
 $json = $body | ConvertTo-Json -Depth 5 -Compress
 $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
 
-# 5. 콘솔 한글 설정 및 API 호출
+# 5. 콘솔 출력 인코딩 설정 및 API 호출
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $response = Invoke-RestMethod -Uri "https://api.friendli.ai/serverless/v1/chat/completions" -Method Post -Headers $headers -Body $bytes
 
