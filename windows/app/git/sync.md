@@ -66,7 +66,7 @@ sleep 1
 
 ```bash
 
-sh ./api/d-git-sync.sh filter-global
+sh ./api/d-git-sync.sh filter-edr
 sleep 1
 
 sh ./api/d-git-sync.sh filter-category
@@ -86,7 +86,7 @@ sleep 1
 
 ```bash
 
-sh ./api/s-git-sync.sh filter-global
+sh ./api/s-git-sync.sh filter-edr
 sleep 1
 
 sh ./api/s-git-sync.sh filter-category
@@ -105,7 +105,7 @@ sleep 1
 
 ```bash
 
-sh ./api/git-sync.sh filter-global
+sh ./api/git-sync.sh filter-edr
 sleep 1
 
 sh ./api/git-sync.sh filter-category
