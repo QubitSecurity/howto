@@ -320,7 +320,7 @@ openssl s_client -groups
 
 # 🚀 결론
 
-> **Rocky Linux + HAProxy 환경에서는 이미 PQC 테스트가 가능한 단계이며,
+> **Rocky Linux + HAProxy 환경에서는 이미 PQC 테스트가 가능한 단계이며,  
 > 실무적으로는 OpenSSL 3.5+/3.6 기반 Hybrid TLS 검증이 가장 현실적인 접근입니다.**
 
 ---
