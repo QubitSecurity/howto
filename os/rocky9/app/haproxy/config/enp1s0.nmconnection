@@ -1,0 +1,20 @@
+# /etc/NetworkManager/system-connections/
+
+[connection]
+id=enp1s0
+uuid=4b48d257-18e0-36e7-af91-d4ccb770cca0
+type=ethernet
+autoconnect-priority=-999
+interface-name=enp1s0
+timestamp=1728644926
+
+[ethernet]
+
+[ipv4]
+address1=192.168.10.24/16
+dns=8.8.8.8;
+method=manual
+
+[ipv6]
+addr-gen-mode=eui64
+method=ignore

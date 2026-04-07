@@ -1,0 +1,21 @@
+# /etc/NetworkManager/system-connections/
+
+[connection]
+id=enp7s0
+uuid=8058a233-ddbe-3bfd-ba81-bf96e13c07fd
+type=ethernet
+autoconnect-priority=-999
+interface-name=enp7s0
+timestamp=1728644926
+
+[ethernet]
+
+[ipv4]
+address1=1.1.1.1/24,172.16.18.23
+method=manual
+
+[ipv6]
+addr-gen-mode=default
+method=disabled
+
+[proxy]
