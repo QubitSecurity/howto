@@ -1,0 +1,487 @@
+## HOWTO: Windows에서 WSL2 Ubuntu 설치 후 GitLab Dev 서버 접속 확인
+
+## 목적
+
+* Windows 환경에서 **WSL2 기반 Ubuntu**를 설치한다
+* Ubuntu에서 **사내 GitLab(dev)** 서버에 **SSH로 정상 접속/clone** 되는지 확인한다
+* 이후 staging / live 배포 자동화를 위한 기반을 마련한다
+
+---
+
+## 1단계: Windows 버전 확인 (중요)
+
+WSL2는 아래 조건을 만족해야 합니다.
+
+* **Windows 10**: 2004 이상 (Build 19041+)
+* **Windows 11**: 모든 버전 가능
+
+### 확인 방법
+
+PowerShell 또는 CMD에서:
+
+```powershell
+winver
+```
+
+---
+
+## 2단계: WSL2 기능 설치 (관리자 권한 필수)
+
+### 2-1. PowerShell을 관리자 권한으로 실행
+
+* 시작 메뉴 → PowerShell
+* 우클릭 → **관리자 권한으로 실행**
+
+### 2-2. WSL 설치 명령 실행
+
+```powershell
+wsl --install
+```
+
+이 명령이 수행하는 작업:
+
+* WSL 기능 활성화
+* Virtual Machine Platform 활성화
+* WSL2 커널 설치
+
+⚠️ **이 단계 후 반드시 재부팅**
+
+---
+
+## 3단계: Ubuntu 배포판 설치
+
+> ⚠️ 재부팅 후 **Ubuntu 창이 자동으로 뜨지 않는 경우가 정상적으로 발생함**
+> → 수동 설치 및 실행 필요
+
+### 3-1. 설치 가능한 배포판 확인
+
+```powershell
+wsl -l -o
+```
+
+### 3-2. Ubuntu 24.04 LTS 설치 (권장)
+
+```powershell
+wsl --install -d Ubuntu-24.04
+```
+
+권장 이유:
+
+* 최신 LTS
+* SSH / rsync / git 사용 안정적
+* Rocky Linux 서버 운영과 호환성 우수
+
+---
+
+## 4단계: Ubuntu 최초 실행 및 사용자 생성
+
+설치 후 **자동으로 Ubuntu 창이 안 뜨면**, 아래 중 하나 실행:
+
+```powershell
+wsl
+```
+
+또는
+
+```powershell
+wsl -d Ubuntu-24.04
+```
+
+또는
+
+* 시작 메뉴 → **Ubuntu 24.04 LTS**
+
+### 최초 실행 시:
+
+```
+Please create a default UNIX user account.
+```
+
+* 사용자 이름: 자유 (예: `eliot`)
+* 비밀번호: 입력해도 화면에 표시되지 않는 것이 정상
+
+---
+
+좋은 포인트입니다 👍
+**“Ubuntu에 어떻게 접속하는지 몰라서 막히는 단계”**는 실제 현장에서 가장 많이 발생합니다.
+아래처럼 **HOWTO 문서에 자연스럽게 끼워 넣을 수 있도록** 정리해서 추가해 드리겠습니다.
+
+아래 내용은 **그대로 문서에 복붙**하셔도 됩니다.
+
+---
+
+## 5단계: WSL2로 실행 중인지 확인
+
+> ⚠️ 이 단계부터는 **Ubuntu 터미널에 실제로 접속해야 합니다.**
+> Ubuntu에 접속하는 방법을 모르면 아래 **[5-0단계]**를 먼저 수행하세요.
+
+---
+
+### 5-0단계: Ubuntu 실행 방법 (중요 ⭐)
+
+> **재부팅 후 Ubuntu 창이 자동으로 뜨지 않는 경우가 정상적으로 발생할 수 있습니다.**
+> 이 경우 아래 방법 중 하나로 **직접 Ubuntu를 실행**해야 합니다.
+
+#### 방법 1️⃣ (가장 쉬운 방법 – 권장)
+
+1. **윈도우 시작 버튼**을 누릅니다.
+2. 검색창에 **`Ubuntu`** 를 입력합니다.
+3. **`Ubuntu 24.04 LTS`** 를 클릭합니다.
+
+→ Ubuntu 터미널 창이 열리면 성공 ✅
+
+---
+
+#### 방법 2️⃣ (PowerShell에서 실행)
+
+PowerShell 또는 CMD에서:
+
+```powershell
+wsl
+```
+
+또는 특정 배포판을 명시:
+
+```powershell
+wsl -d Ubuntu-24.04
+```
+
+---
+
+#### 방법 3️⃣ (여러 배포판이 있는 경우)
+
+설치된 배포판 확인:
+
+```powershell
+wsl -l
+```
+
+그 후:
+
+```powershell
+wsl -d Ubuntu-24.04
+```
+
+---
+
+### Ubuntu 터미널이 열리면 정상 화면 예
+
+```text
+eliot@DESKTOP-XXXX:~$
+```
+
+이 프롬프트가 보이면 **Ubuntu에 정상 접속된 상태**입니다.
+
+---
+
+## 5단계(계속): WSL2로 실행 중인지 확인
+
+Ubuntu 터미널을 **열어 둔 상태**에서
+PowerShell(또는 새 창)에서 실행:
+
+```powershell
+wsl -l -v
+```
+
+정상 예:
+
+```
+NAME            STATE   VERSION
+Ubuntu-24.04    Running 2
+```
+
+### VERSION이 1이면 WSL2로 변경
+
+```powershell
+wsl --set-version Ubuntu-24.04 2
+```
+
+### 기본 배포판으로 설정 (권장)
+
+```powershell
+wsl --set-default Ubuntu-24.04
+```
+
+---
+
+## 6단계: Ubuntu 기본 업데이트 및 필수 도구 설치
+
+> ⚠️ **이 단계부터는 반드시 Ubuntu 터미널에서 실행합니다.**
+> (PowerShell ❌, CMD ❌)
+
+### 6-1. Ubuntu 패키지 업데이트
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+---
+
+### 6-2. GitLab 접속 및 배포 필수 도구 설치
+
+```bash
+sudo apt install -y openssh-client rsync git
+```
+
+설치되는 주요 도구:
+
+* `ssh` : GitLab / Rocky 서버 접속
+* `rsync` : 배포 동기화
+* `git` : GitLab 저장소 접근
+
+---
+
+### 6-3. 설치 확인 (권장)
+
+```bash
+ssh -V
+rsync --version
+git --version
+```
+
+버전 정보가 출력되면 정상입니다 ✅
+
+---
+
+## 정리 (이 단계까지 완료하면)
+
+* ✔ Ubuntu 실행 방법을 명확히 이해함
+* ✔ WSL2(Version 2)로 정상 동작
+* ✔ GitLab dev 서버 접속을 위한 필수 도구 준비 완료
+
+---
+
+## 7단계: Ubuntu에서 GitLab Dev 서버 접속 준비 (SSH)
+
+### 7-1. SSH 키 존재 여부 확인
+
+```bash
+ls ~/.ssh
+```
+
+없다면 생성:
+
+```bash
+ssh-keygen -t ed25519 -C "wsl-ubuntu"
+```
+
+* 경로: 엔터 (기본값)
+* 패스프레이즈: 필요 없으면 엔터
+
+---
+
+### 7-2. GitLab Dev 서버에 SSH 키 등록
+
+Ubuntu에서 공개키 출력:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+GitLab 웹 UI:
+
+```
+Profile → Preferences → SSH Keys
+```
+
+* Key: 공개키 붙여넣기
+* Title: `wsl-ubuntu`
+* Add key
+
+---
+
+## 8단계: GitLab Dev 서버 SSH 접속 테스트 (중요)
+
+Ubuntu 터미널에서:
+
+```bash
+ssh -T git@gitlab.plura.internal
+```
+
+정상 출력 예:
+
+```
+Welcome to GitLab, @eliot!
+```
+
+❗ 처음 접속 시:
+
+```
+Are you sure you want to continue connecting (yes/no)?
+```
+
+→ `yes`
+
+---
+
+## 9단계: GitLab `config/system` 프로젝트 접속 확인 (핵심)
+
+### GitLab 구조
+
+* GitLab 서버: `gitlab.plura.internal`
+* Group: `config`
+* Project: `system`
+
+### 올바른 clone URL (SSH)
+
+```text
+git@gitlab.plura.internal:config/system.git
+```
+
+### Ubuntu에서 clone
+
+```bash
+git clone git@gitlab.plura.internal:config/system.git
+```
+
+정상 결과:
+
+```
+Cloning into 'system'...
+```
+
+---
+
+## 10단계: clone 결과 확인
+
+```bash
+cd system
+ls
+```
+
+예:
+
+```
+rhel/
+ubuntu/
+windows/
+Update-9-plura-security.ps1
+```
+
+→ GitLab dev 서버 접근 성공 🎉
+
+---
+
+## 여기까지 완료되면 의미하는 것
+
+* ✔ Windows → WSL2 → Ubuntu 환경 정상
+* ✔ Ubuntu → GitLab dev 서버 네트워크/SSH 정상
+* ✔ `config/system` 프로젝트 접근 가능
+* ✔ staging / live 배포 자동화 준비 완료
+
+---
+
+## 11단계: 이미 clone된 `system` 프로젝트 업데이트 방법
+
+GitLab에서 이미 `config/system` 프로젝트를 clone한 상태에서
+다시 `git clone`을 실행하면 아래 오류가 발생합니다.
+
+```
+fatal: destination path 'system' already exists and is not an empty directory.
+```
+
+이는 **정상적인 동작**이며, 이 경우에는 **clone이 아니라 update(pull)** 를 해야 합니다.
+
+---
+
+### 11-1. 현재 디렉터리가 Git 저장소인지 확인
+
+Ubuntu 터미널에서 `system` 디렉터리로 이동한 상태에서 실행합니다.
+
+```bash
+cd ~/system
+git rev-parse --is-inside-work-tree
+```
+
+* 출력이 `true` → ✅ 정상적인 Git 저장소 → **11-2단계로 이동**
+* 에러 발생 → ❌ Git 저장소 아님 → **11-5단계 참고**
+
+---
+
+### 11-2. 가장 기본적인 업데이트 방법 (권장)
+
+```bash
+git pull
+```
+
+또는 기본 브랜치가 `main`인 경우 명시적으로:
+
+```bash
+git pull origin main
+```
+
+→ GitLab dev 서버의 최신 내용이 로컬 `system` 디렉터리에 반영됩니다.
+
+---
+
+### 11-3. 로컬 수정 사항이 있어 pull이 실패하는 경우
+
+#### 방법 A️⃣ (로컬 수정 보존, 가장 안전함)
+
+```bash
+git stash -u
+git pull
+git stash pop
+```
+
+#### 방법 B️⃣ (⚠️ 로컬 수정 전부 삭제, 서버와 완전 동일하게 맞춤)
+
+```bash
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+```
+
+> ⚠️ 이 방법은 **로컬 변경 사항이 모두 삭제**되므로 주의
+
+---
+
+### 11-4. 현재 상태 확인 (문제 발생 시 필수 점검)
+
+```bash
+git status
+git branch --show-current
+git log --oneline -5
+```
+
+---
+
+### 11-5. `~/system`이 Git 저장소가 아닌 일반 폴더인 경우
+
+과거에 수동으로 파일을 복사했거나, Git으로 clone하지 않은 폴더일 수 있습니다.
+
+이 경우 아래 절차로 처리합니다.
+
+```bash
+cd ~
+mv system system.bak
+git clone git@gitlab.plura.internal:config/system.git
+```
+
+---
+
+### 11-6. 원격 저장소 URL 확인 (권장)
+
+```bash
+git remote -v
+```
+
+정상 출력 예:
+
+```
+origin  git@gitlab.plura.internal:config/system.git (fetch)
+origin  git@gitlab.plura.internal:config/system.git (push)
+```
+
+---
+
+## 이 단계까지 완료되면
+
+* ✔ 이미 clone된 Git 저장소를 **정상적으로 업데이트**할 수 있음
+* ✔ GitLab dev 서버와 로컬 Ubuntu 작업 디렉터리 동기화 완료
+* ✔ 이후 **staging / live 배포 자동화(CI/CD)** 단계로 바로 진행 가능
+
+---
+
+
+
