@@ -1,0 +1,38 @@
+# line 95 : uncomment and specify hostname
+myhostname = mail.plura.io
+
+# line 102 : uncomment and specify domain name
+mydomain = plura.io
+
+# line 118 : uncomment
+myorigin = $mydomain
+
+# line 135 : change
+inet_interfaces = all
+
+# line 138 : change it if use only IPv4
+inet_protocols = ipv4
+
+# line 183 : add
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+
+# line 283 : uncomment and specify your local network
+mynetworks = 127.0.0.0/8, 10.100.0.0/16
+
+# line 438 : uncomment (use Maildir)
+home_mailbox = Maildir/
+
+# line 593 : add
+# hide the kind or version of SMTP software
+smtpd_banner = $myhostname ESMTP
+
+# add follows to the end
+# disable SMTP VRFY command
+disable_vrfy_command = yes
+
+# require HELO command to sender hosts
+smtpd_helo_required = yes
+
+# limit an email size
+# example below means 10M bytes limit
+message_size_limit = 10240000

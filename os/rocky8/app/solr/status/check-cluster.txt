@@ -1,0 +1,17 @@
+curl -s "http://10.100.61.69:8983/solr/admin/collections?action=CLUSTERSTATUS&wt=json" \
+| jq -r '
+  .cluster as $cl
+  | ($cl.live_nodes // []) as $live
+  | ($cl.collections // {})                                   # 가드
+  | to_entries[]
+  | .key as $c
+  | (.value.shards // {})                                     # 가드
+  | to_entries[]
+  | .key as $s
+  | (.value.replicas // {})                                   # 가드
+  | to_entries[]
+  | .key as $r
+  | .value as $rep
+  | select(($rep.state != "active") or (($live | index($rep.node_name)) == null))
+  | $rep.node_name
+' | sort -u

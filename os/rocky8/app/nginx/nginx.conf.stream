@@ -1,0 +1,34 @@
+# for TCP / UDP Load Balancing
+
+stream {
+
+        upstream syslog_udp {
+                server 10.20.10.250:514;
+                server 10.20.10.250:5514;
+                server 10.20.10.250:5515;
+                server 10.20.10.250:5516;
+        }
+
+#       upstream syslog_tcp {
+#               server 10.20.10.250:514;
+#       }
+
+        server {
+                listen 192.168.190.156:514 udp;
+                proxy_pass syslog_udp;
+                proxy_bind $remote_addr transparent;
+                proxy_responses 0;
+        }
+
+        server {
+                listen 192.168.190.156:514;
+#               proxy_pass syslog_tcp;
+                proxy_pass syslog_udp;
+        }
+}
+
+worker_rlimit_nofile 1000000;
+
+events {
+        worker_connections 30000;
+}

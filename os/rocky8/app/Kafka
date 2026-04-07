@@ -1,0 +1,155 @@
+# KAFKA
+kafka_2.13-3.4.0
+
+## 1. Download and Install
+
+### 1.1 apache
+
+    wget https://archive.apache.org/dist/kafka/3.4.0/kafka_2.13-3.4.0.tgz
+
+
+## 2. Considerations 
+
+### 2.1 Check apache compatibility
+
+- Before deploying a new Kafka version, it is necessary to check the compatibility of that version with the client, producer, and consumer libraries.
+You must ensure that all applications and libraries related to Kafka are compatible with the new version.
+
+
+### 2.2 test environment
+
+- Kafka updates must be fully verified in a test environment.
+Run the new version in a test environment and check the application's behavior, performance, stability, etc. This provides an opportunity to identify and respond to unexpected problems in advance.
+
+
+### 2.3 back up
+
+- You need to perform a data backup before proceeding with Kafka update.
+Back up the Kafka data directory and necessary configuration files and restore them in case data loss or problems occur during the update.
+
+ 
+
+### 2.4 Check out our documentation and support materials
+
+- Review documentation, release notes, support materials, etc. related to Kafka updates. Stay informed about update procedures, changes, major issues, etc. and respond if problems arise.
+
+ 
+
+### 2.5 rollback plan
+
+- Have a rollback plan in case unexpected problems occur during updates
+
+ 
+
+ 
+
+ 
+
+## 3. Update Plan 
+
+rolling updates
+
+### 3.1 Renaming an existing Kafka directory
+- This step is to rename the existing Kafka directory to avoid path conflicts. You can change the directory name using the mv command.
+
+### 3.2 Install a new version of Kafka
+- These are the steps to install a new version of Kafka. In this step, we will download and install the new version of Kafka.
+
+### 3.3 Stopping an existing Kafka run
+
+### 3.4 Setting new version of Kafka server.properties
+- Added inter.broker.protocol.version, log.message.format.version settings (maintains existing version settings for cluster performance and downgrade in case of error after identifying problems)
+
+### 3.5 Running a new version of Kafka
+- Verify cluster stabilization after execution
+
+### 3.6 Update inter.broker.protocol.version settings
+- After synchronization is complete, change inter.broker.protocol.version to the latest version and rerun to check synchronization and stability.
+
+### 3.7 Change log.message.format.version setting
+- After checking synchronization and stability, set log.message.format.version in the same way and run again.
+
+### 3.8 Restart Broker
+- Repeat the above procedure for all brokers to complete the update.
+
+ 
+
+ 
+
+## 4. scenario
+ 
+
+### 4.1 Install Kafka updated version
+After connecting to the kafka broker, unzip and install the new version (kafka_2.13-3.4.0)
+Installation command: wget https://archive.apache.org/dist/kafka/3.4.0/kafka_2.13-3.4.0.tgz
+If the name of the existing Kafka is something like kafka instead of (ex)kafka_2.12-2.2.0, it may be confused with the newly installed Kafka, so change kafka back to kafka_2.12-2.2.0 (refer to number 4)
+Add and modify /home/sysadmin/kafka/config/server.properties settings for new kafka version
+inter.broker.protocol.version= Specify the current Kafka version (e.g. 3.4, 3.0) (version previously used)
+log.message.format.version = Specify the current Kafka version (e.g. 3.4, 3.0) (version previously used)
+Specified as 2.2 at 2023/7 -> upgraded to 3.4
+Compare and change settings compared to existing Kafka server.properties
+Additionally, the log4j.properties setting has also been changed compared to the existing one.
+Stop existing kafka execution - cd/home/sysadmin/kafka_2.12-2.2.0/bin/kafka-server-stop.sh
+Running a new version of Kafka (at this stage, all brokers are running the latest binary, but the actual production version is the legacy version)
+When executing the settings, please refer to number 4 (JMX port settings) below.
+After synchronization is complete, proceed in the same way for all brokers (run all brokers with the latest binary, change the operating version to the legacy version (synchronization confirmation required), and then change the kafka versions one by one.)
+
+
+### 4.2 Kafka 버전 변경
+Although it was run as a new version, the actual operating version is the existing version, so it is replaced with the new version of Kafka after synchronization is completed.
+Modify config/server.properties for new kafka version
+inter.broker.protocol.version= Specifies the new Kafka version installed
+Keep log.message.format.version at its current level in case of downgrade.
+Run Kafka with the latest binary and synchronize with other brokers.
+After synchronization is complete, proceed in the same manner for all brokers.
+
+### 4.3 Kafka 메세지 포맷 변경
+Proceed in the same way as number 2, change log.message.format.version in config/server.properties to the latest version, and then run again.
+
+### 4.4 JMX Port 설정
+When you run it after updating, the JMX port will be set to -1. If the JMX port is displayed as -1, it means that the Kafka broker is not accepting JMX connections. If the JMX port is set to -1, it indicates that JMX is disabled.
+JMX_RMI_PORT =
+JMX_PORT =
+KAFKA_JMX_OPTS =
+port=$JMX_RMI_PORT"
+export KAFKA_HOME KAFKA_PARAM KAFKA_HEAP_OPTS JMX_RMI_PORT JMX_PORT KAFKA_JMX_OPTS Export in this way and proceed with startup.
+
+
+## 5. Monitoring
+Cluster health monitoring
+
+During the update, you must check the status of Broker, Topic, Partition, etc. through Kafka Manager, and check Topic's Under Replicated % and Brokers Leader Skew % to see if synchronization has progressed properly.
+
+### 5.1 Under Replicated %
+A term that indicates the status of partition replication
+This is an indicator of the percentage of partitions for which replication has not yet been completed. Therefore, 0% means that replication of all partitions has been completed.
+### 5.2 Brokers Leader Skew %
+An indicator of the degree of distribution of the partitions each broker serves as the leader in a Kafka cluster.
+0%: Indicates that all brokers share the leader partition equally. Leader partitions are distributed in a balanced manner, and the load on the leader partition of the cluster is evenly distributed.
+100%: Indicates that a specific broker is responsible for most of the leader partitions. This may mean that the leader partitions are unbalanced and the broker has a higher load than other brokers. This may cause cluster performance degradation and load imbalance.
+ 
+
+ 
+
+## 6. Caution
+ 
+
+### 6.1 Always check synchronization before re-running
+ 
+
+### 6.2 Error that occurs when kafka terminates abnormally while running
+#### 6.2.1 Failed to acquire lock on file .lock in /home/sysadmin/kafka-data/kafka-logs.
+A lock file is created in the relevant directory path and must be removed and restarted.
+
+remove command
+Remove lock file with rm /home/sysadmin/kafka-data/kafka-logs/.lock
+
+It is necessary to check the lock file before removal!
+
+ 
+
+### 6.2.2 org.apache.kafka.common.KafkaException: Socket server failed to bind to IPaddress:9092: Address is already in use.
+
+- `lsof -i :9092`: Find processes using port 9092.
+
+- Terminates the process using the PID of the found process. For example, using `kill <processID>`.
