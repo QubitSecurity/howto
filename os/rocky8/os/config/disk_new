@@ -1,0 +1,18 @@
+fdisk -l
+
+mkdir /data1
+mkdir /data2
+
+fdisk /dev/sdb
+
+fdisk /dev/sdc
+
+fdisk -l
+
+mkfs.xfs -f /dev/sdb1
+mkfs.xfs -f /dev/sdc1
+
+mount /dev/sdb1 /data1
+mount /dev/sdc1 /data2
+
+df -h
