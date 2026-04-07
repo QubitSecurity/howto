@@ -1,0 +1,11 @@
+cat > start_plura_msa.sh <<'EOF'
+
+EOF
+
+cat > start_plura_mysql.sh <<'EOF'
+
+EOF
+
+cat > start_plura_solr.sh <<'EOF'
+
+EOF
