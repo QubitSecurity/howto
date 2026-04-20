@@ -4,7 +4,7 @@
 - 전송 구조
 ```mermaid
 graph LR;
-    DB_Server[DB 서버] --(SSH-Internal Network)--> Internal_System[중계 서버] --(SSH-External Network)--> External_System[외부 저장 서버]
+    DB_Server[DB 서버] --(SSH-PLURA 내부 네트워크)--> Internal_System[중계 서버] --(SSH-외부 네트워크)--> External_System[외부 저장 서버]
 ```
 
 ### 1. SSH Key 기반 중계 서버 및 외부 서버 연결
