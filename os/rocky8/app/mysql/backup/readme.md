@@ -71,20 +71,21 @@ SSH_PORT=22
 
 echo "==== Transfer Script Start ===="
 
-# 1. DB 파일 존재 여부 확인 (에러 없이 체크)
-FILES=$(find ${SRC_DIR} -maxdepth 1 -type f -name "*.sql")
+# 1. 최신 파일 1개 찾기
+LATEST_FILE=$(ls -t ${SRC_DIR}/*.sql 2>/dev/null | head -1)
 
-if [ -z "$FILES" ]; then
+if [ -z "$LATEST_FILE" ]; then
     echo "No DB files found. Skip transfer."
     exit 0
 fi
 
-echo "DB files found. Start transfer..."
+echo "Latest file: ${LATEST_FILE}"
+echo "Start transfer..."
 
-# 2. 전송
+# 2. 최신 파일만 전송
 scp -P ${SSH_PORT} \
     -o StrictHostKeyChecking=no \
-    ${SRC_DIR}/*.sql \
+    "${LATEST_FILE}" \
     ${DEST_USER}@${DEST_HOST}:${DEST_DIR}
 
 # 3. 전송 결과 확인
