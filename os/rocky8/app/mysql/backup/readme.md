@@ -17,7 +17,6 @@ ssh-copy-id [backup_user]@[중계 서버 IP] #중계 서버 Backup User
 
 SSH Key 전송(중계 서버 -> 외부 저장 서버)
 ssh-copy-id [external_backup_user]@[외부 저장 서버 IP] # #외부 저장 서버 Backup User
-
 ```
 
 ### 2. DB SQL 파일 전송(DB 서버 -> 중계 서버)
