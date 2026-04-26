@@ -1,6 +1,8 @@
 $envPath = "C:\git\quark\quark\.env"
 
-Add-Content .env @"
+$existing = [System.IO.File]::ReadAllText($envPath)
+
+$gmailBlock = @"
 
 # Gmail report
 GMAIL_ENABLED=true
@@ -15,4 +17,10 @@ GMAIL_INCLUDE_JSON_ATTACHMENT=true
 GMAIL_INCLUDE_SCREENSHOT_PATHS=true
 "@
 
-[System.IO.File]::WriteAllText($envPath, $content, [System.Text.UTF8Encoding]::new($true))
+$newContent = $existing.TrimEnd() + "`r`n" + $gmailBlock
+
+[System.IO.File]::WriteAllText(
+  $envPath,
+  $newContent,
+  [System.Text.UTF8Encoding]::new($true)
+)
