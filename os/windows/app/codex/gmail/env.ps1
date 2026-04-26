@@ -1,6 +1,8 @@
 $envPath = "C:\git\quark\quark\.env"
 
-$content = @"
+Add-Content .env @"
+
+# Gmail report
 GMAIL_ENABLED=true
 GMAIL_DRY_RUN=true
 GMAIL_TO=joo@qubitsec.com
