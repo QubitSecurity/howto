@@ -133,7 +133,6 @@ git push
 
 ```powershell
 git clone https://github.com/qubitsec/quark.git
-cd quark
 git pull
 ```
 
