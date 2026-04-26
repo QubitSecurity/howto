@@ -152,7 +152,7 @@ branch 'main' set up to track 'origin/main'.
 평소 작업 후에는 아래 순서만 반복하면 됩니다.
 
 ```powershell
-cd D:\git\quark
+cd C:\git\quark
 git add .
 git commit -m "작업 내용"
 git push
@@ -162,7 +162,6 @@ git push
 
 ```powershell
 git clone https://github.com/qubitsec/quark.git
-cd quark
 git pull
 ```
 
