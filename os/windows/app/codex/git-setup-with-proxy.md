@@ -92,8 +92,8 @@ https://github.com/qubitsec/quark.git
 작업 폴더를 만들고 Git 저장소로 초기화합니다.
 
 ```powershell
-mkdir D:\git\quark
-cd D:\git\quark
+mkdir C:\git\quark
+cd C:\git\quark
 git init
 ```
 
