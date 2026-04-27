@@ -233,7 +233,7 @@ ETCDCTL_API=3 etcdctl endpoint health
 ### ⑥ 복구
 
 ```bash
-kubectl uncordon 021085-k8s-master
+kubectl uncordon [Master Node Hostname]
 ```
 
 ---
