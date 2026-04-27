@@ -45,10 +45,7 @@ ex.
 ### ① Pod 안전하게 비우기 (핵심)
 
 ```bash
-kubectl drain [Worker Node Hostname] \
-  --ignore-daemonsets \
-  --delete-emptydir-data \
-  --force
+kubectl drain [Worker Node Hostname]  --ignore-daemonsets --delete-emptydir-data --force
 ```
 
 ✔ 의미:
