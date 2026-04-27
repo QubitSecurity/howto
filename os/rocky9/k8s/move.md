@@ -28,7 +28,7 @@
 ---
 
 
-<br><br><br>
+<br><br>
 # 🧩 1단계: Worker 노드 이동 (안전 구간)
 
 ## ✔️ 대상
@@ -143,7 +143,7 @@ kubectl get pod -A -o wide | grep [Service Namespace]
 ---
 
 
-<br><br><br>
+<br><br>
 # 🧩 2단계: Control Plane 이동 (위험 구간)
 
 ## ✔️ 대상
