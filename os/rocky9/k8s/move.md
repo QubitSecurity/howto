@@ -189,7 +189,7 @@ kubectl drain [Master Node Hostname] --ignore-daemonsets
 ```
 
 ---
-
+<!--
 ### ③ etcd 상태 확인 (중요)
 
 ```bash
@@ -197,7 +197,7 @@ ETCDCTL_API=3 etcdctl endpoint health
 ```
 
 👉 모든 노드 healthy 확인
-
+-->
 ---
 
 ### ④ VM 종료 및 이동
