@@ -164,15 +164,7 @@ sleep 1
 ---
 
 
-```bash
 
-sh ./api/d-git-sync.sh ai/prompt/global
-sleep 1
-
-sh ./api/d-git-sync.sh ai/use/page
-sleep 1
-
-```
 
 
 
