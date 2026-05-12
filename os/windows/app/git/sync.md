@@ -6,7 +6,7 @@
 sh ./api/d-git-sync.sh forensic-config
 sleep 1
 
-sh ./api/d-git-sync.sh system-vas
+sh ./api/d-git-sync.sh system-vascheck
 sleep 1
 
 sh ./api/d-git-sync.sh system-mgmt
@@ -41,7 +41,7 @@ sleep 1
 sh ./api/s-git-sync.sh system-control
 sleep 1
 
-sh ./api/s-git-sync.sh system-vas
+sh ./api/s-git-sync.sh system-vascheck
 sleep 1
 
 sh ./api/s-git-sync.sh system-vasversion
@@ -78,7 +78,7 @@ sleep 1
 sh ./api/git-sync.sh system-control
 sleep 1
 
-sh ./api/git-sync.sh system-vas
+sh ./api/git-sync.sh system-vascheck
 sleep 1
 
 sh ./api/git-sync.sh system-vasversion
