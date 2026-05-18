@@ -114,6 +114,12 @@ sleep 1
 sh ./api/d-git-sync.sh filter-mitre
 sleep 1
 
+sh ./api/d-git-sync.sh filter-forensic
+sleep 1
+
+sh ./api/d-git-sync.sh filter-data-breach
+sleep 1
+
 sh ./api/d-git-sync.sh web-extends
 sleep 1
 
@@ -134,6 +140,12 @@ sleep 1
 sh ./api/s-git-sync.sh filter-mitre
 sleep 1
 
+sh ./api/s-git-sync.sh filter-forensic
+sleep 1
+
+sh ./api/s-git-sync.sh filter-data-breach
+sleep 1
+
 sh ./api/s-git-sync.sh web-extends
 sleep 1
 
@@ -151,6 +163,12 @@ sh ./api/git-sync.sh filter-edr
 sleep 1
 
 sh ./api/git-sync.sh filter-mitre
+sleep 1
+
+sh ./api/git-sync.sh filter-forensic
+sleep 1
+
+sh ./api/git-sync.sh filter-data-breach
 sleep 1
 
 sh ./api/git-sync.sh web-extends
