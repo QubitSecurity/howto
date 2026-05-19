@@ -1,66 +1,396 @@
-로컬에서 작업한 내용을 GitLab 서버에 완벽하게 반영하는 과정을 최종 정리해 드립니다. 이번에는 **수정 -> 기록 -> 업로드**의 3단계를 빠뜨리지 않는 것이 핵심입니다.
+# HOWTO: local → dev GitLab 업로드 절차 (`config/filter`)
+
+## 개요
+
+본 문서는 로컬에서 새로 만든 코드 또는 수정한 파일을 **dev GitLab(d-gitlab)** 의 `config/filter` Repository에 반영하는 절차를 설명합니다.
+
+핵심은 항상 아래 순서입니다.
+
+```text
+1. dev Repository를 로컬에 준비
+2. dev 최신 상태로 동기화
+3. 새 코드/수정 파일을 로컬 Repository 경로에 넣기
+4. Repository 루트로 이동
+5. git status로 변경 확인
+6. git add
+7. git commit
+8. git push origin main
+9. dev GitLab 반영 확인
+```
 
 ---
 
-### 🚀 Git 업로드 3단계 프로세스
+## 0️⃣ 작업 기준 경로
 
-파일을 수정한 후에는 항상 이 **세 가지 명령어**를 세트로 사용하신다고 생각하면 쉽습니다.
+이 문서는 아래 경로를 기준으로 설명합니다.
 
-#### 1단계: 변경 사항 선택 (`add`)
+| 구분 | 값 |
+|---|---|
+| dev GitLab | `d-gitlab` |
+| Repository | `config/filter` |
+| 로컬 작업 디렉터리 | `~/filter` |
+| 실제 WSL 경로 | `/home/joo/filter` |
+| 기본 브랜치 | `main` |
+| 기본 remote | `origin` |
 
-수정한 파일들을 Git이 추적할 수 있도록 '바구니'에 담는 과정입니다.
+> 중요: `~/filter` 디렉터리 안에서 `origin`은 dev GitLab의 `config/filter` Repository를 의미합니다.
+
+---
+
+## 1️⃣ dev Repository를 로컬에 다운로드
+
+아직 로컬에 `filter` Repository가 없다면 먼저 다운로드합니다.
 
 ```bash
+cd ~
+git clone git@d-gitlab:config/filter.git filter
+cd ~/filter
+```
+
+또는 원본 GitLab 주소를 직접 사용할 수 있습니다.
+
+```bash
+cd ~
+git clone git@gitlab.plura.internal:config/filter.git filter
+cd ~/filter
+```
+
+정상 clone 여부 확인:
+
+```bash
+pwd
+git remote -v
+git branch
+```
+
+정상 예:
+
+```text
+/home/joo/filter
+
+origin  git@d-gitlab:config/filter.git (fetch)
+origin  git@d-gitlab:config/filter.git (push)
+```
+
+---
+
+## 2️⃣ WSL Git 기본 설정
+
+줄바꿈(CRLF/LF) 노이즈를 줄이기 위해 아래 설정을 1회 적용합니다.
+
+```bash
+git config --global core.autocrlf input
+git config --global core.eol lf
+git config --global core.safecrlf false
+```
+
+---
+
+## 3️⃣ 작업 전 dev 최신 상태로 맞추기
+
+로컬에 새 코드를 넣기 전에, 먼저 dev의 최신 상태를 가져옵니다.
+
+> `git pull` 대신 아래 3줄을 표준으로 사용합니다.
+
+```bash
+cd ~/filter
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+```
+
+주의:
+
+> 위 명령은 로컬 변경 사항을 삭제하고 dev 기준 최신 상태로 맞춥니다.  
+> 따라서 새 코드를 복사하기 **전에만** 실행하세요.
+
+최신 상태 확인:
+
+```bash
+git rev-parse HEAD
+git rev-parse origin/main
+```
+
+두 값이 같으면 로컬이 dev 최신 상태입니다.
+
+---
+
+## 4️⃣ 새 코드 또는 수정 파일을 로컬 Repository에 넣기
+
+dev 최신 상태를 준비한 뒤, 새 코드나 수정 파일을 `~/filter` 아래의 정확한 경로에 넣습니다.
+
+### 4-1. WSL 내부 파일을 복사하는 경우
+
+파일 1개 복사 예:
+
+```bash
+cp ./new-filter-file.json ~/filter/<대상경로>/
+```
+
+디렉터리 단위 복사 예:
+
+```bash
+rsync -av ./new-filter-directory/ ~/filter/<대상경로>/
+```
+
+### 4-2. Windows 다운로드 폴더에서 복사하는 경우
+
+Windows의 `C:\Users\...` 경로는 WSL에서 `/mnt/c/Users/...`로 접근합니다.
+
+파일 1개 복사 예:
+
+```bash
+cp /mnt/c/Users/<WindowsUser>/Downloads/new-filter-file.json ~/filter/<대상경로>/
+```
+
+디렉터리 단위 복사 예:
+
+```bash
+rsync -av /mnt/c/Users/<WindowsUser>/Downloads/filter/ ~/filter/
+```
+
+예시:
+
+```bash
+rsync -av /mnt/c/Users/joo/Downloads/filter/ ~/filter/
+```
+
+> `<WindowsUser>`와 `<대상경로>`는 실제 환경에 맞게 바꿉니다.
+
+---
+
+## 5️⃣ 반드시 Repository 루트로 이동
+
+`git add .`는 반드시 **Repository 루트 경로**에서 실행합니다.
+
+```bash
+cd ~/filter
+pwd
+```
+
+정상 예:
+
+```text
+/home/joo/filter
+```
+
+> `~/tmp`, `~/system`, `~/tmp/s-system`이 아니라 반드시 `~/filter`에서 실행합니다.
+
+---
+
+## 6️⃣ 변경 사항 확인
+
+파일을 넣거나 수정한 뒤 변경 사항을 확인합니다.
+
+```bash
+git status
+```
+
+짧게 확인하려면:
+
+```bash
+git status --short
+```
+
+변경된 파일 목록만 보려면:
+
+```bash
+git diff --name-only
+```
+
+줄바꿈 노이즈인지 확인하려면:
+
+```bash
+git diff --ignore-cr-at-eol -- <파일경로> | head
+```
+
+출력이 없으면 실제 내용 변경 없이 줄바꿈 차이만 있는 경우입니다.
+
+---
+
+## 7️⃣ 변경 사항 선택 (`git add`)
+
+### 전체 변경 사항을 올릴 경우
+
+Repository 루트인 `~/filter`에서 실행합니다.
+
+```bash
+cd ~/filter
 git add .
-
 ```
 
-* `.`은 현재 폴더의 모든 변경 사항을 담겠다는 뜻입니다.
+> `.`은 현재 디렉터리, 즉 `~/filter` 아래의 모든 변경 사항을 의미합니다.
 
-#### 2단계: 로컬에 기록 남기 (`commit`)
-
-바구니에 담긴 내용을 내 컴퓨터의 Git 역사에 기록하는 과정입니다. (이 과정을 거쳐야 파일 내용이 확정됩니다.)
+### 특정 파일만 올릴 경우
 
 ```bash
-git commit -m "Change name to filterName and filterDescription"
-
+cd ~/filter
+git add <파일경로>
 ```
 
-* `-m` 뒤에는 어떤 내용을 수정했는지 설명을 적습니다.
+예:
 
-#### 3단계: 서버로 전송 (`push`)
+```bash
+cd ~/filter
+git add filter/example.json
+```
 
-내 컴퓨터에 기록된 내용을 실제 GitLab 서버로 보내는 과정입니다.
+스테이징 확인:
+
+```bash
+git status --short
+```
+
+---
+
+## 8️⃣ 로컬 commit 생성
+
+변경 내용을 로컬 Git 이력에 기록합니다.
+
+```bash
+git commit -m "Update filter configuration"
+```
+
+예:
+
+```bash
+git commit -m "Add new filter rules"
+```
+
+Git 사용자 정보가 없다는 오류가 나오면 아래를 먼저 설정합니다.
+
+```bash
+git config --global user.name "Eliot Shin"
+git config --global user.email "joo@qubitsec.com"
+```
+
+그 다음 다시 commit 합니다.
+
+```bash
+git commit -m "Update filter configuration"
+```
+
+---
+
+## 9️⃣ dev GitLab로 push
+
+로컬 commit을 dev GitLab의 `main` 브랜치로 전송합니다.
 
 ```bash
 git push origin main
-
 ```
-
-* 만약 이전에 `Everything up-to-date`가 떴던 이유는 2단계(`commit`)를 건너뛰었기 때문입니다. 이제는 정상적으로 전송될 것입니다.
 
 ---
 
-### 💡 문제 발생 시 팁
+## 🔟 dev GitLab 반영 확인
 
-* **아이디/비번을 자꾸 물어본다면?**
-인증 정보를 내 컴퓨터에 저장해두면 편리합니다.
+로컬과 dev 원격의 commit 해시가 같은지 확인합니다.
+
 ```bash
-git config --global credential.helper store
-
+git fetch origin
+git rev-parse HEAD
+git rev-parse origin/main
 ```
 
+두 값이 같으면 dev GitLab 반영이 완료된 것입니다.
 
-* **서버와 로컬이 꼬여서 Push가 거절된다면?** (최후의 수단)
-내가 가진 로컬 파일이 무조건 맞다는 확신이 있을 때만 사용하세요.
-```bash
-git push origin main --force
-
-```
-
-
-* **올라갔는지 확인하려면?**
-GitLab 웹 페이지에서 파일 이름 옆의 **시간(Last commit)**이 `just now` 혹은 `1 minute ago`로 바뀌었는지 확인하세요.
+GitLab 웹 UI에서도 `config/filter` Repository의 최신 commit 시간이 갱신되었는지 확인합니다.
 
 ---
 
+## 1️⃣1️⃣ 자주 발생하는 문제와 대응
+
+### 11-1. `Everything up-to-date`가 나오는데 파일이 안 올라간 경우
+
+대부분 commit을 하지 않은 상태입니다.
+
+확인:
+
+```bash
+cd ~/filter
+git status
+```
+
+해결:
+
+```bash
+cd ~/filter
+git add .
+git commit -m "Update filter configuration"
+git push origin main
+```
+
+---
+
+### 11-2. push가 거절되는 경우
+
+다른 사람이 dev에 먼저 push했을 수 있습니다.
+
+```bash
+cd ~/filter
+git fetch origin
+git rebase origin/main
+git push origin main
+```
+
+충돌이 나면 충돌 파일을 수정한 뒤:
+
+```bash
+git add .
+git rebase --continue
+git push origin main
+```
+
+---
+
+### 11-3. 줄바꿈(CRLF/LF) 때문에 파일이 수정된 것처럼 보이는 경우
+
+내용 변경 여부를 확인합니다.
+
+```bash
+git diff --ignore-cr-at-eol -- <파일경로> | head
+```
+
+실제 내용 변경이 없다면 dev 최신 상태로 다시 맞춥니다.
+
+```bash
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+```
+
+---
+
+## 최종 요약: 로컬 코드를 dev에 올리는 전체 순서
+
+```bash
+# 1. Repository 루트로 이동
+cd ~/filter
+
+# 2. 작업 전 dev 최신화
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+
+# 3. 새 코드 복사 또는 파일 수정
+# 예: rsync -av /mnt/c/Users/joo/Downloads/filter/ ~/filter/
+
+# 4. 변경 사항 확인
+git status
+
+# 5. 변경 사항 선택
+git add .
+
+# 6. commit 생성
+git commit -m "Update filter configuration"
+
+# 7. dev GitLab로 push
+git push origin main
+
+# 8. 반영 확인
+git fetch origin
+git rev-parse HEAD
+git rev-parse origin/main
+```
+
+> 로컬에서 작업한 내용을 dev에 반영하려면 반드시 `add → commit → push` 세 단계를 모두 수행해야 합니다.
