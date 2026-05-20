@@ -18,8 +18,15 @@ sleep 1
 sh ./api/d-git-sync.sh wdac
 sleep 1
 
+sh ./api/d-git-sync.sh owasp-categories
+sleep 1
+
 sh ./api/d-git-sync.sh diagram-category
 sleep 1
+
+sh ./api/d-git-sync.sh databreach-categories
+sleep 1
+
 
 ```
 
@@ -59,6 +66,15 @@ sleep 1
 sh ./api/s-git-sync.sh data-name-mapping
 sleep 1
 
+sh ./api/s-git-sync.sh owasp-categories
+sleep 1
+
+sh ./api/s-git-sync.sh diagram-category
+sleep 1
+
+sh ./api/s-git-sync.sh databreach-categories
+sleep 1
+
 ```
 
 ```bash
@@ -94,6 +110,15 @@ sh ./api/git-sync.sh event
 sleep 1
 
 sh ./api/git-sync.sh data-name-mapping
+sleep 1
+
+sh ./api/git-sync.sh owasp-categories
+sleep 1
+
+sh ./api/git-sync.sh diagram-category
+sleep 1
+
+sh ./api/git-sync.sh databreach-categories
 sleep 1
 
 ```
