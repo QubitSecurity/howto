@@ -1,4 +1,5 @@
 ## Redis Exporter
+모든 서버에 설치
 ### 1. Redis Exporter 다운로드 및 저장
 ```
 wget https://github.com/oliver006/redis_exporter/releases/download/v1.86.0/redis_exporter-v1.86.0.linux-amd64.tar.gz
