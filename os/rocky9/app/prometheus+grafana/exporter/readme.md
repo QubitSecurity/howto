@@ -1,7 +1,7 @@
 
 ## exporter
 1) node exporter - node 모니터링
-- [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
+- [node_exporter 설치](./install/node_exporter.md)
 
 2) redis exporter - redis 모니터링
 - [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
