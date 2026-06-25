@@ -1,4 +1,5 @@
 ## Blackbox Exporter
+모든 서버에 설치
 ### 1. Blackbox Exporter 다운로드 및 저장
 ```
 wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.28.0/blackbox_exporter-0.28.0.linux-amd64.tar.gz
