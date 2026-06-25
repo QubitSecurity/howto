@@ -13,4 +13,4 @@
 - [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
 
 5) mysqld exporter - mysql 모니터링
-- [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
+- [mysqld_exporter 설치](./install/mysqld_exporter.md)
