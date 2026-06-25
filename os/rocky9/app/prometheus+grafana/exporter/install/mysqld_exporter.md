@@ -9,7 +9,6 @@ tar xvf /opt/mysqld_exporter-0.19.0.linux-amd64.tar.gz
 ln -s /opt/mysqld_exporter-0.19.0.linux-amd64.tar.gz /opt/mysqld_exporter
 
 sudo chcon -t bin_t /opt/mysqld_exporter/mysqld_exporter
-
 ```
 ### 2. mysql 접근 계정 생성
 ```
