@@ -4,13 +4,13 @@
 - [node_exporter 설치](./install/node_exporter.md)
 
 2) redis exporter - redis 모니터링
-- [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
+- [redis_exporter 설치](./install/redis_exporter.md)
 
 3) kafka exporter - kafka 모니터링
-- [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
+- [kafka_exporter 설치](./install/kafka_exporter.md)
 
-4) black exporter - Listen Port 기반 모니터링
-- [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
+4) blackbox exporter - Listen Port 기반 모니터링
+- [blackbox_exporter 설치](./install/blackbox_exporter.md)
 
 5) mysqld exporter - mysql 모니터링
 - [mysqld_exporter 설치](./install/mysqld_exporter.md)
