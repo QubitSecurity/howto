@@ -9,7 +9,6 @@ tar xvf /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz
 ln -s /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz /opt/kafka_exporter
 
 sudo chcon -t bin_t /opt/kafka_exporter/kafka_exporter
-
 ```
 
 ### 2. /opt/kafka_expoter 내부 필요 파일 설정
