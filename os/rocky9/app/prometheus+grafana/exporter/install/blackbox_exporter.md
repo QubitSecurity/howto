@@ -1,5 +1,5 @@
 ## Blackbox Exporter
-모든 서버에 설치
+프로메테우스 노드만 설치
 ### 1. Blackbox Exporter 다운로드 및 저장
 ```
 wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.28.0/blackbox_exporter-0.28.0.linux-amd64.tar.gz
@@ -9,7 +9,6 @@ tar xvf /opt/blackbox_exporter-0.28.0.linux-amd64.tar.gz
 ln -s /opt/blackbox_exporter-0.28.0.linux-amd64.tar.gz /opt/blackbox_exporter
 
 sudo chcon -t bin_t /opt/blackbox_exporter/blackbox_exporter
-
 ```
 
 ### 2. systemd 서비스 파일 생성
