@@ -9,7 +9,6 @@ tar xvf /opt/redis_exporter-v1.86.0.linux-amd64.tar.gz
 ln -s /opt/redis_exporter-v1.86.0.linux-amd64.tar.gz /opt/redis_exporter
 
 sudo chcon -t bin_t /opt/redis_exporter/redis_exporter
-
 ```
 
 ### 2. systemd 서비스 파일 생성
