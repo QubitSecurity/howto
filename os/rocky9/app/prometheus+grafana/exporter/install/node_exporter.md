@@ -2,7 +2,7 @@
 모든 서버에 설치
 ### 1. Node Exporter 다운로드 및 저장
 ```
- wget -P /opt https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-386.tar.gz
+wget -P /opt https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-386.tar.gz
 
 tar xvf /opt/node_exporter-1.8.2.linux-386.tar.gz
 
