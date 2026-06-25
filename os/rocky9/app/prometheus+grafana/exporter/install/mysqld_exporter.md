@@ -1,4 +1,5 @@
 ## Mysqld Exporter
+모든 서버에 설치
 ### 1. mysqld Exporter 다운로드 및 저장
 ```
 wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.19.0/mysqld_exporter-0.19.0.linux-amd64.tar.gz
