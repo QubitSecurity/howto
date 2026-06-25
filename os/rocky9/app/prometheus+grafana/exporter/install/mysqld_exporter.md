@@ -22,14 +22,14 @@ SELECT host, user FROM mysql.user;
 ```
 ### 3. 인증 파일 생성
 ```
-vi /opt/mysqld_exporter/.mysqld_exporter.cnf
+sudo vi /opt/mysqld_exporter/.mysqld_exporter.cnf
 
 [client]
 user=exporter
 password=password
 
 권한 설정
-chmod 600 /opt/mysqld_exporter/.mysqld_exporter.cnf
+sudo chmod 600 /opt/mysqld_exporter/.mysqld_exporter.cnf
 ```
 ### 4. systemd 서비스 파일 생성
 ```
@@ -51,7 +51,7 @@ WantedBy=multi-user.target
 
 ### 5. prometheus target 설정 및 적용
 ```
-mkdir -p /opt/prometheus/targets
+sudo mkdir -p /opt/prometheus/targets
 
 vi /opt/prometheus/prometheus.yml
 
@@ -69,7 +69,7 @@ vi /opt/prometheus/targets/mysqld_exporter_targets.yml
 ※ mysql 서버 ip
 
 설정 검사
-promtool check config /opt/prometheus/prometheus.yml
+sudo promtool check config /opt/prometheus/prometheus.yml
 
 적용(재시작 없이)
 sudo curl -X POST http://localhost:9090/-/reload
