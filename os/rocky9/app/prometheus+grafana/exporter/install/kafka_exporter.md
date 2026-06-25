@@ -16,7 +16,7 @@ sudo chcon -t bin_t /opt/kafka_exporter/kafka_exporter
 ```
 내부 파일 목록
 - brokers.conf
-- kafa_exporter
+- kafka_exporter
 - start-kafka-exporter.sh
 
 sudo vi /opt/kafka_exporter/start-kafka-exporter.sh
