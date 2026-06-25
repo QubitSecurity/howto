@@ -13,7 +13,7 @@ sudo chcon -t bin_t /opt/mysqld_exporter/mysqld_exporter
 ```
 ### 2. mysql 접근 계정 생성
 ```
-CREATE USER 'exporter'@'localhost' IDENTIFIED BY 'passwd';
+CREATE USER 'exporter'@'localhost' IDENTIFIED BY 'password';
 
 GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exporter'@'localhost';
 
