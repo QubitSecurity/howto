@@ -1,6 +1,6 @@
 
 ## 설치
-1) 노드 (node-exporter)
+1) 노드 (exporter 기반)
 - [노드 환경 프로메테우스 + 그라파나 설치](./install/install(vm).md)
 
 2) 쿠버네티스 (prometheus stack - helm)
