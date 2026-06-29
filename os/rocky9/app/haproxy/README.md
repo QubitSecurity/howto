@@ -20,3 +20,9 @@
   - Configuration Path: `/etc/profile.d/pproxy.sh`
 - [Daemon](https://github.com/QubitSecurity/howto/blob/main/rocky9/app/haproxy/config/plurad.service)
   - Configuration Path: `/lib/systemd/system/plurad.service`
+
+---
+
+### 💾 Download
+
+- [https://www.haproxy.org/download/](https://www.haproxy.org/download/)
