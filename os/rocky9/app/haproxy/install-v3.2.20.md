@@ -800,3 +800,9 @@ TLS: TLS 1.2 이상만 허용
 TLS 1.2 Cipher: ECDHE + AES-GCM / CHACHA20-POLY1305만 허용
 Keepalived 연동: ip_nonlocal_bind=1 필수
 ```
+
+---
+
+### 💾 Download
+
+- [https://www.haproxy.org/download/](https://www.haproxy.org/download/)
