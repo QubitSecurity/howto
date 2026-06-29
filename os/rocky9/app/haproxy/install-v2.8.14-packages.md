@@ -682,3 +682,9 @@ Keepalived VIP 환경:
 - net.ipv4.ip_nonlocal_bind = 1 적용
 - HAProxy는 예시 VIP 203.0.113.100:80, 443에 바인딩
 ```
+
+---
+
+### 💾 Download
+
+- [https://www.haproxy.org/download/](https://www.haproxy.org/download/)
