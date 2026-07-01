@@ -21,7 +21,7 @@ graph LR;
 Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
 접속 테스트는 http 프로토콜(https 테스트 불가)
 
-1. Client PC 는 브라우저 or curl를 사용하여 Proxy1를 통해 Web 접속
+1. Client PC 는 브라우저 또는 curl 사용하여 Proxy1를 통해 Web 접속
 2  Proxy1 은
    1) 자신(Proxy1)xff 를 생성, Haproxy 접속
    2) Proxy2 경유 자신(Proxy2) XFF 추가 생성, haproxy 접속 (추가 경유 테스트 목적)
@@ -33,8 +33,12 @@ Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
 ## 2. 사전 설정
 Proxy(Squid) xff 설정
 ```
+xff 설정
 request_header_access X-Forwarded-For allow all
 forwarded_for on
+
+squid hosts 등록
+172.16.18.35 haproxy.domain
 ```
 
 
@@ -52,17 +56,17 @@ http-request set-header X-Forwarded-For %[src],%[req.hdr(X-Forwarded-For)] if { 
 ```
 ```
 curl-pattern-1
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://domain/
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://haproxy.domain/
 172.16.18.35 - - [01/Jul/2026:10:17:18 +0900] "GET / HTTP/1.1" 200 3332 "-" "curl/8.19.0" "172.16.10.200,172.16.18.253"
 ```
 ```
 curl-pattern-2
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://domain/
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://haproxy.domain/
 172.16.18.35 - - [01/Jul/2026:10:18:26 +0900] "GET / HTTP/1.1" 200 3332 "-" "curl/8.19.0" "172.16.10.200,172.16.18.253"
 ```
 ```
 curl-pattern-3
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://haproxy.domain
 172.16.18.35 - - [01/Jul/2026:10:19:11 +0900] "GET / HTTP/1.1" 200 3332 "-" "curl/8.19.0" "172.16.10.200,172.16.18.253"
 ```
 #### 3.1.3 결과
@@ -81,21 +85,21 @@ http-request set-header X-Forwarded-For %[src],%[req.fhdr(X-Forwarded-For)] if {
 #### 3.2.2 테스트 및 웹 로그 결과
 ```
 브라우저
-172.16.18.35 - - [01/Jul/2026:10:22:52 +0900] "GET /favicon.ico HTTP/1.1" 200 3332 "http://domain/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0" "172.16.10.200,192.168.10.39, 172.16.18.253"
+172.16.18.35 - - [01/Jul/2026:10:22:52 +0900] "GET /favicon.ico HTTP/1.1" 200 3332 "http://haproxy.domain/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0" "172.16.10.200,192.168.10.39, 172.16.18.253"
 ```
 ```
 curl-pattern-1
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://domain/
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://haproxy.domain/
 172.16.18.35 - - [01/Jul/2026:10:23:47 +0900] "GET / HTTP/1.1" 200 3332 "-" "curl/8.19.0" "172.16.10.200,1.1.1.1, 192.168.10.39, 172.16.18.253"
 ```
 ```
 curl-pattern-2
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://domain/
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://haproxy.domain/
 172.16.18.35 - - [01/Jul/2026:10:23:41 +0900] "GET / HTTP/1.1" 200 3332 "-" "curl/8.19.0" "172.16.10.200,1.1.1.1,2.2.2.2, 192.168.10.39, 172.16.18.253"
 ```
 ```
 curl-pattern-3
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://haproxy.domain
 172.16.18.35 - - [01/Jul/2026:10:29:37 +0900] "GET / HTTP/1.1" 200 3332 "-" "curl/8.19.0" "172.16.10.200,1.1.1.1, 3.3.3.3, 192.168.10.39, 172.16.18.253"
 ```
 #### 3.2.3 결과
@@ -126,7 +130,7 @@ client가 아래 패턴와  curl-pattern-3 형식 실행 시, 임의 지정된 x
 ### 3.3.2 테스트 및 웹 로그 결과
 ```
 curl-pattern-3
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://haproxy.domain
 172.16.18.35 - - [01/Jul/2026:10:36:34 +0900] "GET / HTTP/1.1" 200 7620 "-" "curl/8.6.0" "172.16.30.250,3.3.3.3"
 ```
 ### 3.3.3 결과
