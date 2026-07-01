@@ -66,8 +66,10 @@ curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Fo
 ```
 결과 앞에서는 haproxy에서 확인한 src 주소
 뒤에는 경유 과정의 src 앞단의 주소
-즉 src 이전의 하나의 주소만 확인 가능(단 경유 과정이 없다면 임의 xff 필드 주소 호출)
+즉 src 이전의 하나의 주소만 확인 가능(단 경유 과정이 없다면 임의 xff 필드 단일 주소 확인)
 ```
+---
+
 
 ### 3.2 설정 req.fhdr
 ```
@@ -96,6 +98,8 @@ curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Fo
 뒤에는 경유 과정의 src 앞단의 주소
 모든 IP주소 확인 가능
 ```
+---
+
 
 ### 3.3 설정 req.allhdr
 ```
@@ -112,14 +116,12 @@ graph LR;
    Client --> Haproxy --> WEB
 
 ```
-
 ### 3.3 테스트 및 웹 로그 결과
 ```
 curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain)
 192.168.10.35 - - [01/Jul/2026:10:36:34 +0900] "GET / HTTP/1.1" 200 7620 "-" "curl/8.6.0" "172.16.30.250,5.5.5.5"
 즉 1.1.1.1 정보는 확인되지 않음.
 ```
-
 ### 3.3 결과
 ```
 결과 앞에서는 haproxy에서 확인한 src 주소
@@ -132,7 +134,7 @@ allhdr는 haproxy가 제공하는 함수가 아니기에, http_fetch.c 소스에
 http-request set-var(txn.xff) req.allhdr(X-Forwarded-For)
 http-request set-header X-Forwarded-For %[src],%[var(txn.xff)]
 ```
-
+---
 
 
 
