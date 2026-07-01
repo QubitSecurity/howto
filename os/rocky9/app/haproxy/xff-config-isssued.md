@@ -31,7 +31,7 @@ Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
 
 ---
 ## 2. 사전 설정
-Proxy(Squid) xff 설정
+Proxy(Squid) 설정
 ```
 xff 설정
 request_header_access X-Forwarded-For allow all
