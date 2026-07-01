@@ -51,22 +51,25 @@ http-request set-header X-Forwarded-For %[src],%[req.hdr(X-Forwarded-For)] if { 
 192.168.10.35 - - [01/Jul/2026:09:44:30 +0900] "GET / HTTP/1.1" 200 7620 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0" "172.16.10.200,172.16.18.253"
 ```
 ```
-curl-pattern-1 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://domain/)
+curl-pattern-1
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://domain/
 192.168.10.35 - - [01/Jul/2026:10:17:18 +0900] "GET /a HTTP/1.1" 404 3332 "-" "curl/8.19.0" "172.16.10.200,172.16.18.253"
 ```
 ```
-curl-pattern-2 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://domain/)
+curl-pattern-2
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://domain/
 192.168.10.35 - - [01/Jul/2026:10:18:26 +0900] "GET /a HTTP/1.1" 404 3332 "-" "curl/8.19.0" "172.16.10.200,172.16.18.253"
 ```
 ```
-curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain)
+curl-pattern-3
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain
 192.168.10.35 - - [01/Jul/2026:10:19:11 +0900] "GET /a HTTP/1.1" 404 3332 "-" "curl/8.19.0" "172.16.10.200,172.16.18.253"
 ```
 ### 3.1 결과
 ```
-결과 앞에서는 haproxy에서 확인한 src 주소
-뒤에는 경유 과정의 src 앞단의 주소
-즉 src 이전의 하나의 주소만 확인 가능(단 경유 과정이 없다면 임의 xff 필드 단일 주소 확인)
+xff 필드 좌측 데이터는 haproxy 확인 src 주소
+그 뒤로 경유 과정의 src 앞단 주소 확인
+즉 src 이전의 하나의 주소만 확인 가능(경유가 없다면, 임의 지정 xff 필드 단일 주소 확인)
 ```
 ---
 
@@ -81,21 +84,24 @@ http-request set-header X-Forwarded-For %[src],%[req.fhdr(X-Forwarded-For)] if {
 192.168.10.35 - - [01/Jul/2026:10:22:52 +0900] "GET /favicon.ico HTTP/1.1" 404 3332 "http://haproxy.plura.io/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0" "172.16.10.200,192.168.10.39, 172.16.18.253"
 ```
 ```
-curl-pattern-1 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://domain/)
+curl-pattern-1
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1"  http://domain/
 192.168.10.35 - - [01/Jul/2026:10:23:47 +0900] "GET /a HTTP/1.1" 404 3332 "-" "curl/8.19.0" "172.16.10.200,1.1.1.1, 192.168.10.39, 172.16.18.253"
 ```
 ```
-curl-pattern-2 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://domain/)
+curl-pattern-2
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1.,2.2.2.2" http://domain/
 192.168.10.35 - - [01/Jul/2026:10:23:41 +0900] "GET /a HTTP/1.1" 404 3332 "-" "curl/8.19.0" "172.16.10.200,1.1.1.1,2.2.2.2, 192.168.10.39, 172.16.18.253"
 ```
 ```
-curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain)
+curl-pattern-3
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain
 192.168.10.35 - - [01/Jul/2026:10:29:37 +0900] "GET /a HTTP/1.1" 404 3332 "-" "curl/8.19.0" "172.16.10.200,1.1.1.1, 3.3.3.3, 192.168.10.39, 172.16.18.253"
 ```
 ### 3.2 결과
 ```
-결과 앞에서는 haproxy에서 확인한 src 주소
-뒤에는 경유 과정의 src 앞단의 주소
+xff 필드 좌측 데이터는 haproxy 확인 src 주소
+그 뒤로 헤더 임의 지정 xff 데이터, Client, 경유 IP 순 확인
 모든 IP주소 확인 가능
 ```
 ---
@@ -124,9 +130,9 @@ curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Fo
 ```
 ### 3.3 결과
 ```
-결과 앞에서는 haproxy에서 확인한 src 주소
-뒤에는 경유 과정의 src 앞단의 주소
-먼저 임의 지정된 xff 정보는 없어짐.
+xff 필드 좌측 데이터는 haproxy 확인 src 주소
+그 뒤로 헤더 임의 지정 xff 데이터
+먼저 임의 지정된 xff 정보 중, 제일 마지막 데이터만 남음.
 
 이를 해결하기 위해 allhdr fetch 함수를 생성, 모든 데이터를 확인하는 함수 필요.
 allhdr는 haproxy가 제공하는 함수가 아니기에, http_fetch.c 소스에 관련 코드를 포함하여 재빌드.
