@@ -69,7 +69,7 @@ curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3
 ```
 xff 필드 좌측 데이터는 haproxy 확인 src 주소
 그 뒤로 경유 과정의 src 앞단 주소 확인
-즉 src 이전의 하나의 주소만 확인 가능(경유가 없다면, 임의 지정 xff 필드 단일 주소 확인)
+즉 src 이전의 하나의 주소만 확인 가능(경유가 없다면, curl 헤더 임의 지정 xff 필드 단일 주소 확인)
 ```
 ---
 
@@ -134,8 +134,8 @@ xff 필드 좌측 데이터는 haproxy 확인 src 주소
 그 뒤로 헤더 임의 지정 xff 데이터
 먼저 임의 지정된 xff 정보 중, 제일 마지막 데이터만 남음.
 
-이를 해결하기 위해 allhdr fetch 함수를 생성, 모든 데이터를 확인하는 함수 필요.
-allhdr는 haproxy가 제공하는 함수가 아니기에, http_fetch.c 소스에 관련 코드를 포함하여 재빌드.
+이를 해결하기 위해 모든 request 데이터를 확인하는 fetch 함수 생성 필요.
+haproxy에서 자체 제공하는 함수는 없음. http_fetch.c 소스에서 관련 코드를 구현하여 재빌드 필요.
 재빌드 후 아래와 같이 설정
 http-request set-var(txn.xff) req.allhdr(X-Forwarded-For)
 http-request set-header X-Forwarded-For %[src],%[var(txn.xff)]
