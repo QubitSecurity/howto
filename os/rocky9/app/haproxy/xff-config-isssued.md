@@ -5,6 +5,18 @@
 ---
 
 ## 1. 접속 테스트 구성
+
+```mermaid
+graph LR;
+   Client[Client PC]
+   Proxy1[Proxy1]
+   Proxy2[Proxy2]
+   Haproxy[Haproxy]
+   WEB[Nginx]
+        
+   Client --> Proxy1 --> Proxy2 --> Haproxy --> WEB
+
+```
 ```
 Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
 접속 테스트는 http 프로토콜
@@ -91,6 +103,16 @@ curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Fo
 client -> haproxy -> nginx (squid가 없는 구조) 일때,
 client가 아래 패턴와  curl-pattern-3 형식 실행 시, 임의 지정된 xff 정보를 로그에 생성하지 못함.
 ```
+```mermaid
+graph LR;
+   Client[Client PC]
+   Haproxy[Haproxy]
+   WEB[Nginx]
+        
+   Client --> Haproxy --> WEB
+
+```
+
 ### 3.3 테스트 및 웹 로그 결과
 ```
 curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain)
