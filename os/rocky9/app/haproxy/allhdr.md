@@ -174,11 +174,7 @@ grep -n "req.hdr" src/http_fetch.c
 `req.hdr` 바로 아래에
 
 ```c
-{ "req.allhdr", smp_fetch_allhdr,
-    ARG2(1,STR,STR),
-    NULL,
-    SMP_T_STR,
-    SMP_USE_HRQHV },
+{ "req.allhdr", smp_fetch_allhdr,    ARG2(1,STR,STR),    NULL,    SMP_T_STR,    SMP_USE_HRQHV },
 ```
 
 추가합니다.
@@ -188,11 +184,7 @@ grep -n "req.hdr" src/http_fetch.c
 ## response도 만들 경우
 
 ```c
-{ "res.allhdr", smp_fetch_allhdr,
-    ARG2(1,STR,STR),
-    NULL,
-    SMP_T_STR,
-    SMP_USE_HRSHV },
+{ "res.allhdr", smp_fetch_allhdr,    ARG2(1,STR,STR),    NULL,    SMP_T_STR,    SMP_USE_HRSHV },
 ```
 
 도 추가합니다.
@@ -230,7 +222,8 @@ make \
 TARGET=linux-glibc \
 USE_OPENSSL=1 \
 USE_PCRE2=1 \
-USE_ZLIB=1
+USE_ZLIB=1 \
+...
 ```
 
 ---
