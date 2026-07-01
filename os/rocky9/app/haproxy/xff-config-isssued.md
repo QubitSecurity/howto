@@ -140,7 +140,7 @@ haproxy에서 자체 제공하는 함수는 없음. http_fetch.c 소스에서 �
 http-request set-var(txn.xff) req.allhdr(X-Forwarded-For)
 http-request set-header X-Forwarded-For %[src],%[var(txn.xff)]
 ```
-- [allhdr 재빌드 방법](https://github.com/QubitSecurity/howto/blob/main/rocky9/app/haproxy/allhdr.md)
+- [allhdr 재빌드 방법](https://github.com/QubitSecurity/howto/blob/main/os/rocky9/app/haproxy/allhdr.md)
 ---
 
 
