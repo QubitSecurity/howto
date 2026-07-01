@@ -19,7 +19,7 @@ graph LR;
 ```
 ```
 Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
-접속 테스트는 http 프로토콜
+접속 테스트는 http 프로토콜(https 테스트 불가)
 
 1. Client PC 는 브라우저 or curl를 사용하여 Proxy1를 통해 Web 접속
 2  Proxy1 은
