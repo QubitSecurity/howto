@@ -8,11 +8,11 @@
 
 ```mermaid
 graph LR;
-   Client[Client PC]
-   Proxy1[Proxy1]
-   Proxy2[Proxy2]
-   Haproxy[Haproxy]
-   WEB[Nginx]
+   Client[Client PC<br>192.168.10.39]
+   Proxy1["Proxy1<br>192.168.10.253<br>(172.16.18.253)"]
+   Proxy2[Proxy2<br>172.16.10.200]
+   Haproxy[Haproxy<br>172.16.18.35]
+   WEB[Nginx<br>172.16.183.37]
         
    Client --> Proxy1 --> Proxy2 --> Haproxy --> WEB
 
