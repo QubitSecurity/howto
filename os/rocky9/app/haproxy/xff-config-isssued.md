@@ -1,5 +1,5 @@
 
-# HAProxy 3.2.20 XFF 설정 이슈 정리
+# HAProxy 3.2.20 xff 설정 이슈 정리
 
 
 ---
