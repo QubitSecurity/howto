@@ -128,12 +128,13 @@ curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Fo
 뒤에는 경유 과정의 src 앞단의 주소
 먼저 임의 지정된 xff 정보는 없어짐.
 
-이를 해결하기 위해 allhdr fetch 함수를 생성하여 모든 내용을 불러올수 있게 할 필요가 있음.
-allhdr는 haproxy가 제공하는 함수가 아니기에, http_fetch.c 소스에 관련 코드를 주입하여 재빌드가 필요.
+이를 해결하기 위해 allhdr fetch 함수를 생성, 모든 데이터를 확인하는 함수 필요.
+allhdr는 haproxy가 제공하는 함수가 아니기에, http_fetch.c 소스에 관련 코드를 포함하여 재빌드.
 재빌드 후 아래와 같이 설정
 http-request set-var(txn.xff) req.allhdr(X-Forwarded-For)
 http-request set-header X-Forwarded-For %[src],%[var(txn.xff)]
 ```
+- [allhdr 재빌드](https://github.com/QubitSecurity/howto/blob/main/rocky9/app/haproxy/allhdr.md)
 ---
 
 
