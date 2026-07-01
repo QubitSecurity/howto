@@ -130,7 +130,7 @@ client가 아래 패턴와  curl-pattern-3 형식 실행 시, 임의 지정된 x
 ### 3.3.2 테스트 및 웹 로그 결과
 ```
 curl-pattern-3
-curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://haproxy.domain
+curl -k -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://haproxy.domain
 172.16.18.35 - - [01/Jul/2026:10:36:34 +0900] "GET / HTTP/1.1" 200 7620 "-" "curl/8.6.0" "172.16.30.250,3.3.3.3"
 ```
 ### 3.3.3 결과
