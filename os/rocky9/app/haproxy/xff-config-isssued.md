@@ -24,7 +24,7 @@ Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
 1. Client PC 는 브라우저 or curl를 사용하여 Proxy1를 통해 Web 접속
 2  Proxy1 은
    1) 자신(Proxy1)xff 를 생성, Haproxy 접속
-   2) Proxy2 경유 자신(Proxy2) XFF 추가 생성, haproxy 접속
+   2) Proxy2 경유 자신(Proxy2) XFF 추가 생성, haproxy 접속 (추가 경유 테스트 목적)
 3. haproxy 는 xff 를 재구성하여 nginx 접속
 4. Nginx 에서 웹 access 로그 확인
 ```
