@@ -81,7 +81,7 @@ http-request set-header X-Forwarded-For %[src],%[req.fhdr(X-Forwarded-For)] if {
 #### 3.2.2 테스트 및 웹 로그 결과
 ```
 브라우저
-172.16.18.35 - - [01/Jul/2026:10:22:52 +0900] "GET /favicon.ico HTTP/1.1" 200 3332 "http://haproxy.plura.io/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0" "172.16.10.200,192.168.10.39, 172.16.18.253"
+172.16.18.35 - - [01/Jul/2026:10:22:52 +0900] "GET /favicon.ico HTTP/1.1" 200 3332 "http://domain/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0" "172.16.10.200,192.168.10.39, 172.16.18.253"
 ```
 ```
 curl-pattern-1
@@ -125,7 +125,8 @@ client가 아래 패턴와  curl-pattern-3 형식 실행 시, 임의 지정된 x
 
 ### 3.3.2 테스트 및 웹 로그 결과
 ```
-curl-pattern-3 (curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain)
+curl-pattern-3
+curl -k -x "http://proxy" -H "X-Forwarded-For: 1.1.1.1" -H "X-Forwarded-For: 3.3.3.3"  http://domain
 172.16.18.35 - - [01/Jul/2026:10:36:34 +0900] "GET / HTTP/1.1" 200 7620 "-" "curl/8.6.0" "172.16.30.250,3.3.3.3"
 ```
 ### 3.3.3 결과
