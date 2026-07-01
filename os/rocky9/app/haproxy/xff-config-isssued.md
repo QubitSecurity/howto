@@ -1,5 +1,5 @@
 
-# HAProxy 3.2.20 xff 설정 이슈 정리
+# HAProxy 3.2.20 X-Forwarded-For 설정 테스트 정리
 
 
 ---
@@ -26,19 +26,19 @@ Client PC -> Proxy1 -> Proxy2 -> Haproxy -> Nginx
    1) 자신(Proxy1)xff 를 생성, Haproxy 접속
    2) Proxy2 경유 자신(Proxy2) XFF 추가 생성, haproxy 접속 (추가 경유 테스트 목적)
 3. haproxy 는 xff 를 재구성하여 nginx 접속
-4. Nginx 에서 웹 access 로그 확인
+4. Nginx access 로그 확인
 ```
 
 ---
 ## 2. 사전 설정
-Squid xff 설정
+Proxy(Squid) xff 설정
 ```
 request_header_access X-Forwarded-For allow all
 forwarded_for on
 ```
 
 
-## 3. haproxy xff 구성 설정 별 테스트 및 결과
+## 3. haproxy X-Forwarded-For 설정 별 테스트 및 결과
 
 ### 3.1.1 req.hdr 설정
 ```
