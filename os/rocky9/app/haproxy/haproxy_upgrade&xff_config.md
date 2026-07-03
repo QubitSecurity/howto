@@ -43,7 +43,8 @@ sudo make -j"$(nproc)" \
   USE_PCRE2_JIT=1 \
   USE_ZLIB=1 \
   USE_SYSTEMD=1 \
-  USE_LINUX_CAP=1
+  USE_LINUX_CAP=1 \
+  USE_PROMEX=1
 
 sudo make install
 ```
