@@ -140,7 +140,7 @@ frontend fe_https
     http-request deny deny_status 403 if blocked_src
 
     #-------------------------------------------------------------
-    # 전체 X-Forwarded-For를 로그에 남기고 싶을 때
+    # (Option)전체 X-Forwarded-For를 로그에 남기고 싶을 때
     # 이 capture는 set-header 이전에 수행됨
     #-------------------------------------------------------------
     http-request capture req.fhdr(X-Forwarded-For) len 512
