@@ -5,6 +5,16 @@
 ---
 
 ## 1. HAProxy 버전 업그레이드(v3.2.20)
+### 1.0 사전 패키지 설치
+```
+sudo dnf install -y \
+  gcc make tar wget curl \
+  openssl-devel \
+  pcre2-devel \
+  zlib-devel \
+  systemd-devel \
+  libcap-devel
+```
 ### 1.1 HAProxy v3.2.20 다운로드
 
 ```bash
