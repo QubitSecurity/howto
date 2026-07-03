@@ -59,7 +59,7 @@ sudo make -j"$(nproc)" \
 sudo make install
 ```
 
-설치된 버전.(source 파일 설치 시 /usr/local/sbin 하위 실행 파일 생성)
+설치된 버전 확인(source 파일 설치 시 /usr/local/sbin 하위 실행 파일 생성)
 
 ```bash
 /usr/local/sbin/haproxy -v
