@@ -91,4 +91,11 @@ sudo vi /opt/prometheus/targets/haproxy_exporter_targets.yml
   labels:
     cluster_name: cluster2
 ※ haproxy 서버 ip
+
+설정 검사
+promtool check config /opt/prometheus/prometheus.yml
+
+적용(재시작 없이)
+sudo curl -X POST http://localhost:9090/-/reload
 ```
+
