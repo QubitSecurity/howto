@@ -46,7 +46,6 @@ vi /opt/prometheus/prometheus.yml
 
 vi /opt/prometheus/targets/mysqld_exporter_targets.yml
 
-[root@192010252-prometheus prometheus]# cat targets/redis_exporter_targets.yml
 - targets:
   - aaa.aaa.aaa.aaa:9121
   - bbb.bbb.bbb.bbb:9121
