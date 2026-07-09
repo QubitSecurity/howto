@@ -2,11 +2,13 @@
 모든 서버에 설치
 ### 1. Node Exporter 다운로드 및 저장
 ```
-wget -P /opt https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-386.tar.gz
+wget -P /opt https://github.com/prometheus/node_exporter/releases/download/v1.11.1/node_exporter-1.11.1.linux-amd64.tar.gz
 
-tar xvf /opt/node_exporter-1.8.2.linux-386.tar.gz
+tar xvf /opt/node_exporter-1.11.1.linux-amd64.tar.gz
 
-ln -s /opt/node_exporter-1.8.2.linux-386 /opt/node_exporter
+ln -s /opt/node_exporter-1.11.1.linux-amd64 /opt/node_exporter
+
+
 ```
 ### 2. 서비스 파일 생성
 ```
@@ -23,3 +25,6 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
+
+sudo systemctl enable --now node_exporter
+```
