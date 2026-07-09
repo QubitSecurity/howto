@@ -33,11 +33,14 @@ sudo firewall-cmd --permanent --add-port=9100/tcp
 sudo firewall-cmd --reload
 ```
 ### 4. prometheus target 설정 및 적용
-vi /opt/prometheus/targets/mysqld_exporter_targets.yml
+```
+vi /opt/prometheus/targets/node_exporter_targets.json
+
+ex.
 [
   {
     "targets": [
-      "10.100.21.16:9100"
+      "aaa.aaa.aaa.aaa:9100"
     ],
     "labels": {
       "env": "production",
@@ -46,17 +49,17 @@ vi /opt/prometheus/targets/mysqld_exporter_targets.yml
   },
   {
     "targets": [
-      "10.100.21.17:9100"
+      "aaa.aaa.aaa.bbb:9100"
     ],
     "labels": {
       "env": "production",
       "role": "node_exporter"
     }
   }
-
 ]
+※ node 서버 ip
 
-※ redis 서버 ip
+
 
 설정 검사
 promtool check config /opt/prometheus/prometheus.yml
