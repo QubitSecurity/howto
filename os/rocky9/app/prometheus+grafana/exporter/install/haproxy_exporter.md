@@ -1,7 +1,7 @@
 ## Kafka Exporter
 haproxy exporter를 설치하는 2가지 방법
 1. haproxy exporter 일반 설치
-2. haproxy 자체 지원 exporter 설치(PROMEX)
+2. haproxy 자체 지원 exporter(PROMEX) 사용(haproxy v2.0 이상 가능)
 
 ### 1. haproxy exporter 일반 설치
 #### 1.1 haporxy Exporter 다운로드 및 저장
