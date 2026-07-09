@@ -26,6 +26,37 @@ Restart=always
 WantedBy=multi-user.target
 
 sudo systemctl enable --now node_exporter
+```
+### 3. 방화벽 오픈
+```
+sudo firewall-cmd --permanent --add-port=9100/tcp
+sudo firewall-cmd --reload
+```
+### 4. prometheus target 설정 및 적용
+vi /opt/prometheus/targets/mysqld_exporter_targets.yml
+[
+  {
+    "targets": [
+      "10.100.21.16:9100"
+    ],
+    "labels": {
+      "env": "production",
+      "role": "node_exporter"
+    }
+  },
+  {
+    "targets": [
+      "10.100.21.17:9100"
+    ],
+    "labels": {
+      "env": "production",
+      "role": "node_exporter"
+    }
+  }
+
+]
+
+※ redis 서버 ip
 
 설정 검사
 promtool check config /opt/prometheus/prometheus.yml
