@@ -8,7 +8,6 @@ tar xvf /opt/node_exporter-1.11.1.linux-amd64.tar.gz
 
 ln -s /opt/node_exporter-1.11.1.linux-amd64 /opt/node_exporter
 
-
 ```
 ### 2. 서비스 파일 생성
 ```
@@ -27,4 +26,11 @@ Restart=always
 WantedBy=multi-user.target
 
 sudo systemctl enable --now node_exporter
+
+설정 검사
+promtool check config /opt/prometheus/prometheus.yml
+
+적용(재시작 없이)
+sudo curl -X POST http://localhost:9090/-/reload
+
 ```
