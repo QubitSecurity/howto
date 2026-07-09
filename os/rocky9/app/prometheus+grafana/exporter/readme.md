@@ -14,3 +14,6 @@
 
 5) mysqld exporter - mysql 모니터링
 - [mysqld_exporter 설치](./install/mysqld_exporter.md)
+
+6) haproxy exporter - mysql 모니터링
+- [haproxy_exporter 설치](./install/haproxy_exporter.md)
