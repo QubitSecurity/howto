@@ -1,5 +1,5 @@
 
-## exporter
+## prometheus exporter
 1) node exporter - node 모니터링
 - [node_exporter 설치](./install/node_exporter.md)
 
