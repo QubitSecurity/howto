@@ -12,8 +12,11 @@ for vm in $(virsh list --all --name ); do
     mod2="1048576"
     memdata=$(expr $memdata / $mod2)
 
+    cpudata=$(echo  $(virsh dominfo $vm | grep 'CPU(s)'))
+    cpudata=$(echo "$cpudata" | sed "s/CPU(s): //g" )
 
 
-   echo "$vm" "$memdata" "$sodata"
+
+   echo "$vm" "$cpudata" "$memdata" "$sodata"
 
 done
