@@ -6,7 +6,7 @@ wget https://github.com/danielqsj/kafka_exporter/releases/download/v1.9.0/kafka_
 
 tar xvf /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz -C /opt
 
-ln -s /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz /opt/kafka_exporter
+ln -s /opt/kafka_exporter-1.9.0.linux-amd64 /opt/kafka_exporter
 
 sudo chcon -t bin_t /opt/kafka_exporter/kafka_exporter
 ```
