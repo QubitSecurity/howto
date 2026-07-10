@@ -2,7 +2,7 @@
 클러스터링 메타데이터를 가져오기 때문에 각 클러스터된 노드들 중 하나에서만 설치.
 ### 1. Kafka Exporter 다운로드 및 저장
 ```
-wget https://github.com/danielqsj/kafka_exporter/releases/download/v1.9.0/kafka_exporter-1.9.0.linux-amd64.tar.gz
+wget -P /opt https://github.com/danielqsj/kafka_exporter/releases/download/v1.9.0/kafka_exporter-1.9.0.linux-amd64.tar.gz
 
 tar xvf /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz -C /opt
 
@@ -56,7 +56,7 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 
-sudo systemctl enable --now kafka_exporter 
+sudo systemctl enable --now kafka_exporter && sudo systemctl status kafka_exporter
 
 ```
 
