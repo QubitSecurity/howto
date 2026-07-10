@@ -4,7 +4,7 @@
 ```
 wget https://github.com/danielqsj/kafka_exporter/releases/download/v1.9.0/kafka_exporter-1.9.0.linux-amd64.tar.gz
 
-tar xvf /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz
+tar xvf /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz -C /opt
 
 ln -s /opt/kafka_exporter-1.9.0.linux-amd64.tar.gz /opt/kafka_exporter
 
