@@ -37,7 +37,7 @@ aaa.aaa.aaa.aa1:9092
 aaa.aaa.aaa.aa2:9092
 aaa.aaa.aaa.aa3:9092
 
-chcon -t bin_t /opt/kafka_exporter/start-kafka-exporter.sh
+sudo chcon -t bin_t /opt/kafka_exporter/start-kafka-exporter.sh
 
 sudo vi /etc/systemd/system/kafka_exporter.service
 [Unit]
