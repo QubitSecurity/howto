@@ -11,7 +11,7 @@ ln -s /opt/node_exporter-1.11.1.linux-amd64 /opt/node_exporter
 ```
 ### 2. 서비스 파일 생성
 ```
-vi /etc/systemd/system/node_exporter.service
+sudo vi /etc/systemd/system/node_exporter.service
 
 [Unit]
 Description=Node Exporter
