@@ -30,6 +30,8 @@ done < /opt/kafka_exporter/brokers.conf
 exec /opt/kafka_exporter/kafka_exporter $ARGS
 sudo systemctl enable --now blackbox_exporter 
 
+sudo chcon -t bin_t /opt/kafka_exporter/start-kafka-exporter.sh
+sudo chmod u+x /opt/kafka_exporter/start-kafka-exporter.sh
 
 sudo vi /opt/kafka_exporter/brokers.conf (클러스터링된 노드 정보 설정 파일)
 
@@ -37,7 +39,7 @@ aaa.aaa.aaa.aa1:9092
 aaa.aaa.aaa.aa2:9092
 aaa.aaa.aaa.aa3:9092
 
-sudo chcon -t bin_t /opt/kafka_exporter/start-kafka-exporter.sh
+
 
 sudo vi /etc/systemd/system/kafka_exporter.service
 [Unit]
