@@ -25,7 +25,7 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 
-sudo systemctl enable --now node_exporter
+sudo systemctl enable --now node_exporter && sudo systemctl status node_exporter
 ```
 ### 3. 방화벽 오픈
 ```
