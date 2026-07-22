@@ -1,5 +1,5 @@
 
-# HAProxy 3.2.20 X-Forwarded-For 설정 테스트 정리
+# HAProxy 3.2.20 버전 X-Forwarded-For 설정 테스트 정리
 
 
 ---
