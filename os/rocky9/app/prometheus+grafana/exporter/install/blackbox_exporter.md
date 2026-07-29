@@ -21,14 +21,14 @@ After=network.target
 
 [Service]
 User=root
-ExecStart=blackbox_exporter  --config.file=/home/sysadmin/blackbox_exporter/blackbox.yml
+ExecStart=/opt/blackbox_exporter/blackbox_exporter  --config.file=/opt/blackbox_exporter/blackbox.yml
 
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 
-sudo systemctl enable --now blackbox_exporter 
+sudo systemctl enable --now blackbox_exporter && sudo systemctl status blackbox_exporter 
 
 ```
 
