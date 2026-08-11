@@ -176,6 +176,14 @@ pwd
 ```bash
 cd ~/filter
 git status
+
+git diff --cached --stat
+
+git commit -m "Update forensic linking"
+
+git push origin main
+
+
 ```
 
 간단히 파일 목록만 보려면:
