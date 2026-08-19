@@ -169,7 +169,7 @@ EnvironmentFile=/opt/solr-%i/env
 ExecStart=/opt/solr-%i/start.sh
 ExecStop=/opt/solr-%i/stop.sh
 PIDFile=/opt/solr-%i/run/solr-%i.pid
-Restart=on-failure
+Restart=no
 LimitNOFILE=1048576
 
 [Install]
@@ -179,7 +179,10 @@ WantedBy=default.target
 
 ```bash
 systemctl --user daemon-reload
+systemctl --user start solr@89XX
+혹은
 systemctl --user enable --now solr@89XX
+※zookeeper 없이 solr만 시작된 경우 정상 시작되지 않으니, enable --now 유의 사용 필요.
 # 필요 포트 반복: 8984..8990
 ```
 
@@ -191,7 +194,6 @@ systemctl --user list-units --type=service | grep solr
 개별 서비스 삭제(안전)
 systemctl --user stop solr@89XX
 systemctl --user disable solr@89XX
-systemctl --user stop solr@89XX
 systemctl --user reset-failed solr@89XX.service
 
 데몬 리로드 (메모리 상 유닛 테이블 새로고침)
