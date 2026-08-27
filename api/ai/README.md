@@ -10,9 +10,9 @@
 | 서비스 | 인증 방식 | API 문서 링크 | 비고 |
 | --- | --- | --- | --- |
 | ChatGPT (OpenAI) | API Key | [OpenAI Docs](https://platform.openai.com/docs) | GPT-4o 사용 가능 |
-| Gemini | OAuth 2.0 + API Key | [Gemini API](https://ai.google.dev/) | PaLM → Gemini로 통합. **단순 연동 시 [Google AI Studio](https://aistudio.google.com/)에서 빠른 키 발급 가능** |
+| Gemini (Google) | OAuth 2.0 + API Key | [Gemini API](https://ai.google.dev/) | PaLM → Gemini로 통합. **단순 연동 시 [Google AI Studio](https://aistudio.google.com/)에서 빠른 키 발급 가능** |
 | Claude (Anthropic) | API Key | [Anthropic API Docs](https://docs.anthropic.com/) | Claude 3 Opus / Sonnet / Haiku 지원 |
-| HyperCLOVA X | OAuth / API Key / API Gateway Key | [NAVER Cloud AI](https://guide.ncloud-docs.com/) | NCP Console에서 사전 설정 필요. **(REST API 직접 호출 시 API Gateway Key 동시 필요)** |
+| HyperCLOVA X (Naver) | OAuth / API Key / API Gateway Key | [NAVER Cloud AI](https://guide.ncloud-docs.com/) | NCP Console에서 사전 설정 필요. **(REST API 직접 호출 시 API Gateway Key 동시 필요)** |
 | **EXAONE (LG)** | **API Key (파트너 경로)** | (파트너 콘솔/FriendliAI 또는 LG AI Research 안내 문서 경로 · 내부 문서 참조) | 국내 도입 친화, 한국어 강점, 멀티모달/추론 라인업. **(파트너 콘솔 사용 시 엔드포인트 URL 표준화 확인 필요)** |
 
 > ❌ **뤼튼 테크놀로지**(Wrtn Technologies)는 자체 LLM을 보유하고 있지 않으며,
