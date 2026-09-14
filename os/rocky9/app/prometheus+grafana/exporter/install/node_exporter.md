@@ -20,7 +20,7 @@ After=network.target
 [Service]
 User=root
 ExecStart=/opt/node_exporter/node_exporter
-Restart=always
+#Restart=always
 
 [Install]
 WantedBy=multi-user.target
