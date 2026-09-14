@@ -22,8 +22,7 @@ After=network.target
 [Service]
 User=root
 ExecStart=/opt/blackbox_exporter/blackbox_exporter  --config.file=/opt/blackbox_exporter/blackbox.yml
-
-Restart=always
+#Restart=always
 
 [Install]
 WantedBy=multi-user.target
