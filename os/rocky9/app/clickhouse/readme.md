@@ -1,133 +1,101 @@
 
-## Single 포트 단일 노드
-
-### 실행 환경
-```
-ansible hosts 파일 경로 : /home/qubit/ansible/hosts
-실행 경로 : /opt/solr
-
-파일 종류
-single-port.yml - ansible을 통해 solr 를 다운로드, 설치, 실행하는 yml(단일 프로세스 단일 노드)
-```
-
-### 설치 방법
-```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/single-port.yml
-```
-
-### 서비스 전체 종료
-```
-ansible -i /home/qubit/ansible/hosts solr -m command -a "/opt/solr/bin/solr stop -all"
-```
-
-### 서비스 전체 설치 파일 삭제
-```
-ansible -i /home/qubit/ansible/hosts solr -m shell -a "sudo rm -rf /opt/solr*"
-```
+## 구성 방법
+### 구성 1. 4노드 (clickhouse-server+keeper 3노드 / clickhouse-server 1노드)
 ### 구조
 ```mermaid
-graph LR;
+graph LR
+    %% ----------------------------------------------------
+    %% [구조 핵심] 서버 레이어와 키퍼 레이어를 가로축으로 분리하여 
+    %% 배치 엔진이 꼬이는 현상을 근본적으로 차단합니다.
+    %% ----------------------------------------------------
+    
+    %% 스타일 정의
+    classDef serverStyle fill:#E1F5FE,stroke:#03A9F4,stroke-width:1.5px,color:#01579B;
+    classDef keeperStyle fill:#E8F5E9,stroke:#4CAF50,stroke-width:1.5px,color:#1B5E20;
 
-    %% Define layout direction and spacing
-   %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
-   %% style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
-   %% style Plug_Zookeeper fill:#fff,stroke:#000,stroke-width:2px;
-
-    %% Ansible Server Section
-    subgraph Ansible_Server[Ansible Server]
+    %% 1. ClickHouse Servers (좌측 정렬)
+    subgraph ClickHouse_Cluster [ClickHouse Server Nodes]
         direction TB
-        Ansible1[Ansible]
-        hosts[hosts]
-        
-        Ansible1 --> hosts
+        S1["[Node 1] clickhouse-server1:9000"]:::serverStyle
+        S2["[Node 2] clickhouse-server2:9000"]:::serverStyle
+        S3["[Node 3] clickhouse-server3:9000"]:::serverStyle
+        S4["[Node 4] clickhouse-server4:9000"]:::serverStyle
+        %%S1 <--sync--> S2
+        %%S3 <--sync--> S4
     end
 
-    %% Zookeeper Section
-    subgraph Zookeeper[Installed_Zookeeper]
+    %% 2. Keeper Quorum (우측 정렬)
+    subgraph Keeper_Cluster [ClickHouse Keeper Quorum]
         direction TB
-        Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
-        Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
-        Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
-        
-        
+        K1["[Node 1] keeper1:2181"]:::keeperStyle
+        K2["[Node 2] keeper2:2181"]:::keeperStyle
+        K3["[Node 3] keeper3:2181"]:::keeperStyle
     end
 
-    %% Solr Subgraph
-    subgraph Solr[Solr Group]
-        direction TB
-        SolrServer1[SolrServer1:8983]
-        SolrServer2[SolrServer2:8983]
-    end
-hosts -->|설치| Solr
 
-SolrServer1 --> Zookeeper1
-SolrServer1 --> Zookeeper2
-SolrServer1 --> Zookeeper3
-SolrServer2 --> Zookeeper1
-SolrServer2 --> Zookeeper2
-SolrServer2 --> Zookeeper3
-```
+    %% 3. Keeper 간의 상호 동기화 지시선 (우측에서 자기들끼리 순환)
+    K1 <--> K2 <--> K3
 
-## baremetal 다중 포트
-### 실행 환경
-```
-ansible hosts 파일 경로 : /home/qubit/ansible/hosts
-실행 경로 : /opt/solr
+    %% 4. 모든 Server에서 모든 Keeper로 가는 지시선 정렬
+    %% (로컬 통신은 실선, 원격 교차 통신은 점선으로 렌더링을 맑게 처리)
+    S1 --> Keeper_Cluster
+    S2 --> Keeper_Cluster
+    S3 --> Keeper_Cluster
+    S4 --> Keeper_Cluster
 
-파일 종류
-solr.yml - ansible을 통해 solr 를 다운로드, 설치, 실행하는 yml
-```
+        S1 <--sync--> S2
+        S3 <--sync--> S4
 
-### 설치 방법
-```
-ansible-playbook -i /home/qubit/ansible/hosts /home/qubit/ansible/multi-port.yml
-```
 
-### 서비스 전체 종료
-```
-ansible -i /home/qubit/ansible/hosts solr -m command -a "sudo /opt/solr/bin/solr stop -all*"
-```
 
-### 서비스 전체 설치 파일 삭제
 ```
-ansible -i /home/qubit/ansible/hosts solr -m shell -a "sudo rm -rf /opt/solr*"
-```
-
+### 구성2. 7노드 (clickhouse-server 4노드 / keeper 3노드)
 ### 구조
 ```mermaid
-graph LR;
+graph LR
+    %% ----------------------------------------------------
+    %% [구조 핵심] 서버 레이어와 키퍼 레이어를 가로축으로 분리하여 
+    %% 배치 엔진이 꼬이는 현상을 근본적으로 차단합니다.
+    %% ----------------------------------------------------
+    
+    %% 스타일 정의
+    classDef serverStyle fill:#E1F5FE,stroke:#03A9F4,stroke-width:1.5px,color:#01579B;
+    
+    %% 핫핑크/진보라 테두리와 노란색 배경으로 키퍼 스타일 구성
+    classDef keeperStyle fill:#FFFDE7,stroke:#E91E63,stroke-width:3px,color:#880E4F,font-weight:bold;
 
-    %% Define layout direction and spacing
-   %% style Ansible_Server fill:#f9f,stroke:#333,stroke-width:2px,height:200px;
-   %% style Zookeeper fill:#cfc,stroke:#333,stroke-width:2px;
-   %% style Plug_Zookeeper fill:#fff,stroke:#000,stroke-width:2px;
-
-    %% Ansible Server Section
-    subgraph Ansible_Server[Ansible Server]
+    %% 1. ClickHouse Servers (좌측 정렬 - 파란색 레이어)
+    subgraph ClickHouse_Cluster [ClickHouse Server Nodes]
         direction TB
-        Ansible1[Ansible]
-        hosts[hosts]
-        
-        Ansible1 --> hosts
+        S1["[Node 1] clickhouse-server1:9000"]:::serverStyle
+        S2["[Node 2] clickhouse-server2:9000"]:::serverStyle
+        S3["[Node 3] clickhouse-server3:9000"]:::serverStyle
+        S4["[Node 4] clickhouse-server4:9000"]:::serverStyle
     end
 
-    %% Zookeeper Section
-    subgraph Zookeeper[Installed_Zookeeper]
+    %% 2. Keeper Quorum (우측 정렬 - 핑크 레이어 및 밑줄 유지)
+    subgraph Keeper_Cluster [ClickHouse Keeper Quorum]
         direction TB
-        Zookeeper1[Zookeeper1<br>Zookeeper_Node1:2888:3888:2181]
-        Zookeeper2[Zookeeper2<br>Zookeeper_Node2:2888:3888:2181]
-        Zookeeper3[Zookeeper3<br>Zookeeper_Node3:2888:3888:2181]
-        
+        K1["<b><u>[Node 5]</u></b> keeper1:2181"]:::keeperStyle
+        K2["<b><u>[Node 6]</u></b> keeper2:2181"]:::keeperStyle
+        K3["<b><u>[Node 7]</u></b> keeper3:2181"]:::keeperStyle
     end
 
-    %% Solr Subgraph
-    subgraph Solr[Solr Single]
-        direction TB
-        SolrProcesses[SolrProcesses<br>Single_Node:8983<br>Single_Node:8984<br>Single_Node:8985<br>...]
-    end
-hosts -->|설치| Solr
+    %% Keeper 서브그래프 박스 자체를 연한 핑크 배경과 붉은색 실선 테두리로 강조
+    style Keeper_Cluster fill:#FCE4EC,stroke:#C2185B,stroke-width:2.5px;
 
-SolrProcesses --> Zookeeper1
-SolrProcesses --> Zookeeper2
-SolrProcesses --> Zookeeper3
+    %% 3. Keeper 간의 상호 동기화 지시선
+    K1 <--> K2 <--> K3
+
+    %% 4. 모든 Server에서 Keeper Cluster 전체로 가는 지시선
+    S1 --> Keeper_Cluster
+    S2 --> Keeper_Cluster
+    S3 --> Keeper_Cluster
+    S4 --> Keeper_Cluster
+
+    %% 서버 간 싱크 라인
+    S1 <-- sync --> S2
+    S3 <-- sync --> S4
+
+
 ```
