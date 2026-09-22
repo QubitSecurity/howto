@@ -6,7 +6,7 @@
 cat <<EOF | sudo tee -a /etc/hosts
 xxx.xxx.xxx.1 node1-clickhouse
 xxx.xxx.xxx.2 node2-clickhouse
-xxx.xxx.xxx.3 node-clickhouse
+xxx.xxx.xxx.3 node3-clickhouse
 xxx.xxx.xxx.4 node4-clickhouse
 EOF
 ```
