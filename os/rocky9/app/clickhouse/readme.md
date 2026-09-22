@@ -1,7 +1,6 @@
 
 ## 구성 방법
 ### 구성 1. clickhouse-server+keeper 3노드 / clickhouse-server 1노드 
-### 구조
 ```mermaid
 graph LR
     %% ----------------------------------------------------
@@ -50,7 +49,6 @@ graph LR
 
 ```
 ### 구성2. clickhouse-server 4노드 / keeper 3노드
-### 구조
 ```mermaid
 graph LR
     %% ----------------------------------------------------
