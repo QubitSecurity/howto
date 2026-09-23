@@ -1,4 +1,48 @@
+## 구성 1. clickhouse-server+keeper 3노드 / clickhouse-server 1노드 
+```mermaid
+graph LR
+    %% ----------------------------------------------------
+    %% [구조 핵심] 서버 레이어와 키퍼 레이어를 가로축으로 분리하여 
+    %% 배치 엔진이 꼬이는 현상을 근본적으로 차단합니다.
+    %% ----------------------------------------------------
+    
+    %% 스타일 정의
+    classDef serverStyle fill:#E1F5FE,stroke:#03A9F4,stroke-width:1.5px,color:#01579B;
+    classDef keeperStyle fill:#E8F5E9,stroke:#4CAF50,stroke-width:1.5px,color:#1B5E20;
 
+    %% 1. ClickHouse Servers (좌측 정렬)
+    subgraph ClickHouse_Cluster [ClickHouse Server Nodes]
+        direction TB
+        S1["[Node 1] clickhouse-server1:9000"]:::serverStyle
+        S2["[Node 2] clickhouse-server2:9000"]:::serverStyle
+        S3["[Node 3] clickhouse-server3:9000"]:::serverStyle
+        S4["[Node 4] clickhouse-server4:9000"]:::serverStyle
+        %%S1 <--sync--> S2
+        %%S3 <--sync--> S4
+    end
+
+    %% 2. Keeper Quorum (우측 정렬)
+    subgraph Keeper_Cluster [ClickHouse Keeper Quorum]
+        direction TB
+        K1["[Node 1] keeper1:2181"]:::keeperStyle
+        K2["[Node 2] keeper2:2181"]:::keeperStyle
+        K3["[Node 3] keeper3:2181"]:::keeperStyle
+    end
+
+
+    %% 3. Keeper 간의 상호 동기화 지시선 (우측에서 자기들끼리 순환)
+    K1 <--> K2 <--> K3
+
+    %% 4. 모든 Server에서 모든 Keeper로 가는 지시선 정렬
+    %% (로컬 통신은 실선, 원격 교차 통신은 점선으로 렌더링을 맑게 처리)
+    S1 --> Keeper_Cluster
+    S2 --> Keeper_Cluster
+    S3 --> Keeper_Cluster
+    S4 --> Keeper_Cluster
+
+        S1 <--sync--> S2
+        S3 <--sync--> S4
+```
 
 ## 0. 사전준비
 ### 0.1 hosts 등록
@@ -18,6 +62,25 @@ systemctl stop firewalld
 방화벽 비활성화
 systemctl disable firewalld
 ```
+
+### 0.3 THP 비활성화
+```
+sudo sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
+sudo sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/defrag'
+```
+
+### 0.4 커널 파라미터 적용 (Delay Accounting 및 최대 스레드 증대)
+```
+cat <<EOF | sudo tee -a /etc/sysctl.conf
+kernel.task_delayacct = 1
+kernel.threads-max = 2097152
+vm.max_map_count = 1600000
+EOF
+
+sysctl 적용
+sudo sysctl -p
+```
+
 
 ## 1. 설치
 ### 1.1 레포지토리 설정 및 다운로드 설치
