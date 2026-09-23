@@ -95,6 +95,31 @@ sudo dnf install -y clickhouse-server clickhouse-client --setopt=proxy=http://xx
 ### 1.2 로그 설정
 ```
 sudo vi /etc/clickhouse-server/config.d/system_logs.xml
+
+<clickhouse>
+    <!-- text_log 보존 기간을 2일로 설정 (기본값: 보통 30일) -->
+    <text_log>
+        <ttl>event_date + INTERVAL 2 DAY</ttl>
+    </text_log>
+
+    <!-- 추적 로그(trace_log)도 2일로 단축 -->
+    <trace_log>
+        <ttl>event_date + INTERVAL 2 DAY</ttl>
+    </trace_log>
+
+    <!-- Keeper 통신 로그(aggregated_zookeeper_log)도 2일로 단축 -->
+    <aggregated_zookeeper_log>
+        <ttl>event_date + INTERVAL 2 DAY</ttl>
+    </aggregated_zookeeper_log>
+
+    <!-- 프로세서 프로파일 로그도 2일로 단축 -->
+    <processors_profile_log>
+        <ttl>event_date + INTERVAL 2 DAY</ttl>
+    </processors_profile_log>
+</clickhouse>
+```
+### 1.3 keeper 설정(1,2,3번 노드에서만)
+```
 <clickhouse>
     <keeper_server>
         <tcp_port>2181</tcp_port>
@@ -128,8 +153,10 @@ sudo vi /etc/clickhouse-server/config.d/system_logs.xml
     </keeper_server>
 </clickhouse>
 ```
-### 1.3 매크로 설정(각 노드별 적용)
+### 1.4 매크로 설정(각 노드별 적용)
 ```
+sudo vi /etc/clickhouse-server/config.d/macros.xml
+
 <clickhouse>
     <macros>
         <shard>01</shard>
@@ -159,9 +186,11 @@ sudo vi /etc/clickhouse-server/config.d/system_logs.xml
 </clickhouse>
 ```
 
-### 1.4 클러스터 및 keeper 설정 (4대 서버 공통)
+### 1.5 클러스터 및 keeper 설정 (4대 서버 공통)
 
 ```
+sudo vi /etc/clickhouse-server/config.d/cluster.xml
+
 <clickhouse>
     <!-- 외부 및 다른 서버 통신 허용 -->
     <listen_host>0.0.0.0</listen_host>
@@ -225,22 +254,3 @@ LimitNOFILE=500000
 EOF
 ```
 
-### 1.6 실행파일 생성
-```
-vi clickhouse-start.sh
-
-# 1. THP 비활성화
-sudo sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
-sudo sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/defrag'
-
-# 2. 커널 파라미터 적용 (Delay Accounting 및 최대 스레드 증대)
-cat <<EOF | sudo tee -a /etc/sysctl.conf
-kernel.task_delayacct = 1
-kernel.threads-max = 2097152
-vm.max_map_count = 1600000
-EOF
-
-# 3. sysctl 적용 및 ClickHouse 서비스 재시작
-sudo sysctl -p
-sudo systemctl restart clickhouse-server
-```
