@@ -86,10 +86,9 @@ sudo sysctl -p
 ### 1.1 레포지토리 설정 및 다운로드 설치
 ```
 (프록시 구성 환경)
-sudo dnf install -y yum-utils --setopt=proxy=http://xxx.xxx.xxx.xxx:3128
-sudo yum-config-manager --add-repo https://packages.clickhouse.com/rpm/clickhouse.repo  --setopt=proxy=http://xxx.xxx.xxx.xxx:3128
-sudo dnf install -y clickhouse-server clickhouse-client --setopt=proxy=http://xxx.xxx.xxx.xxx:3128
-※ 프록시 예외 환경인 경우 --setopt=proxy=http://xxx.xxx.xxx.xxx:3128 제외
+sudo dnf install -y yum-utils
+sudo yum-config-manager --add-repo https://packages.clickhouse.com/rpm/clickhouse.repo
+sudo dnf install -y clickhouse-server clickhouse-client
 ```
 
 ### 1.2 로그 설정
