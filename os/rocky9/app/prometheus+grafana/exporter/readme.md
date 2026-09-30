@@ -18,5 +18,5 @@
 6) haproxy exporter - haproxy 모니터링
 - [haproxy_exporter 설치](./install/haproxy_exporter.md)
 
-7) clickhouse exporter - haproxy 모니터링
+7) clickhouse exporter - clickhouse 모니터링
 - [clickhouse_exporter 설치](./install/clickhouse_exporter.md)
