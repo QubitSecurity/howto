@@ -4,7 +4,7 @@
 
 ### 1. clickhouse Exporter 설정
 ```
-sudo vi /etc/clickhouse-server/config.d/prometheus.yml
+sudo vi /etc/clickhouse-server/config.d/prometheus.xml
 
 <clickhouse>
   <prometheus>
