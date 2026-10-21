@@ -1,0 +1,17 @@
+{
+  "allowedSourceIps": ["<HAPROXY_SOURCE_IP>"],
+  "allowedDestinationCidrs": ["172.16.12.212/32"],
+  "denyCidrs": ["192.168.200.200/32", "172.16.18.200/32", "<HAPROXY_SOURCE_IP>/32"],
+  "allowTestLoopback": false,
+  "dialTimeoutMs": 2000,
+  "writeTimeoutMs": 2000,
+  "maxConnections": 128,
+  "connectionIdleSeconds": 30,
+  "maxMessageBytes": 8192,
+  "maxUdpBytes": 8192,
+  "legacyTimezone": "Asia/Seoul",
+  "legacyMaxMessageBytes": 1024,
+  "debug": false,
+  "healthProbeSourceIp": "192.168.200.200",
+  "healthAckSocket": "/run/plura-syslog/health.sock"
+}

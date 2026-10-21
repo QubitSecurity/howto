@@ -1,0 +1,4 @@
+go version go1.23.2 linux/amd64
+ok  	plura.local/syslog-sender	0.008s
+0.5.0
+Built: /mnt/data/plura-syslog-sender-v0.5/bin/plura-syslog-sender

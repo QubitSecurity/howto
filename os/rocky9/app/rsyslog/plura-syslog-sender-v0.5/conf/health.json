@@ -1,0 +1,12 @@
+{
+  "nodeId": "gw1",
+  "listenAddress": "192.168.200.200:18081",
+  "allowedPeerIps": ["<HAPROXY_SOURCE_IP>", "192.168.200.200", "127.0.0.1"],
+  "probeAddress": "192.168.200.200:514",
+  "probeSourceIp": "192.168.200.200",
+  "ackSocket": "/run/plura-syslog/health.sock",
+  "drainFile": "/run/plura-syslog/drain",
+  "intervalMs": 2000,
+  "timeoutMs": 1500,
+  "staleMs": 6000
+}

@@ -1,0 +1,7 @@
+PASS: readiness only after TCP -> omprog -> Go nonce callback (test adapter)
+PASS: exact HAProxy HTTP/1.0 200 expectation remains compatible
+PASS: TCP listener still open but processing blocked -> readiness 503
+PASS: pipeline recovery -> readiness 200
+PASS: drain marker blocks readiness and removing it restores readiness
+PASS: Go Sender process failure detected, despite TCP port remaining open
+NOTICE: Actual rsyslog/HAProxy not used in this smoke test.

@@ -1,0 +1,133 @@
+=== RUN   TestOutputFormats
+=== RUN   TestOutputFormats/default
+=== RUN   TestOutputFormats/explicit_rfc5424
+=== RUN   TestOutputFormats/rfc3164
+=== RUN   TestOutputFormats/cef_default_legacy
+=== RUN   TestOutputFormats/cef_rfc5424
+--- PASS: TestOutputFormats (0.00s)
+    --- PASS: TestOutputFormats/default (0.00s)
+    --- PASS: TestOutputFormats/explicit_rfc5424 (0.00s)
+    --- PASS: TestOutputFormats/rfc3164 (0.00s)
+    --- PASS: TestOutputFormats/cef_default_legacy (0.00s)
+    --- PASS: TestOutputFormats/cef_rfc5424 (0.00s)
+=== RUN   TestFormatErrors
+=== RUN   TestFormatErrors/long_legacy
+=== RUN   TestFormatErrors/unknown_format
+=== RUN   TestFormatErrors/tls_as_format
+=== RUN   TestFormatErrors/header_without_cef
+=== RUN   TestFormatErrors/empty_format
+=== RUN   TestFormatErrors/bad_cef_header_option
+=== RUN   TestFormatErrors/cef_missing_body
+=== RUN   TestFormatErrors/nil_legacy_time
+=== RUN   TestFormatErrors/bad_timestamp
+=== RUN   TestFormatErrors/legacy_multiline
+=== RUN   TestFormatErrors/duplicate_other_sd
+--- PASS: TestFormatErrors (0.00s)
+    --- PASS: TestFormatErrors/long_legacy (0.00s)
+    --- PASS: TestFormatErrors/unknown_format (0.00s)
+    --- PASS: TestFormatErrors/tls_as_format (0.00s)
+    --- PASS: TestFormatErrors/header_without_cef (0.00s)
+    --- PASS: TestFormatErrors/empty_format (0.00s)
+    --- PASS: TestFormatErrors/bad_cef_header_option (0.00s)
+    --- PASS: TestFormatErrors/cef_missing_body (0.00s)
+    --- PASS: TestFormatErrors/nil_legacy_time (0.00s)
+    --- PASS: TestFormatErrors/bad_timestamp (0.00s)
+    --- PASS: TestFormatErrors/legacy_multiline (0.00s)
+    --- PASS: TestFormatErrors/duplicate_other_sd (0.00s)
+=== RUN   TestCEFQuotingAndSeverity
+--- PASS: TestCEFQuotingAndSeverity (0.00s)
+=== RUN   TestLegacyMetadataPolicy
+--- PASS: TestLegacyMetadataPolicy (0.00s)
+=== RUN   TestCEFRealUDPSend
+--- PASS: TestCEFRealUDPSend (0.00s)
+=== RUN   TestLFRejectsEmbeddedNewline
+--- PASS: TestLFRejectsEmbeddedNewline (0.00s)
+=== RUN   TestConfigPairAndLegacyValidation
+--- PASS: TestConfigPairAndLegacyValidation (0.00s)
+=== RUN   TestConfigV041BackwardCompatibility
+--- PASS: TestConfigV041BackwardCompatibility (0.00s)
+=== RUN   TestAllSourcesAndDestinationsValidated
+=== RUN   TestAllSourcesAndDestinationsValidated/127.0.0.1
+=== RUN   TestAllSourcesAndDestinationsValidated/0.0.0.0
+=== RUN   TestAllSourcesAndDestinationsValidated/169.254.169.254
+=== RUN   TestAllSourcesAndDestinationsValidated/224.0.0.1
+=== RUN   TestAllSourcesAndDestinationsValidated/255.255.255.255
+=== RUN   TestAllSourcesAndDestinationsValidated/::1
+=== RUN   TestAllSourcesAndDestinationsValidated/fe80::1
+=== RUN   TestAllSourcesAndDestinationsValidated/::ffff:172.16.12.212
+--- PASS: TestAllSourcesAndDestinationsValidated (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/127.0.0.1 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/0.0.0.0 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/169.254.169.254 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/224.0.0.1 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/255.255.255.255 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/::1 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/fe80::1 (0.00s)
+    --- PASS: TestAllSourcesAndDestinationsValidated/::ffff:172.16.12.212 (0.00s)
+=== RUN   TestPermanentDropDoesNotLogPayload
+--- PASS: TestPermanentDropDoesNotLogPayload (0.00s)
+=== RUN   TestTimestampAndSDLimits
+--- PASS: TestTimestampAndSDLimits (0.00s)
+=== RUN   TestHealthProbeCallbackAndIsolation
+--- PASS: TestHealthProbeCallbackAndIsolation (0.00s)
+=== RUN   TestHealthProbeFailureNeverBlocksBusinessQueue
+--- PASS: TestHealthProbeFailureNeverBlocksBusinessQueue (0.00s)
+=== RUN   TestReadinessStates
+--- PASS: TestReadinessStates (0.00s)
+=== RUN   TestPipelineProbeThroughTCPAndProcessor
+--- PASS: TestPipelineProbeThroughTCPAndProcessor (0.00s)
+=== RUN   TestHealthConfigValidation
+--- PASS: TestHealthConfigValidation (0.00s)
+=== RUN   TestTCPConnectionReuseAndByteCount
+--- PASS: TestTCPConnectionReuseAndByteCount (0.00s)
+=== RUN   TestTransientFailureRequestsRetry
+--- PASS: TestTransientFailureRequestsRetry (0.00s)
+=== RUN   TestLFFrameAndUDPSize
+--- PASS: TestLFFrameAndUDPSize (0.00s)
+=== RUN   TestBoundedInputResynchronizes
+--- PASS: TestBoundedInputResynchronizes (0.00s)
+=== RUN   TestMetadataAndStrip
+--- PASS: TestMetadataAndStrip (0.00s)
+=== RUN   TestOtherStructuredDataRetained
+--- PASS: TestOtherStructuredDataRetained (0.00s)
+=== RUN   TestRejectInvalidMessages
+=== RUN   TestRejectInvalidMessages/port_invalid
+=== RUN   TestRejectInvalidMessages/missing_sd
+=== RUN   TestRejectInvalidMessages/wrong_app
+=== RUN   TestRejectInvalidMessages/duplicate_param
+=== RUN   TestRejectInvalidMessages/bad_escape
+=== RUN   TestRejectInvalidMessages/source_disallowed
+=== RUN   TestRejectInvalidMessages/destination_disallowed
+=== RUN   TestRejectInvalidMessages/special_destination
+=== RUN   TestRejectInvalidMessages/proto_invalid
+=== RUN   TestRejectInvalidMessages/duplicate_sd
+--- PASS: TestRejectInvalidMessages (0.00s)
+    --- PASS: TestRejectInvalidMessages/port_invalid (0.00s)
+    --- PASS: TestRejectInvalidMessages/missing_sd (0.00s)
+    --- PASS: TestRejectInvalidMessages/wrong_app (0.00s)
+    --- PASS: TestRejectInvalidMessages/duplicate_param (0.00s)
+    --- PASS: TestRejectInvalidMessages/bad_escape (0.00s)
+    --- PASS: TestRejectInvalidMessages/source_disallowed (0.00s)
+    --- PASS: TestRejectInvalidMessages/destination_disallowed (0.00s)
+    --- PASS: TestRejectInvalidMessages/special_destination (0.00s)
+    --- PASS: TestRejectInvalidMessages/proto_invalid (0.00s)
+    --- PASS: TestRejectInvalidMessages/duplicate_sd (0.00s)
+=== RUN   TestValidateConfig
+--- PASS: TestValidateConfig (0.00s)
+=== RUN   TestOmprogUDPEndToEnd
+--- PASS: TestOmprogUDPEndToEnd (0.00s)
+=== RUN   TestTCPFraming
+--- PASS: TestTCPFraming (0.00s)
+=== RUN   TestCEFBodyPassThrough
+--- PASS: TestCEFBodyPassThrough (0.00s)
+=== RUN   FuzzParseEnvelope
+=== RUN   FuzzParseEnvelope/seed#0
+=== RUN   FuzzParseEnvelope/seed#1
+=== RUN   FuzzParseEnvelope/seed#2
+--- PASS: FuzzParseEnvelope (0.00s)
+    --- PASS: FuzzParseEnvelope/seed#0 (0.00s)
+    --- PASS: FuzzParseEnvelope/seed#1 (0.00s)
+    --- PASS: FuzzParseEnvelope/seed#2 (0.00s)
+PASS
+coverage: 68.2% of statements
+ok  	plura.local/syslog-sender	0.009s	coverage: 68.2% of statements

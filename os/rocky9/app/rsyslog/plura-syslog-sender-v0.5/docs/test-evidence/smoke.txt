@@ -1,0 +1,7 @@
+PASS: omprog startup ack
+PASS: UDP relay + routing SD stripped
+PASS: TCP octet framing with UTF8 byte count
+PASS: RFC3164 output via real UDP receiver
+PASS: CEF + RFC3164 header; body escaping preserved
+PASS: CEF + RFC5424 header
+PASS: disallowed destination drop, no message contents in diagnostics

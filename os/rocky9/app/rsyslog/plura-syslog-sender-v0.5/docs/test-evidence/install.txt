@@ -1,0 +1,7 @@
+{"time":"2026-10-21T23:08:47.651219336Z","level":"INFO","msg":"config_check_ok","allowedSources":1,"allowedDestinationCidrs":1}
+{"time":"2026-10-21T23:08:47.652549559Z","level":"INFO","msg":"health_config_check_ok","node":"gw1"}
+{"time":"2026-10-21T23:08:47.65376901Z","level":"INFO","msg":"config_pair_ok","node":"gw1"}
+{"time":"2026-10-21T23:08:47.676565339Z","level":"INFO","msg":"config_check_ok","allowedSources":1,"allowedDestinationCidrs":1}
+{"time":"2026-10-21T23:08:47.677851971Z","level":"INFO","msg":"health_config_check_ok","node":"gw1"}
+{"time":"2026-10-21T23:08:47.679390689Z","level":"INFO","msg":"config_pair_ok","node":"gw1"}
+PASS: install/upgrade preserves configs and rsyslog; backup + atomic executable replacement; invalid config aborts before replacement

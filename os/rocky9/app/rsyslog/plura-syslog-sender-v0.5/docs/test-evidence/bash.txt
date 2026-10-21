@@ -1,0 +1,3 @@
+Written to 127.0.0.1:60209 TCP; requested customer 172.16.12.212:514 udp, format=rfc5424
+This is local socket-write completion, NOT customer delivery confirmation.
+PASS: Bash TCP ingress framing uses UTF-8 byte length; customer UDP choice is independent

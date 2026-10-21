@@ -1,0 +1,30 @@
+[Unit]
+Description=PLURA Syslog pipeline readiness monitor
+After=network-online.target rsyslog.service
+Wants=network-online.target rsyslog.service
+# Deliberately not PartOf/BindsTo: stay up and return 503 if rsyslog stops.
+
+[Service]
+Type=simple
+User=root
+Group=root
+RuntimeDirectory=plura-syslog
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+UMask=0077
+ExecStart=/usr/libexec/rsyslog/plura-syslog-sender -health -config /etc/plura-syslog/health.json
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/run/plura-syslog
+PrivateTmp=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=plura-syslog-health
+
+[Install]
+WantedBy=multi-user.target

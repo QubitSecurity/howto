@@ -1,0 +1,1 @@
+PASS: all Bash scripts parse; Python scripts compile
