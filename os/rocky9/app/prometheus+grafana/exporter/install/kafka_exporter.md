@@ -28,7 +28,6 @@ do
     ARGS="$ARGS --kafka.server=$broker"
 done < /opt/kafka_exporter/brokers.conf
 exec /opt/kafka_exporter/kafka_exporter $ARGS
-sudo systemctl enable --now blackbox_exporter 
 
 sudo chcon -t bin_t /opt/kafka_exporter/start-kafka-exporter.sh
 sudo chmod u+x /opt/kafka_exporter/start-kafka-exporter.sh
